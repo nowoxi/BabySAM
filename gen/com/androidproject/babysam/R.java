@@ -35,14 +35,14 @@ public final class R {
         public static final int icon=0x7f020001;
     }
     public static final class id {
-        public static final int TextViewBottomVersion=0x7f080005;
+        public static final int TextViewBottomVersion=0x7f080003;
         public static final int auth_but=0x7f080001;
-        public static final int logo=0x7f080006;
+        public static final int logo=0x7f080004;
         public static final int relativeLayout1=0x7f080000;
         public static final int relativeLayout2=0x7f080002;
-        public static final int textView1=0x7f080007;
-        public static final int zxing_but=0x7f080003;
-        public static final int zxing_result=0x7f080004;
+        public static final int textView1=0x7f080005;
+        public static final int zxing_but=0x7f080006;
+        public static final int zxing_result=0x7f080007;
     }
     public static final class layout {
         public static final int event=0x7f030000;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BabySAM</string>
+    <string name="splash">BabySAM for Student Attendance monitoring </string>
+    <string name="login">Authentication Screen</string>
+    <string name="menu">Menu Screen</string>
+    <string name="event">Event Screen</string>
+    <string name="old">Old sessions Screen</string>
+    <string name="help">Help Screen</string>
+    <string name="face">Facial Recognition Screen</string>
+    <string name="session">Sessions Screen</string>
+    <string name="officials">Officials Screen</string>
+    <string name="students">Students Screen</string>
+    <string name="old_display">Display Screen</string>    
+    <string name="facerec_display">Display Screen</string>
+    
+    <string name="version">version 1.0</string>
+    <string name="auth_but">Login</string>
+    <string name="zxing_but">Scan</string>
+</resources>

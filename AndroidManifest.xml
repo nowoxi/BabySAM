@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.androidproject.babysam"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="7" />
+
+    <application android:label="@string/app_name" android:icon="@drawable/babysam_icon" android:debuggable="true">
+        <activity android:name=".SplashActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name="EventActivity"></activity>
+        <activity android:name="babysamActivity"></activity>
+        <activity android:name="FaceActivity"></activity>
+        <activity android:name="Facerec_displayActivity"></activity>
+        <activity android:name="HelpActivity"></activity>
+        <activity android:name="LoginActivity"></activity>
+        <activity android:name="MenuActivity"></activity>
+        <activity android:name="OfficialsActivity"></activity>
+        <activity android:name="old_displayActivity"></activity>
+        <activity android:name="OldActivity"></activity>
+        <activity android:name="SessionActivity"></activity>
+        <activity android:name="StudentsActivity"></activity>
+    </application>
+</manifest>

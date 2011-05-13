@@ -3,7 +3,7 @@
     <string name="app_name">BabySAM</string>
     <string name="splash">BabySAM for Student Attendance monitoring </string>
     <string name="login">Authentication Screen</string>
-    <string name="menu">Menu Screen</string>
+    <string name="menu">Main Menu</string>
     <string name="event">Event Screen</string>
     <string name="old">Old sessions Screen</string>
     <string name="help">Help Screen</string>
@@ -17,4 +17,16 @@
     <string name="version">version 1.0</string>
     <string name="auth_but">Login</string>
     <string name="zxing_but">Scan</string>
+    
+    <string name="menu_item_event">Event</string>
+    <string name="menu_item_old">Old session</string>
+    <string name="menu_item_facerec">Face Recognition</string>
+    <string name="menu_item_help">Help</string>
+    
+    <string name="option_help">Help</string>
+    <string name="option_event_addse">Add Session</string>
+    <string name="option_event_addof">Add Official</string>
+    <string name="option_event_addst">Add Student</string>
+    <string name="option_event_save">Save</string>
+    <string name="option_event_cancel">Cancel</string>
 </resources>

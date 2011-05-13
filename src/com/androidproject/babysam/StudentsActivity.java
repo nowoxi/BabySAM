@@ -6,6 +6,7 @@ package com.androidproject.babysam;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -88,4 +89,14 @@ public class StudentsActivity extends babysamActivity {
             }
         }
     }
+
+	   @Override
+	    public boolean onCreateOptionsMenu(Menu menu) {
+		    super.onCreateOptionsMenu(menu);
+		    getMenuInflater().inflate(R.menu.students_options, menu);
+		    menu.findItem(R.id.help_menu_item).setIntent(
+		    new Intent(this, HelpActivity.class));
+		    return true;
+	    }
+	   
 }

@@ -5,6 +5,8 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/menu"
-    android:gravity="center_vertical|center_horizontal"/>
+    android:gravity="center_vertical|center_horizontal" android:id="@+id/menu_text" android:textSize="@dimen/menu_item_size"/>
+<ListView android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_centerHorizontal="true" android:id="@+id/menu_list" android:layout_below="@+id/menu_text" android:scrollbars="vertical"></ListView>
+<ImageView android:layout_height="wrap_content" android:id="@+id/imageView1" android:layout_width="wrap_content" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" android:scaleType="fitEnd" android:src="@drawable/babysam_icon"></ImageView>
     
    </RelativeLayout>

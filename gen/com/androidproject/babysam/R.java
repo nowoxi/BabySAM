@@ -35,14 +35,24 @@ public final class R {
         public static final int icon=0x7f020001;
     }
     public static final class id {
-        public static final int TextViewBottomVersion=0x7f080003;
-        public static final int auth_but=0x7f080001;
-        public static final int logo=0x7f080004;
-        public static final int relativeLayout1=0x7f080000;
-        public static final int relativeLayout2=0x7f080002;
-        public static final int textView1=0x7f080005;
-        public static final int zxing_but=0x7f080006;
-        public static final int zxing_result=0x7f080007;
+        public static final int TextViewBottomVersion=0x7f090006;
+        public static final int auth_but=0x7f090001;
+        public static final int event_addof=0x7f09000d;
+        public static final int event_addse=0x7f09000c;
+        public static final int event_addst=0x7f09000e;
+        public static final int event_cancel=0x7f090010;
+        public static final int event_help=0x7f09000b;
+        public static final int event_save=0x7f09000f;
+        public static final int help_menu_item=0x7f090011;
+        public static final int imageView1=0x7f090005;
+        public static final int logo=0x7f090007;
+        public static final int menu_list=0x7f090004;
+        public static final int menu_text=0x7f090003;
+        public static final int relativeLayout1=0x7f090000;
+        public static final int relativeLayout2=0x7f090002;
+        public static final int textView1=0x7f090008;
+        public static final int zxing_but=0x7f090009;
+        public static final int zxing_result=0x7f09000a;
     }
     public static final class layout {
         public static final int event=0x7f030000;
@@ -51,12 +61,21 @@ public final class R {
         public static final int help=0x7f030003;
         public static final int login=0x7f030004;
         public static final int menu=0x7f030005;
-        public static final int officials=0x7f030006;
-        public static final int old=0x7f030007;
-        public static final int old_display=0x7f030008;
-        public static final int session=0x7f030009;
-        public static final int splash=0x7f03000a;
-        public static final int students=0x7f03000b;
+        public static final int menu_item=0x7f030006;
+        public static final int officials=0x7f030007;
+        public static final int old=0x7f030008;
+        public static final int old_display=0x7f030009;
+        public static final int session=0x7f03000a;
+        public static final int splash=0x7f03000b;
+        public static final int students=0x7f03000c;
+    }
+    public static final class menu {
+        public static final int eventoptions=0x7f080000;
+        public static final int faceoptions=0x7f080001;
+        public static final int officials_options=0x7f080002;
+        public static final int oldoptions=0x7f080003;
+        public static final int session_options=0x7f080004;
+        public static final int students_options=0x7f080005;
     }
     public static final class string {
         public static final int app_name=0x7f070000;
@@ -67,9 +86,19 @@ public final class R {
         public static final int help=0x7f070006;
         public static final int login=0x7f070002;
         public static final int menu=0x7f070003;
+        public static final int menu_item_event=0x7f070010;
+        public static final int menu_item_facerec=0x7f070012;
+        public static final int menu_item_help=0x7f070013;
+        public static final int menu_item_old=0x7f070011;
         public static final int officials=0x7f070009;
         public static final int old=0x7f070005;
         public static final int old_display=0x7f07000b;
+        public static final int option_event_addof=0x7f070016;
+        public static final int option_event_addse=0x7f070015;
+        public static final int option_event_addst=0x7f070017;
+        public static final int option_event_cancel=0x7f070019;
+        public static final int option_event_save=0x7f070018;
+        public static final int option_help=0x7f070014;
         public static final int session=0x7f070008;
         public static final int splash=0x7f070001;
         public static final int students=0x7f07000a;

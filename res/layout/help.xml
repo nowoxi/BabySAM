@@ -3,10 +3,13 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    >
+    android:background="@android:color/white">
 <TextView  
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/help"
-    />
+    android:gravity="center_vertical|center_horizontal"/>
+    <TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" android:id="@+id/TextView_HelpText" android:linksClickable="true" android:autoLink="all" android:textColor="@android:color/black"/>
 </LinearLayout>

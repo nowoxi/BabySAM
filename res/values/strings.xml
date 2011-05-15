@@ -8,7 +8,7 @@
     <string name="old">SESSION HISTORY</string>
     <string name="help">HELP</string>
     <string name="face">Facial Recognition Screen</string>
-    <string name="session">Sessions Screen</string>
+    <string name="session">Sessions Details</string>
     <string name="officials">Officials Screen</string>
     <string name="students">Students Screen</string>
     <string name="old_display">HISTORY DETAILS</string>    
@@ -16,7 +16,7 @@
     
     <string name="version">version 1.0</string>
     <string name="auth_but">Login</string>
-    <string name="zxing_but">Scan</string>
+    <string name="zxing_but">Scan Code</string>
     
     <string name="menu_item_event">Event</string>
     <string name="menu_item_old">Old session</string>
@@ -32,4 +32,7 @@
     
     <string name="event_offlabel">Officials </string>
     <string name="event_stdlabel">Students </string>
+    <string name="ses_save">Save </string>
+    <string name="ses_clear">Clear All </string>
+    
 </resources>

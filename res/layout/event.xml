@@ -20,19 +20,7 @@
     </TableRow>
 </TableLayout>
 <TextView android:id="@+id/textView3" android:layout_height="wrap_content" android:gravity="center_vertical|center_horizontal" android:layout_width="fill_parent" android:text="@string/event_offlabel"></TextView>
-<RelativeLayout android:layout_width="fill_parent" android:id="@+id/relativeLayout2" android:layout_height="wrap_content">
-    <ScrollView android:id="@+id/scrollView1" android:layout_width="fill_parent" android:scrollbars="vertical" android:layout_height="wrap_content">
-        <LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="fill_parent">
-            <ListView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/officials_view"></ListView>
-        </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+<ListView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/officials_view"></ListView>
 <TextView android:id="@+id/TextView03" android:layout_width="fill_parent" android:gravity="center_vertical|center_horizontal" android:layout_height="wrap_content" android:text="@string/event_stdlabel"></TextView>
-<RelativeLayout android:layout_width="fill_parent" android:id="@+id/relativeLayout3" android:layout_height="fill_parent">
-    <ScrollView android:id="@+id/scrollView2" android:layout_height="fill_parent" android:layout_width="fill_parent" android:scrollbars="vertical">
-        <LinearLayout android:id="@+id/linearLayout2" android:layout_width="fill_parent" android:layout_height="fill_parent">
-            <ListView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/students_view"></ListView>
-        </LinearLayout>
-    </ScrollView>
-</RelativeLayout>
+<ListView android:layout_width="fill_parent" android:layout_height="wrap_content" android:id="@+id/students_view"></ListView>
 </LinearLayout>

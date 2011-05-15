@@ -24,6 +24,7 @@ public final class R {
         public static final int vtext=0x7f060001;
     }
     public static final class dimen {
+        public static final int menu_item_med=0x7f070005;
         public static final int menu_item_size=0x7f070003;
         public static final int menu_item_top=0x7f070004;
         public static final int title_font=0x7f070000;
@@ -34,42 +35,50 @@ public final class R {
         public static final int babysam_icon=0x7f020000;
     }
     public static final class id {
+        public static final int EditText01=0x7f0a0015;
+        public static final int EditText02=0x7f0a0017;
+        public static final int EditText03=0x7f0a0019;
+        public static final int EditText04=0x7f0a001c;
+        public static final int TableRow01=0x7f0a0014;
+        public static final int TableRow02=0x7f0a0016;
+        public static final int TableRow03=0x7f0a0018;
+        public static final int TableRow04=0x7f0a001a;
         public static final int TextView01=0x7f0a0006;
         public static final int TextView02=0x7f0a0005;
-        public static final int TextView03=0x7f0a000c;
-        public static final int TextViewBottomVersion=0x7f0a0019;
-        public static final int TextView_HelpText=0x7f0a0011;
-        public static final int auth_but=0x7f0a0013;
-        public static final int event_addof=0x7f0a001f;
-        public static final int event_addse=0x7f0a001e;
-        public static final int event_addst=0x7f0a0020;
-        public static final int event_cancel=0x7f0a0022;
-        public static final int event_help=0x7f0a001d;
-        public static final int event_save=0x7f0a0021;
-        public static final int help_menu_item=0x7f0a0023;
-        public static final int imageView1=0x7f0a0016;
-        public static final int linearLayout1=0x7f0a000a;
-        public static final int linearLayout2=0x7f0a000f;
-        public static final int listView1=0x7f0a0017;
-        public static final int listView2=0x7f0a0018;
-        public static final int logo=0x7f0a001a;
-        public static final int menu_list=0x7f0a0015;
-        public static final int menu_text=0x7f0a0014;
-        public static final int officials_view=0x7f0a000b;
-        public static final int relativeLayout1=0x7f0a0012;
-        public static final int relativeLayout2=0x7f0a0008;
-        public static final int relativeLayout3=0x7f0a000d;
-        public static final int scrollView1=0x7f0a0009;
-        public static final int scrollView2=0x7f0a000e;
-        public static final int students_view=0x7f0a0010;
+        public static final int TextView03=0x7f0a0009;
+        public static final int TextView04=0x7f0a001b;
+        public static final int TextViewBottomVersion=0x7f0a001d;
+        public static final int TextView_HelpText=0x7f0a000b;
+        public static final int auth_but=0x7f0a000d;
+        public static final int event_addof=0x7f0a0023;
+        public static final int event_addse=0x7f0a0022;
+        public static final int event_addst=0x7f0a0024;
+        public static final int event_cancel=0x7f0a0026;
+        public static final int event_help=0x7f0a0021;
+        public static final int event_save=0x7f0a0025;
+        public static final int help_menu_item=0x7f0a0027;
+        public static final int imageView1=0x7f0a0011;
+        public static final int listView1=0x7f0a0012;
+        public static final int listView2=0x7f0a0013;
+        public static final int logo=0x7f0a001e;
+        public static final int menu_list=0x7f0a0010;
+        public static final int menu_text=0x7f0a000f;
+        public static final int officials_view=0x7f0a0008;
+        public static final int relativeLayout1=0x7f0a000c;
+        public static final int relativeLayout2=0x7f0a000e;
+        public static final int session_clear=0x7f0a002b;
+        public static final int session_help=0x7f0a0028;
+        public static final int session_save=0x7f0a002a;
+        public static final int session_scan=0x7f0a0029;
+        public static final int students_view=0x7f0a000a;
         public static final int tableLayout1=0x7f0a0000;
         public static final int tableRow1=0x7f0a0001;
         public static final int tableRow2=0x7f0a0004;
         public static final int textView1=0x7f0a0002;
         public static final int textView2=0x7f0a0003;
         public static final int textView3=0x7f0a0007;
-        public static final int zxing_but=0x7f0a001b;
-        public static final int zxing_result=0x7f0a001c;
+        public static final int zxing_but=0x7f0a001f;
+        public static final int zxing_result=0x7f0a0020;
     }
     public static final class layout {
         public static final int event=0x7f030000;
@@ -121,6 +130,8 @@ public final class R {
         public static final int option_event_cancel=0x7f080019;
         public static final int option_event_save=0x7f080018;
         public static final int option_help=0x7f080014;
+        public static final int ses_clear=0x7f08001d;
+        public static final int ses_save=0x7f08001c;
         public static final int session=0x7f080008;
         public static final int splash=0x7f080001;
         public static final int students=0x7f08000a;

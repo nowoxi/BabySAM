@@ -5,4 +5,5 @@
         <dimen name="vspace">3pt</dimen>
         <dimen name="menu_item_size">16pt</dimen>
         <dimen name="menu_item_top">12pt</dimen>
+        <dimen name="menu_item_med">8pt</dimen>
     </resources>

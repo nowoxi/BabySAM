@@ -41,8 +41,8 @@ public class EventActivity extends babysamActivity {
        private void LoadPref(){
        
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-	        en_stscan = eventSettings.getInt(ST_SCAN, 0);
-	        en_ofscan = eventSettings.getInt(OF_SCAN, 0);
+	        en_stscan = eventSettings.getInt(ST_SCAN, 1);
+	        en_ofscan = eventSettings.getInt(OF_SCAN, 1);
 	        en_evscan = eventSettings.getInt(EV_SCAN, 1);
        
        }
@@ -90,7 +90,7 @@ public class EventActivity extends babysamActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	//this section will run the barcode scanner as an intent if student barcode scanning is enabled
-
+		LoadPref();
 		switch(item.getItemId()) {        	
         	case R.id.event_addst:
 	        	en_stPerson = 1;

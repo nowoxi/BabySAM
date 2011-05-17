@@ -10,7 +10,7 @@
     <string name="face">Facial Recognition Screen</string>
     <string name="session">Sessions Details</string>
     <string name="officials">Officials Screen</string>
-    <string name="students">Students Screen</string>
+    <string name="settings">SETTINGS</string>
     <string name="old_display">HISTORY DETAILS</string>    
     <string name="facerec_display">Display Screen</string>
     
@@ -19,8 +19,9 @@
     <string name="zxing_but">Scan Code</string>
     
     <string name="menu_item_event">Event</string>
-    <string name="menu_item_old">Old session</string>
+    <string name="menu_item_old">History</string>
     <string name="menu_item_facerec">Face Recognition</string>
+    <string name="menu_item_set">Settings</string>
     <string name="menu_item_help">Help</string>
     
     <string name="option_help">Help</string>
@@ -29,10 +30,22 @@
     <string name="option_event_addst">Add Student</string>
     <string name="option_event_save">Save</string>
     <string name="option_event_cancel">Cancel</string>
+    <string name="option_event_set">Settings</string>
     
     <string name="event_offlabel">Officials </string>
     <string name="event_stdlabel">Students </string>
     <string name="ses_save">Save </string>
     <string name="ses_clear">Clear All </string>
     
+    <string name="ses_event">Event Type </string>
+    <string name="ses_venue">Venue</string>
+    <string name="ses_course">Course </string>
+    <string name="ses_time">Time </string>
+    
+    <string name="set_st">Scan Students Barcode</string>
+    <string name="set_of">Scan Officials Barcode </string>
+    <string name="set_ev">Scan Event QR Code </string>
+    
+    <string name="set_option_all">Check All</string>
+    <string name="set_option_cancel">Uncheck All</string>
 </resources>

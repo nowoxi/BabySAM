@@ -20,11 +20,15 @@ android:icon="@android:drawable/ic_menu_add"></item>
 <item
 android:id="@+id/event_save"
 android:title="@string/option_event_save"
-android:icon="@android:drawable/ic_menu_add"></item>
+android:icon="@android:drawable/ic_menu_save"></item>
 <item
 android:id="@+id/event_cancel"
 android:title="@string/option_event_cancel"
 android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
+<item
+android:id="@+id/event_set"
+android:title="@string/option_event_set"
+android:icon="@android:drawable/ic_menu_manage"></item>
 </menu>
     
     

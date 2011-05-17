@@ -4,7 +4,7 @@
 <TextView  
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
-    android:text="@string/students"
+    android:text="@string/face"
     android:gravity="center_vertical|center_horizontal"/>
       <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true" android:layout_centerVertical="true" android:layout_centerHorizontal="true" android:text="@string/zxing_but" android:id="@+id/zxing_but"></Button>
       <TextView android:layout_height="wrap_content" android:layout_above="@+id/zxing_but" android:id="@+id/zxing_result" android:layout_width="fill_parent" android:gravity="center_vertical|center_horizontal"></TextView>

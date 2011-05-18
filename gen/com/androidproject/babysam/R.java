@@ -51,14 +51,14 @@ public final class R {
         public static final int TextView_HelpText=0x7f0a000b;
         public static final int auth_but=0x7f0a000d;
         public static final int checkBox1=0x7f0a0021;
-        public static final int event_addof=0x7f0a0028;
-        public static final int event_addse=0x7f0a0027;
-        public static final int event_addst=0x7f0a0029;
-        public static final int event_cancel=0x7f0a002b;
-        public static final int event_help=0x7f0a0026;
-        public static final int event_save=0x7f0a002a;
-        public static final int event_set=0x7f0a002c;
-        public static final int help_menu_item=0x7f0a002d;
+        public static final int event_addof=0x7f0a0026;
+        public static final int event_addse=0x7f0a0025;
+        public static final int event_addst=0x7f0a0027;
+        public static final int event_cancel=0x7f0a0029;
+        public static final int event_help=0x7f0a0024;
+        public static final int event_save=0x7f0a0028;
+        public static final int event_set=0x7f0a002a;
+        public static final int help_menu_item=0x7f0a002b;
         public static final int imageView1=0x7f0a0011;
         public static final int layout_root3=0x7f0a0014;
         public static final int linearLayout1=0x7f0a0020;
@@ -71,13 +71,9 @@ public final class R {
         public static final int relativeLayout1=0x7f0a000c;
         public static final int relativeLayout2=0x7f0a000e;
         public static final int scrollView1=0x7f0a0015;
-        public static final int session_clear=0x7f0a0031;
-        public static final int session_help=0x7f0a002e;
-        public static final int session_save=0x7f0a0030;
-        public static final int session_scan=0x7f0a002f;
-        public static final int set_All=0x7f0a0034;
-        public static final int set_clear=0x7f0a0033;
-        public static final int set_save=0x7f0a0032;
+        public static final int set_All=0x7f0a002e;
+        public static final int set_clear=0x7f0a002d;
+        public static final int set_save=0x7f0a002c;
         public static final int settings_list=0x7f0a001f;
         public static final int students_view=0x7f0a000a;
         public static final int tableLayout1=0x7f0a0000;
@@ -86,8 +82,6 @@ public final class R {
         public static final int textView1=0x7f0a0002;
         public static final int textView2=0x7f0a0003;
         public static final int textView3=0x7f0a0007;
-        public static final int zxing_but=0x7f0a0024;
-        public static final int zxing_result=0x7f0a0025;
     }
     public static final class layout {
         public static final int event=0x7f030000;
@@ -97,23 +91,18 @@ public final class R {
         public static final int login=0x7f030004;
         public static final int menu=0x7f030005;
         public static final int menu_item=0x7f030006;
-        public static final int officials=0x7f030007;
-        public static final int old=0x7f030008;
-        public static final int old_display=0x7f030009;
-        public static final int session=0x7f03000a;
-        public static final int settings=0x7f03000b;
-        public static final int settings_item=0x7f03000c;
-        public static final int splash=0x7f03000d;
-        public static final int students=0x7f03000e;
+        public static final int old=0x7f030007;
+        public static final int old_display=0x7f030008;
+        public static final int session=0x7f030009;
+        public static final int settings=0x7f03000a;
+        public static final int settings_item=0x7f03000b;
+        public static final int splash=0x7f03000c;
     }
     public static final class menu {
         public static final int eventoptions=0x7f090000;
         public static final int faceoptions=0x7f090001;
-        public static final int officials_options=0x7f090002;
-        public static final int oldoptions=0x7f090003;
-        public static final int session_options=0x7f090004;
-        public static final int settingsoptions=0x7f090005;
-        public static final int students_options=0x7f090006;
+        public static final int oldoptions=0x7f090002;
+        public static final int settingsoptions=0x7f090003;
     }
     public static final class raw {
         public static final int help=0x7f050000;
@@ -157,6 +146,7 @@ public final class R {
         public static final int set_option_cancel=0x7f080028;
         public static final int set_st=0x7f080024;
         public static final int settings=0x7f08000a;
+        public static final int settings_save=0x7f080029;
         public static final int splash=0x7f080001;
         public static final int version=0x7f08000d;
         public static final int zxing_but=0x7f08000f;

@@ -1,34 +1,32 @@
-  <menu
-xmlns:android="http://schemas.android.com/apk/res/android">
-
-<item
-android:id="@+id/event_help"
-android:title="@string/option_help"
-android:icon="@android:drawable/ic_menu_help"></item>
-<item
-android:id="@+id/event_addse"
-android:title="@string/option_event_addse"
-android:icon="@android:drawable/ic_menu_add"></item>
-<item
-android:id="@+id/event_addof"
-android:title="@string/option_event_addof"
-android:icon="@android:drawable/ic_menu_add"></item>
-<item
-android:id="@+id/event_addst"
-android:title="@string/option_event_addst"
-android:icon="@android:drawable/ic_menu_add"></item>
-<item
-android:id="@+id/event_save"
-android:title="@string/option_event_save"
-android:icon="@android:drawable/ic_menu_save"></item>
-<item
-android:id="@+id/event_cancel"
-android:title="@string/option_event_cancel"
-android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
-<item
-android:id="@+id/event_set"
-android:title="@string/option_event_set"
-android:icon="@android:drawable/ic_menu_manage"></item>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+	android:id="@+id/event_help"
+	android:title="@string/option_help"
+	android:icon="@android:drawable/ic_menu_help"></item>
+	<item
+	android:id="@+id/event_addse"
+	android:title="@string/option_event_addse"
+	android:icon="@android:drawable/ic_menu_add"></item>
+	<item
+	android:id="@+id/event_addof"
+	android:title="@string/option_event_addof"
+	android:icon="@android:drawable/ic_menu_add"></item>
+	<item
+	android:id="@+id/event_addst"
+	android:title="@string/option_event_addst"
+	android:icon="@android:drawable/ic_menu_add"></item>
+	<item
+	android:id="@+id/event_save"
+	android:title="@string/option_event_save"
+	android:icon="@android:drawable/ic_menu_save"></item>
+	<item
+	android:id="@+id/event_cancel"
+	android:title="@string/option_event_cancel"
+	android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
+	<item
+	android:id="@+id/event_set"
+	android:title="@string/option_event_set"
+	android:icon="@android:drawable/ic_menu_manage"></item>
 </menu>
     
     

@@ -20,10 +20,8 @@
         <activity android:name="HelpActivity"></activity>
         <activity android:name="LoginActivity"></activity>
         <activity android:name="MenuActivity"></activity>
-        <activity android:name="OfficialsActivity"></activity>
         <activity android:name="old_displayActivity"></activity>
         <activity android:name="OldActivity"></activity>
-        <activity android:name="SessionActivity"></activity>
         <activity android:name="settingsActivity"></activity>
     </application>
 </manifest>

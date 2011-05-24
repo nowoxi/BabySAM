@@ -49,4 +49,6 @@
     <string name="set_option_all">Check All</string>
     <string name="set_option_cancel">Uncheck All</string>
     <string name="settings_save">Settings Saved</string>
+    
+    <string name="no_data">No data</string>
 </resources>

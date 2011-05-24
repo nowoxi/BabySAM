@@ -58,7 +58,7 @@ public class OldActivity extends babysamActivity {
 	    		
 	    		//send the event id to the new activity to be started
 	    		
-	    		Log.i(TAG,"4 After call "+ eventData.get(position)[0]+"  "+eventData.get(position)[1] );
+	    		//Log.i(TAG,"4 After call "+ eventData.get(position)[0]+"  "+eventData.get(position)[1] );
 			    Intent intent = new Intent(OldActivity.this,Old_displayActivity.class);	
 				/*intent.putExtra("EventID", eventData.get(position)[0]);
 				intent.putExtra("EventType", eventData.get(position)[1]);
@@ -69,7 +69,7 @@ public class OldActivity extends babysamActivity {
 				String [] intentExtra = new String [5];
 				for (int i = 0; i < 5 ; i++){
 		        	intentExtra[i]= "intExtra"+i ;
-		        	Log.i(TAG, " this is the intent 2 "+ intentExtra[i]);
+		        	//Log.i(TAG, " this is the intent 2 "+ intentExtra[i]);
 		        }
 				for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);
 				startActivity(intent);

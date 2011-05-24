@@ -25,6 +25,7 @@ public class EventActivity extends babysamActivity {
 	   // en_evsxan - event scan
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson; 
 	   private String format, scformat, contents;
+	   
 	   //to set student or official (1 for student 2 for official 3 for event)--ensure that this value is
 	   //sustained even when an intent is called else save it as a preference
 	   
@@ -131,6 +132,7 @@ public class EventActivity extends babysamActivity {
 	public void entryDialog (){
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+		final EditText input = new EditText(this);
 		//TODO-the value for en_stperson might be lost when calling intent please check
 		if (en_stPerson == 3){
 			LayoutInflater inflater = getLayoutInflater();
@@ -139,15 +141,16 @@ public class EventActivity extends babysamActivity {
 			EditText zxingresult = (EditText) dialoglayout.findViewById(R.id.EditText01);
             zxingresult.setText(contents);
 		} else {
-			final EditText input = new EditText(this);
+		//	final EditText input = new EditText(this);
 			alert.setView(input);
 			input.setText(contents);
 		}
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
+				contents = (String) input.getText().toString(); 
 				saveData();
-				Toast.makeText(getApplicationContext(), contents, Toast.LENGTH_SHORT).show();
+				Toast.makeText(getApplicationContext(), "content: " + contents, Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -161,8 +164,14 @@ public class EventActivity extends babysamActivity {
 	}
 	
 	public void saveData(){
-		//TODO - update the database with the value from the text box 
+		//TODO - update the database with the value from content
 		// bear in mind if official or student. so ensure en_stperson= 3 is never entered into db
+		if (en_stPerson == 3){
+			
+		}else {
+			//final EditText input = new EditText(this);
+			//contents = (String) input.getText().toString(); 
+		}
 	}
     
 	public void event_cancel(){

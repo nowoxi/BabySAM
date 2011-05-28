@@ -29,6 +29,7 @@ public final class R {
         public static final int menu_item_top=0x7f080004;
         public static final int title_font=0x7f080000;
         public static final int vfont=0x7f080001;
+        public static final int view_height=0x7f080006;
         public static final int vspace=0x7f080002;
     }
     public static final class drawable {
@@ -89,15 +90,16 @@ public final class R {
         public static final int face=0x7f030001;
         public static final int facerec_display=0x7f030002;
         public static final int help=0x7f030003;
-        public static final int login=0x7f030004;
-        public static final int menu=0x7f030005;
-        public static final int menu_item=0x7f030006;
-        public static final int old=0x7f030007;
-        public static final int old_display=0x7f030008;
-        public static final int session=0x7f030009;
-        public static final int settings=0x7f03000a;
-        public static final int settings_item=0x7f03000b;
-        public static final int splash=0x7f03000c;
+        public static final int list_item=0x7f030004;
+        public static final int login=0x7f030005;
+        public static final int menu=0x7f030006;
+        public static final int menu_item=0x7f030007;
+        public static final int old=0x7f030008;
+        public static final int old_display=0x7f030009;
+        public static final int session=0x7f03000a;
+        public static final int settings=0x7f03000b;
+        public static final int settings_item=0x7f03000c;
+        public static final int splash=0x7f03000d;
     }
     public static final class menu {
         public static final int eventoptions=0x7f0a0000;
@@ -124,7 +126,7 @@ public final class R {
         public static final int menu_item_help=0x7f090014;
         public static final int menu_item_old=0x7f090011;
         public static final int menu_item_set=0x7f090013;
-        public static final int no_data=0x7f09002a;
+        public static final int no_data=0x7f09002b;
         public static final int officials=0x7f090009;
         public static final int old=0x7f090005;
         public static final int old_display=0x7f09000b;
@@ -142,13 +144,14 @@ public final class R {
         public static final int ses_time=0x7f090023;
         public static final int ses_venue=0x7f090021;
         public static final int session=0x7f090008;
+        public static final int set_db=0x7f090027;
         public static final int set_ev=0x7f090026;
         public static final int set_of=0x7f090025;
-        public static final int set_option_all=0x7f090027;
-        public static final int set_option_cancel=0x7f090028;
+        public static final int set_option_all=0x7f090028;
+        public static final int set_option_cancel=0x7f090029;
         public static final int set_st=0x7f090024;
         public static final int settings=0x7f09000a;
-        public static final int settings_save=0x7f090029;
+        public static final int settings_save=0x7f09002a;
         public static final int splash=0x7f090001;
         public static final int version=0x7f09000d;
         public static final int zxing_but=0x7f09000f;

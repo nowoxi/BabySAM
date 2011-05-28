@@ -1,6 +1,8 @@
 package com.androidproject.babysam;
 
 
+import java.util.ArrayList;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,7 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class EventActivity extends babysamActivity {
@@ -24,8 +29,15 @@ public class EventActivity extends babysamActivity {
 	   // en_ofscan - Official scan, contents - data in scanned code
 	   // en_evsxan - event scan
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson; 
-	   private String format, scformat, contents;
+	   private String format, scformat, contents, content_delimiter;
+	   private String [] ev_contents;
 	   
+	   
+	   private final ArrayList<String> offeventData = new ArrayList<String>();
+	   private final ArrayList<String> stdeventData = new ArrayList<String>();
+       private ArrayAdapter<String> off_adapt;        
+	   private ArrayAdapter<String> std_adapt;
+       
 	   //to set student or official (1 for student 2 for official 3 for event)--ensure that this value is
 	   //sustained even when an intent is called else save it as a preference
 	   
@@ -34,6 +46,16 @@ public class EventActivity extends babysamActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event);
         LoadPref();  
+        content_delimiter = "\\|";
+        
+		//Retrieve listview
+	    ListView off = (ListView) findViewById(R.id.officials_view);
+	    ListView std = (ListView) findViewById(R.id.students_view);
+	    off_adapt = new ArrayAdapter<String>(this, R.layout.list_item, offeventData);        
+	    std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
+	    off.setAdapter(off_adapt);
+	    std.setAdapter(std_adapt);
+	    //Log.i(TAG,"3 After call" );
     }
     
 	   @Override
@@ -121,6 +143,8 @@ public class EventActivity extends babysamActivity {
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 			intent.setPackage("com.google.zxing.client.android");
 			intent.putExtra("SCAN_FORMATS", scan_format);
+			intent.putExtra("SCAN_WIDTH", 300 );
+			intent.putExtra("SCAN_HEIGHT", 240 );
 			startActivityForResult(intent, 0);
     	} else {
                	//method to create the dialog box straight
@@ -133,24 +157,48 @@ public class EventActivity extends babysamActivity {
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		final EditText input = new EditText(this);
-		//TODO-the value for en_stperson might be lost when calling intent please check
+		//TODO-the value for en_stperson might be lost when calling intent please check  
+	    
 		if (en_stPerson == 3){
 			LayoutInflater inflater = getLayoutInflater();
 			View dialoglayout = inflater.inflate(R.layout.session, (ViewGroup) findViewById(R.id.layout_root3));
 			alert.setView(dialoglayout);
-			EditText zxingresult = (EditText) dialoglayout.findViewById(R.id.EditText01);
-            zxingresult.setText(contents);
+			EditText [] eventresult = { (EditText) dialoglayout.findViewById(R.id.EditText01), (EditText) dialoglayout.findViewById(R.id.EditText02),
+					(EditText) dialoglayout.findViewById(R.id.EditText03), (EditText) dialoglayout.findViewById(R.id.EditText04) };
+			//split_content();
+			ev_contents = contents.split(content_delimiter);
+			for (int i = 0 ; i < ev_contents.length; i++){
+				eventresult[i].setText(ev_contents[i]);
+			}
+            
 		} else {
 		//	final EditText input = new EditText(this);
 			alert.setView(input);
-			input.setText(contents);
+			input.setText(contents);			
+			
 		}
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-				contents = (String) input.getText().toString(); 
+				 
 				saveData();
 				Toast.makeText(getApplicationContext(), "content: " + contents, Toast.LENGTH_SHORT).show();
+				if (en_stPerson == 3){
+					TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
+			    	    	(TextView) findViewById(R.id.TextView01)};
+					for (int i = 0; i < 4 ; i++){
+			    		text[i].setText(ev_contents[i]);
+			    	}
+				}else {
+					contents = (String) input.getText().toString();
+					if (en_stPerson == 1){
+						stdeventData.add(contents);
+						std_adapt.notifyDataSetChanged();
+					} else if (en_stPerson == 2){
+						offeventData.add(contents);
+						off_adapt.notifyDataSetChanged();
+					} 
+				} 
 			}
 		});
 
@@ -171,11 +219,16 @@ public class EventActivity extends babysamActivity {
 		}else {
 			//final EditText input = new EditText(this);
 			//contents = (String) input.getText().toString(); 
+		    
 		}
 	}
     
 	public void event_cancel(){
 		// TODO - make a method that would cancel all the current status of events	i.e. deleting from the database
+	}
+	
+	public void split_content (){
+		
 	}
 	//junk code
 	//String value = input.getText().toString().trim();

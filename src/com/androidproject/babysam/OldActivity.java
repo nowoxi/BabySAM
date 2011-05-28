@@ -5,8 +5,10 @@ import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -14,65 +16,71 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class OldActivity extends babysamActivity {
     /** Called when the activity is first created. */
+	private int DB_mode;
+	private final ArrayList<String[]> eventData = new ArrayList<String[]>();
+    private final ArrayList<String> meventData = new ArrayList<String>();
+    private final ArrayList<Long> RowID = new ArrayList<Long>();
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.old);
-        
+        LoadPref();
         //defining array here
-        final ArrayList<String[]> eventData = new ArrayList<String[]>();
-        final ArrayList<String> meventData = new ArrayList<String>();
-	    
-        // Retrieve XML
-	    //XmlResourceParser mockAllScores = getResources().getXml(R.xml.persons);
-	    XmlResourceParser eventxml = getResources().getXml(R.xml.event);
-	    
+        
 	    //Retrieve listview
 	    ListView old = (ListView) findViewById(R.id.listView1);
 	    
-	    //primarily should return eventdata which has the content so the file
-	    try {
-	    processData(old,eventxml, eventData);
-	    } catch (Exception e) {
-            Log.e(TAG, "Failed to load Events", e);
-        }
-	     
-	    //put data in meventData after eventData comes back
-	    //if you send eventdata to another class you will need a way to call it	        
-	    for( int i = 0; i < eventData.size(); i++){
-	    		meventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
-	    }
 	    
+	    
+	    if (DB_mode == 0){
+	        // Retrieve XML
+		    //XmlResourceParser mockAllScores = getResources().getXml(R.xml.persons);
+		    XmlResourceParser eventxml = getResources().getXml(R.xml.event);
+		     
+		    //primarily should return eventdata which has the content so the file
+		    try {
+		    	processData(old,eventxml, eventData);
+		    } catch (Exception e) {
+	            Log.e(TAG, "Failed to load Events", e);
+	        }
+		    
+		    //put data in meventData after eventData comes back
+		    //if you send eventdata to another class you will need a way to call it	        
+		    for( int i = 0; i < eventData.size(); i++){
+		    		meventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
+		    }
+	    } else if (DB_mode == 1){
+	    	testData();
+	    	eventExtract();
+	    }
+	    	    
 	    ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, R.layout.menu_item, meventData);        
 	    old.setAdapter(adapt);
 	    //adapt.notifyDataSetChanged();
 	    Log.i(TAG,"3 After call" );
-   
-    
-    
+           
 	    old.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	    	public void onItemClick(AdapterView<?> parent, View itemClicked, int position, long id) {
-	    		
-	    		//send the event id to the new activity to be started
-	    		
-	    		//Log.i(TAG,"4 After call "+ eventData.get(position)[0]+"  "+eventData.get(position)[1] );
-			    Intent intent = new Intent(OldActivity.this,Old_displayActivity.class);	
-				/*intent.putExtra("EventID", eventData.get(position)[0]);
-				intent.putExtra("EventType", eventData.get(position)[1]);
-				intent.putExtra("Venue", eventData.get(position)[2]);
-				intent.putExtra("Course", eventData.get(position)[3]);
-				intent.putExtra("Duration", eventData.get(position)[4]);*/
-				//String [] intExtra = new String [5] ;
-				String [] intentExtra = new String [5];
-				for (int i = 0; i < 5 ; i++){
-		        	intentExtra[i]= "intExtra"+i ;
-		        	//Log.i(TAG, " this is the intent 2 "+ intentExtra[i]);
-		        }
-				for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);
-				startActivity(intent);
+	    		Intent intent = new Intent(OldActivity.this,Old_displayActivity.class);	
+	    		if (DB_mode == 0){
+		    		//Log.i(TAG,"4 After call "+ eventData.get(position)[0]+"  "+eventData.get(position)[1] );
+					String [] intentExtra = new String [5];
+					for (int i = 0; i < 5 ; i++){
+			        	intentExtra[i]= "intExtra"+i ;
+			        	//Log.i(TAG, " this is the intent 2 "+ intentExtra[i]);
+			        }
+					for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);
+													
+		    	} else if (DB_mode == 1){
+		    		//send the event id to the new activity to be started
+		    		Log.i(TAG,"4 After call list postision: "+ position +" rowID:  "+RowID.get(position)+ ". I beleive it is easier to use " + (position+1)+" as Row ID");
+		    		intent.putExtra("EventID", (position+1));
+		    	}
+	    		startActivity(intent);
 	    	}
 	    });
 	    
@@ -103,22 +111,7 @@ public class OldActivity extends babysamActivity {
 		        String strName = event.getName();
 		        if (strName.equals("event")) {
 		            bFoundEvents = true;
-		           /* //extracting information from xml
-		            //int eventID = Integer.parseInt(event.getAttributeValue(null, "ID"));
-		            String eventID = event.getAttributeValue(null, "ID");
-		            String eventType = event.getAttributeValue(null, "EType");
-		            String eventVenue = event.getAttributeValue(null, "Venue");
-		            String eventCourse = event.getAttributeValue(null, "course");
-		            //int eventDuration = Integer.parseInt(event.getAttributeValue(null, "duration"));
-		            String eventDuration = event.getAttributeValue(null, "duration");
-		            String eventTime = event.getAttributeValue(null, "timestamp");
-		            //int eventaresREG = Integer.parseInt(event.getAttributeValue(null, "ariesREG"));
-		            String eventaresREG = event.getAttributeValue(null, "ariesREG");
-		            
-		           // String [] eventData = { Integer.toString(eventID), eventType,};
-		           if (eventVenue != null)eventData.add(0,eventType+"  "+eventCourse);*/
-		           
-		           
+		           		           
 		         //extracting information from xml
 		            //int eventID = Integer.parseInt(event.getAttributeValue(null, "ID"));
 		            String [] data = new String [7];
@@ -134,19 +127,8 @@ public class OldActivity extends babysamActivity {
 		            
 		           // String [] eventData = { Integer.toString(eventID), eventType,};
 		           if (data[2] != null){
-		        	   eventData.add(0,data);
-		          
-		           
-			           //Log.i(TAG,"annoying part  -"+ eventData +" and " + xnum);
-			           //Log.i(TAG,"2 annoying part  - "+ eventData.get(xnum) );
-			           //Log.i(TAG,"eventID = "+eventData.get(xnum)[0]+" / eventType = "+eventData.get(xnum)[1]+" / eventVenue = " +eventData.get(xnum)[2]+ 
-			   		   //     		   "eventDuration = "+eventData.get(xnum)[3]+" / eventCourse = "+ eventData.get(xnum)[4]+" / eventTime = " +eventData.get(xnum)[5] );
-			           //xnum ++; 
-		           } 
-		           // show the values gotten from xml in logcat as not all will be shown in listview for now
-		           //Log.i(TAG,"eventID = "+eventID+" / eventType = "+eventType+" / eventVenue = " +eventVenue+ 
-		        //		   "eventDuration = "+eventDuration+" / eventCourse = "+ eventCourse+" / eventTime = " +eventTime );
-		           
+		        	   eventData.add(0,data);		          
+		           } 		           
 		        }
 		    }
 		    doceventType = event.next();
@@ -163,19 +145,62 @@ public class OldActivity extends babysamActivity {
 	//	Log.i(TAG,"2 After call" );
 	}
 
-	//private void insertEvent(ListView dataList, String scoreValue, String scoreRank, String scoreUserName) {
-   //  private void insertEvent(ListView dataList,  ArrayList<String> eventData) {
-		// TODO Auto-generated method stub
-    	 //ListView menuList = (ListView) findViewById(R.id.menu_list);
-    	 
-   
-     //   Log.i(TAG,"After call" );
-	//}
+	
     public void eventExtract (){
+    	//create object of DB
+    	DBAdapter db = new DBAdapter(this);
+        
+      //---get all events---
+        db.open();
+        Cursor c = db.getAllEvents();
+        /* Get the indices of the Columns we will need */
+        int timeColumn = c.getColumnIndex("timestamp");         
+        int eventTypeColumn = c.getColumnIndex("evType");
+        int rowIDColumn = c.getColumnIndex("_id") ;
+        
+        if (c.moveToFirst()) 
+        	/* Loop through all Results */             	
+        	 do {
+        		 /* Add current Entry to meventData. */
+                 meventData.add(c.getString(timeColumn)+"  "+c.getString(eventTypeColumn));
+                 RowID.add(c.getLong(rowIDColumn));
+             } while (c.moveToNext());
+        else
+            Toast.makeText(this, "No Events found", 
+            		Toast.LENGTH_LONG).show();
+        db.close();
     	
     }
     
     public void personExtract (){
     	
+    }
+    
+  //to load all prefences to their variables only used in event
+    private void LoadPref(){
+	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
+    }
+    
+    private void testData(){
+    	//insertEvent(String event, String venue, String course, int duration, int aries, String timestamp)
+    	//insertPerson(long eventid, int ptype, long code, String timestamp)
+    	//---add 2 titles---
+    	DBAdapter db = new DBAdapter(this); 
+        db.open();        
+        //long id;
+        db.insertEvent(
+        		"Examination",
+        		"NW104",
+        		"Electrojumper",
+        		60,
+        		0,
+        		"12:00");
+       // Long u = new Long ("20116001325041");
+        db.insertPerson(2,2,new Long ("23116001325041"),"12:00");
+        db.insertPerson(2,1,new Long ("23115001325041"),"12:00");
+        db.insertPerson(2,1,new Long ("23114001325041"),"12:00");
+        db.insertPerson(2,1,new Long ("23113001325041"),"12:00");
+        db.close();
     }
 }

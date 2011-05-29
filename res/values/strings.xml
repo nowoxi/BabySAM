@@ -40,7 +40,7 @@
     <string name="ses_event">Event Type </string>
     <string name="ses_venue">Venue</string>
     <string name="ses_course">Course </string>
-    <string name="ses_time">Time </string>
+    <string name="ses_time">Duration </string>
     
     <string name="set_st">Scan Students Barcode</string>
     <string name="set_of">Scan Officials Barcode </string>
@@ -49,6 +49,9 @@
     
     <string name="set_option_all">Check All</string>
     <string name="set_option_cancel">Uncheck All</string>
+    <string name="set_option_debug">Debug</string>
+    <string name="set_option_addata">Add data to db</string>
+    <string name="set_option_delall">Empty dB</string>
     <string name="settings_save">Settings Saved</string>
     
     <string name="no_data">No data</string>

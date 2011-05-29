@@ -97,7 +97,7 @@ public class Old_displayActivity extends babysamActivity {
 	    
 	    } else if (DB_mode == 1){
 	    	if ( intent != null){	    		
-	    		Log.i(TAG,""+intent.getLongExtra("EventID",1) );
+	    		Log.i(TAG,"long extra"+intent.getLongExtra("EventID",1) );
 		    	extra_EID = intent.getLongExtra("EventID",1);
 		    	eventExtract();
 		    	for (int i = 0; i < 4 ; i++){
@@ -166,7 +166,7 @@ public class Old_displayActivity extends babysamActivity {
         int codeColumn = c.getColumnIndex("code");
         int pTypeColumn = c.getColumnIndex("pType");
         //int rowIDColumn = c.getColumnIndex("_id") ;
-        
+        Log.i(TAG, " the value for eventID - "+ extra_EID);
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
         	 do {
@@ -183,8 +183,8 @@ public class Old_displayActivity extends babysamActivity {
                  
              } while (c.moveToNext());
         else
-            Toast.makeText(this, "No Events found", 
-            		Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Persons found", 
+            		Toast.LENGTH_SHORT).show();
         db.close();
     	
     }
@@ -216,7 +216,7 @@ public class Old_displayActivity extends babysamActivity {
             // } while (c.moveToNext());
         } else {
             Toast.makeText(this, "Event found", 
-            		Toast.LENGTH_LONG).show();
+            		Toast.LENGTH_SHORT).show();
         }
         db.close();
     	

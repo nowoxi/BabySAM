@@ -54,7 +54,7 @@ public class OldActivity extends babysamActivity {
 		    		meventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
 		    }
 	    } else if (DB_mode == 1){
-	    	testData();
+	    	//testData();
 	    	eventExtract();
 	    }
 	    	    
@@ -78,7 +78,7 @@ public class OldActivity extends babysamActivity {
 		    	} else if (DB_mode == 1){
 		    		//send the event id to the new activity to be started
 		    		Log.i(TAG,"4 After call list postision: "+ position +" rowID:  "+RowID.get(position)+ ". I beleive it is easier to use " + (position+1)+" as Row ID");
-		    		intent.putExtra("EventID", (position+1));
+		    		intent.putExtra("EventID", RowID.get(position));
 		    	}
 	    		startActivity(intent);
 	    	}
@@ -167,7 +167,7 @@ public class OldActivity extends babysamActivity {
              } while (c.moveToNext());
         else
             Toast.makeText(this, "No Events found", 
-            		Toast.LENGTH_LONG).show();
+            		Toast.LENGTH_SHORT).show();
         db.close();
     	
     }
@@ -180,27 +180,6 @@ public class OldActivity extends babysamActivity {
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
-    }
+    }   
     
-    private void testData(){
-    	//insertEvent(String event, String venue, String course, int duration, int aries, String timestamp)
-    	//insertPerson(long eventid, int ptype, long code, String timestamp)
-    	//---add 2 titles---
-    	DBAdapter db = new DBAdapter(this); 
-        db.open();        
-        //long id;
-        db.insertEvent(
-        		"Examination",
-        		"NW104",
-        		"Electrojumper",
-        		60,
-        		0,
-        		"12:00");
-       // Long u = new Long ("20116001325041");
-        db.insertPerson(2,2,new Long ("23116001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23115001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23114001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23113001325041"),"12:00");
-        db.close();
-    }
 }

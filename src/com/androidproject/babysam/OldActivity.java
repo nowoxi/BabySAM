@@ -54,7 +54,6 @@ public class OldActivity extends babysamActivity {
 		    		meventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
 		    }
 	    } else if (DB_mode == 1){
-	    	//testData();
 	    	eventExtract();
 	    }
 	    	    

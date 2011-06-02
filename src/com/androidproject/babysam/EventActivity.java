@@ -32,7 +32,7 @@ public class EventActivity extends babysamActivity {
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson; 
 	   private String format, scformat, contents, content_delimiter;
 	   private String [] ev_contents = new String [4];
-	   private long RowID;
+	   private long RowID, pRowID, stateID;
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -49,6 +49,7 @@ public class EventActivity extends babysamActivity {
         setContentView(R.layout.event);
         LoadPref(); 
         getNextRow();
+        checkstatus();
         content_delimiter = "\\|";
         
 		//Retrieve listview
@@ -73,25 +74,53 @@ public class EventActivity extends babysamActivity {
 
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
-		Log.i(TAG,"stop oh" );
+		// TODO Auto-generated method stub		
 		super.onStop();
+		Log.i(TAG,"stop oh" );
 	}
 
 	@Override
 		protected void onDestroy() {
 			// TODO Auto-generated method stub
-			//   alert.dismiss();
-		Log.i(TAG,"destroy oh" );
+			//   alert.dismiss();		
+			super.onDestroy();Log.i(TAG,"destroy oh" );
 		//clean db incase officials or students added and session not saved
-		   if(RowID != getLastRow()){
-			   event_cancel();
+		   if(RowID != getLastEventRow() && checkperson()){
+			   event_cancel(RowID);
 			   Log.i(TAG,"Event not added session cleared" );
 			   Toast.makeText(this, "Event not added session cleared", Toast.LENGTH_SHORT).show();
 		   }
-			super.onDestroy();
 		} 
       
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Log.i(TAG,"resume oh and "+ RowID );
+	}
+
+	private void checkstatus (){
+		//you should have a row id that doesnt change...on load 
+		//on load if row id loaded from db is same as rowid 
+	}
+	private Boolean checkperson(){
+		// method used by dialog to check if person or offical have been added to the canceled unidentified session
+		//so it can remove them
+		DBAdapter db = new DBAdapter(this); 
+        db.open();
+        Cursor c = db.getAllEventPersons(RowID);
+        /* Get the indices of the Columns we will need */
+        Boolean check = false;
+        if (c.moveToFirst()){
+        	check = true;
+        	Log.i(TAG, " students or officals added to empty session - "+ RowID);       
+        }
+        
+        db.close();
+		EventActivity.this.finish();
+		return check ;
+	}
     //to load all prefences to their variables only used in event
        private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -151,7 +180,7 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_ofscan, scformat);	
             return true;
         	case R.id.event_cancel:
-	        	event_cancel();	
+	        	event_cancel(RowID);	
             return true;
         	case R.id.event_addse:
         		Log.i(TAG,"2" );
@@ -189,7 +218,7 @@ public class EventActivity extends babysamActivity {
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		final EditText input = new EditText(this);
 		//TODO-the value for en_stperson might be lost when calling intent please check  
-		Log.i(TAG,"fail 1 " );
+		//Log.i(TAG,"fail 1 " );
 	    LayoutInflater inflater = getLayoutInflater();
 			final View dialoglayout = inflater.inflate(R.layout.session, (ViewGroup) findViewById(R.id.layout_root3));
 		if (en_stPerson == 3){
@@ -203,7 +232,7 @@ public class EventActivity extends babysamActivity {
 					eventresult[i].setText(ev_contents[i]);
 				}
 			}
-            Log.i(TAG,"fail 2 " );
+           // Log.i(TAG,"fail 2 " );
 		} else {
 		//	final EditText input = new EditText(this);
 			alert.setView(input);			
@@ -215,9 +244,8 @@ public class EventActivity extends babysamActivity {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				 //HERE YOU UPDATE THE DATABASE AND NOT INSERT 
 				//VALUES ARE ADDED ON SCANNING UNLESS SCANNING ISNT SET
-				Log.i(TAG,"fail 3 " );
-				saveData();
-				Toast.makeText(getApplicationContext(), "content: " + contents, Toast.LENGTH_SHORT).show();
+			
+				pRowID = 0;
 				if (en_stPerson == 3){
 					
 					EditText [] eventresult = { (EditText) dialoglayout.findViewById(R.id.EditText01), (EditText) dialoglayout.findViewById(R.id.EditText02),
@@ -231,7 +259,7 @@ public class EventActivity extends babysamActivity {
 					//update data if data was scanned, insert data if other wise
 					Log.i(TAG,"fail 4 " );
 					if (en_evscan == 1){
-						
+						upd_dbdata(en_stPerson, pRowID,RowID);
 					} else if (en_evscan == 0){
 						add_dbdata(en_stPerson);
 					}
@@ -243,25 +271,29 @@ public class EventActivity extends babysamActivity {
 			    	}
 				}else {
 					contents = (String) input.getText().toString();
-					//add_dbdata(en_stPerson);
-					if (en_stPerson == 1){
-						stdeventData.add(contents);
-						std_adapt.notifyDataSetChanged();
+					//this section adds to the database from the text box and also populates the listview
+					if (en_stPerson == 1){						
 						if (en_stscan == 1){
-							
+							//the value of pRowID must be the id of the recrd added by the scan intent
+							pRowID = getLastPersonRow();
+							upd_dbdata(en_stPerson, pRowID,RowID);
 						} else if (en_ofscan == 0){
 							add_dbdata(en_stPerson);
 						}
+						stdeventData.add(contents);
+						std_adapt.notifyDataSetChanged();
 					} else if (en_stPerson == 2){
 						if (en_ofscan == 1){
-							
+							pRowID = getLastPersonRow();
+							upd_dbdata(en_stPerson, pRowID,RowID);
 						} else if (en_ofscan == 0){
 							add_dbdata(en_stPerson);
 						}
 						offeventData.add(contents);
 						off_adapt.notifyDataSetChanged();
 					} 
-				} 
+				}
+				Toast.makeText(getApplicationContext(), "content: " + contents, Toast.LENGTH_SHORT).show();
 			}
 		});
 
@@ -274,23 +306,11 @@ public class EventActivity extends babysamActivity {
 		
 	}
 	
-	public void saveData(){
-        	  
-		//TODO - update the database with the value from content
-		// bear in mind if official or student. so ensure en_stperson= 3 is never entered into db
-		if (en_stPerson == 3){
-			
-		}else {
-			//final EditText input = new EditText(this);
-			//contents = (String) input.getText().toString(); 
-		    
-		}
-	}
 	
 	//if i try to use a method that returns a value it would always try to recalculate 
 	// the next row id which would make the programming wrong as this activity would increase the 
 	// the rows during operation
-	public long getLastRow(){
+	public long getLastEventRow(){
 		DBAdapter db = new DBAdapter(this);
         
 	      //---get all events---
@@ -304,29 +324,59 @@ public class EventActivity extends babysamActivity {
 		return LRowID;
 	}
 	public void getNextRow(){
-		/*DBAdapter db = new DBAdapter(this);
+			RowID = getLastEventRow()+1;
+	        Log.i(TAG,"Next Row ID : "+ RowID );		
+	}
+	
+	public long getLastPersonRow(){
+		DBAdapter db = new DBAdapter(this);
         
 	      //---get all events---
 	        db.open();
-	        Cursor c = db.getAllEvents();
+	        Cursor c = db.getAllEventPersons(RowID);
 	        int rowIDColumn = c.getColumnIndex("_id") ;
-	        if (c.moveToLast())RowID = c.getLong(rowIDColumn);
-	        else RowID = 0;
-	        RowID += 1;
-	        db.close();*/
-			RowID = getLastRow()+1;
-	        Log.i(TAG,"Next Row ID : "+ RowID );		
-	    
-	    //TODO - update the database with the value from content
-		// bear in mind if official or student. so ensure en_stperson= 3 is never entered into db
-		if (en_stPerson == 3){
-			
-		}else {
-			//final EditText input = new EditText(this);
-			//contents = (String) input.getText().toString(); 
-		    
-		}
+	        long LRowID=0;
+			if (c.moveToLast())LRowID = c.getLong(rowIDColumn);	        
+	        db.close();
+	        Log.i(TAG,"Last Person Row ID : "+ LRowID );	
+		return LRowID;
 	}
+	
+	private void upd_dbdata(int ptype,long pID, long rID){
+    	//---add 2 events and persons---
+    	DBAdapter db = new DBAdapter(this); 
+        db.open();       
+        Log.i(TAG,"add data 1" );
+        if (ptype == 3){
+        	try{
+	        db.updateEvent(
+	        		rID,
+	        		ev_contents[0],
+	        		ev_contents[1],
+	        		ev_contents[2],
+	        		Integer.parseInt(ev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
+	        		//60,
+	        		0,
+	        		timeStamp());
+	        Log.i(TAG,"add data 2a" );
+        	} catch (NumberFormatException e){
+        		 Toast.makeText(this, "Invalid data format", 
+                 		Toast.LENGTH_SHORT).show();
+        	}
+        } else {    
+        	try{
+        		Long code = new Long (contents);
+        		String cdate = timeStamp();
+	        	Log.i(TAG,"add data 2" );
+	        	db.updatePerson(pID,rID,ptype,code,cdate);
+        	} catch (NumberFormatException e){
+       		 Toast.makeText(this, "Invalid data format", 
+              		Toast.LENGTH_SHORT).show();
+        	}
+        	
+        }
+        db.close();
+    }
     
 	private void add_dbdata(int ptype){
     	//---add 2 events and persons---
@@ -339,10 +389,10 @@ public class EventActivity extends babysamActivity {
 	        		ev_contents[0],
 	        		ev_contents[1],
 	        		ev_contents[2],
-	        		//Integer.parseInt(ev_contents[3]),TODO ENSURE U CORRECT THIS FORMAT PROBLEM
-	        		60,
+	        		Integer.parseInt(ev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
+	        		//60,
 	        		0,
-	        		(String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date()));
+	        		timeStamp());
 	        Log.i(TAG,"add data 2a" );
         	} catch (NumberFormatException e){
         		 Toast.makeText(this, "Invalid data format", 
@@ -351,9 +401,9 @@ public class EventActivity extends babysamActivity {
         } else {    
         	try{
         		Long code = new Long (contents);
-        		String cdate = (String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date());
+        		String cdate = timeStamp();
 	        	Log.i(TAG,"add data 2" );
-	        	db.insertPerson(RowID,ptype,code,cdate);
+	        	db.insertPerson(RowID,ptype,code,cdate);	        	
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
               		Toast.LENGTH_SHORT).show();
@@ -363,17 +413,17 @@ public class EventActivity extends babysamActivity {
         db.close();
     }
 	
-	public void event_cancel(){
+	public void event_cancel(long rID){
 		// TODO - make a method that would cancel all the current status of events	i.e. deleting from the database
 		DBAdapter db = new DBAdapter(this); 
         db.open();
-        db.deleteEvent(RowID);
+        db.deleteEvent(rID);
         db.close();
 		EventActivity.this.finish();
 	}
 	
-	public void setContent(){
-		
+	public String timeStamp(){
+		return (String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date());
 	}
 	
 	//junk code

@@ -24,6 +24,7 @@ public class OldActivity extends babysamActivity {
 	private final ArrayList<String[]> eventData = new ArrayList<String[]>();
     private final ArrayList<String> meventData = new ArrayList<String>();
     private final ArrayList<Long> RowID = new ArrayList<Long>();
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

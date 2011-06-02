@@ -9,13 +9,11 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class Old_displayActivity extends babysamActivity {
     /** Called when the activity is first created. */
@@ -33,6 +31,7 @@ public class Old_displayActivity extends babysamActivity {
     //private final ArrayList<Long> ofRowID = new ArrayList<Long>();
     //private final ArrayList<Long> stRowID = new ArrayList<Long>();
     private Long extra_EID;
+    private functions f;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,8 +43,8 @@ public class Old_displayActivity extends babysamActivity {
 	    //Retrieve listview
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
-	    
-	   
+	    //TODO ensure that f is a good idea please
+	    f = new functions(this);	   
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
 	    //get the event id from the intent that was passed
@@ -99,11 +98,16 @@ public class Old_displayActivity extends babysamActivity {
 	    	if ( intent != null){	    		
 	    		Log.i(TAG,"long extra"+intent.getLongExtra("EventID",1) );
 		    	extra_EID = intent.getLongExtra("EventID",1);
-		    	eventExtract();
+		    	//TODO - trying to introduce the functions object so i can re-use common methods
+		    	//eventExtract();
+		    	eventDetails = f.eventExtract(extra_EID);
 		    	for (int i = 0; i < 4 ; i++){
 		    		text[i].setText(eventDetails[i]);
 		    	}
-		    	personExtract();
+		    	offeventData=f.personExtract(extra_EID, 2);
+		    	stdeventData=f.personExtract(extra_EID, 1);
+		    	
+		    	//personExtract();
 	    	}
 	    }        
         
@@ -153,25 +157,36 @@ public class Old_displayActivity extends babysamActivity {
 			eventData.add(0,data);
 		}
 	}
+        
+  //to load all prefences to their variables only used in event
+    private void LoadPref(){
+	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
+    }
+}
 
-    public void personExtract (){
+/*to be removed
+ * 
+ * 
+ * 
+ * public void personExtract (){
     	//create object of DB
     	DBAdapter db = new DBAdapter(this);
         
       //---get all events---
         db.open();
         Cursor c = db.getAllEventPersons(extra_EID);
-        /* Get the indices of the Columns we will need */
+        // Get the indices of the Columns we will need 
         //int timeColumn = c.getColumnIndex("timestamp"); 
         int codeColumn = c.getColumnIndex("code");
         int pTypeColumn = c.getColumnIndex("pType");
         //int rowIDColumn = c.getColumnIndex("_id") ;
         Log.i(TAG, " the value for eventID - "+ extra_EID);
         if (c.moveToFirst()) 
-        	/* Loop through all Results */             	
+        	// Loop through all Results              	
         	 do {
         		 int pType = c.getInt(pTypeColumn);
-        		 /* Add current Entry to offeventData and stdeventData. */
+        		 // Add current Entry to offeventData and stdeventData. 
         		 if(pType == 2){
         			 offeventData.add("  "+c.getLong(codeColumn));
                  //ofRowID.add(c.getLong(rowIDColumn));
@@ -188,43 +203,39 @@ public class Old_displayActivity extends babysamActivity {
         db.close();
     	
     }
-    
-    public void eventExtract (){
-    	//create object of DB
-    	DBAdapter db = new DBAdapter(this);
-        
-      //---get all events---
-        db.open();
-        Cursor c = db.getEvent(extra_EID);
-        /* Get the indices of the Columns we will need */
-        //int timeColumn = c.getColumnIndex("timestamp");         
-        int eventTypeColumn = c.getColumnIndex("evType");
-        int venueColumn = c.getColumnIndex("venue");
-        int courseColumn = c.getColumnIndex("course");
-        int durColumn = c.getColumnIndex("duration");
-       // int rowIDColumn = c.getColumnIndex("_id") ;
-        
-        if (c.moveToFirst()) {
-        	/* Loop through all Results */             	
-        	// do {
-        		 /* Add current Entry to meventData. */
-                 eventDetails[0] = c.getString(eventTypeColumn);
-                 eventDetails[1] = c.getString(venueColumn);
-                 eventDetails[2] = c.getString(courseColumn);
-                 eventDetails[3] = c.getString(durColumn);
-                 
-            // } while (c.moveToNext());
-        } else {
-            Toast.makeText(this, "Event found", 
-            		Toast.LENGTH_SHORT).show();
-        }
-        db.close();
-    	
-    }
-    
-  //to load all prefences to their variables only used in event
-    private void LoadPref(){
-	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
-    }
-}
+ * 
+ * 
+ * 
+ *  public void eventExtract (){
+ 
+ 	//create object of DB
+ 	DBAdapter db = new DBAdapter(this);
+     
+   //---get all events---
+     db.open();
+     Cursor c = db.getEvent(extra_EID);
+     // Get the indices of the Columns we will need 
+     //int timeColumn = c.getColumnIndex("timestamp");         
+     int eventTypeColumn = c.getColumnIndex("evType");
+     int venueColumn = c.getColumnIndex("venue");
+     int courseColumn = c.getColumnIndex("course");
+     int durColumn = c.getColumnIndex("duration");
+    // int rowIDColumn = c.getColumnIndex("_id") ;
+     
+     if (c.moveToFirst()) {
+     	// Loop through all Results             	
+     	// do {
+     		 // Add current Entry to meventData. 
+              eventDetails[0] = c.getString(eventTypeColumn);
+              eventDetails[1] = c.getString(venueColumn);
+              eventDetails[2] = c.getString(courseColumn);
+              eventDetails[3] = c.getString(durColumn);
+              
+         // } while (c.moveToNext());
+     } else {
+         Toast.makeText(this, "Event found", 
+         		Toast.LENGTH_SHORT).show();
+     }
+     db.close();
+ 	
+ }*/

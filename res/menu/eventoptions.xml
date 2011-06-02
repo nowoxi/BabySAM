@@ -16,6 +16,19 @@
 	android:title="@string/option_event_addst"
 	android:icon="@android:drawable/ic_menu_add"></item>
 	<item
+	android:id="@+id/event_upload"
+	android:title="@string/option_event_upload"
+	android:icon="@android:drawable/ic_menu_send">
+			<menu>
+	            <item android:id="@+id/event_email"
+	                  android:title="@string/option_event_email"
+	                  android:icon="@android:drawable/ic_menu_send" />
+	            <item android:id="@+id/event_aries"
+	                  android:title="@string/option_event_aries" 
+	                  android:icon="@android:drawable/ic_menu_upload"/>
+	        </menu>
+	</item>
+	<item
 	android:id="@+id/event_save"
 	android:title="@string/option_event_save"
 	android:icon="@android:drawable/ic_menu_save"></item>
@@ -23,6 +36,7 @@
 	android:id="@+id/event_cancel"
 	android:title="@string/option_event_cancel"
 	android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
+	
 	<item
 	android:id="@+id/event_set"
 	android:title="@string/option_event_set"

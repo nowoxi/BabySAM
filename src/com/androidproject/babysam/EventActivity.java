@@ -33,6 +33,7 @@ public class EventActivity extends babysamActivity {
 	   private String format, scformat, contents, content_delimiter;
 	   private String [] ev_contents = new String [4];
 	   private long RowID, pRowID, stateID;
+	   private functions f;
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -47,6 +48,7 @@ public class EventActivity extends babysamActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event);
+        f = new functions(this);
         LoadPref(); 
         getNextRow();
         checkstatus();
@@ -66,10 +68,9 @@ public class EventActivity extends babysamActivity {
     
 	   @Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
-		   
-		   Log.i(TAG,"pause oh" );
-		super.onPause();
+		// TODO Auto-generated method stub		 
+		super.onPause();  
+		Log.i(TAG,"pause oh" );
 	}
 
 	@Override
@@ -152,7 +153,7 @@ public class EventActivity extends babysamActivity {
                 Log.i(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
                 Log.i(TAG,"Format = "+format+" / Contents = " +contents );
               //split_content();
-    			ev_contents = contents.split(content_delimiter);
+    			if (en_stPerson==3)ev_contents = contents.split(content_delimiter);
                 add_dbdata(en_stPerson);
                 entryDialog();
             } else if (resultCode == RESULT_CANCELED) {
@@ -187,7 +188,15 @@ public class EventActivity extends babysamActivity {
 	        	en_stPerson = 3;
 	        	scformat = "QR_CODE";
 	        	scanSet(en_evscan, scformat);	
-            return true;            
+            return true;  
+        	case R.id.event_aries:
+	        	sendAries();	
+            return true;
+        	case R.id.event_email:
+        		Log.i(TAG,"send email" );
+	        	//sendEmail(RowID);	
+        		f.sendEmail(RowID, ev_contents, offeventData, stdeventData);
+            return true;
         }
 		
 		return super.onOptionsItemSelected(item);
@@ -213,6 +222,10 @@ public class EventActivity extends babysamActivity {
         }
 	}
 	
+	public void sendAries(){
+		
+	}
+		
 	public void entryDialog (){
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -242,8 +255,8 @@ public class EventActivity extends babysamActivity {
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
-				 //HERE YOU UPDATE THE DATABASE AND NOT INSERT 
-				//VALUES ARE ADDED ON SCANNING UNLESS SCANNING ISNT SET
+				 //HERE YOU UPDATE THE DATABASE with  dialog if scanning is set AND NOT INSERT.				
+				//you insert values from dialog if scanning is not set
 			
 				pRowID = 0;
 				if (en_stPerson == 3){
@@ -414,7 +427,7 @@ public class EventActivity extends babysamActivity {
     }
 	
 	public void event_cancel(long rID){
-		// TODO - make a method that would cancel all the current status of events	i.e. deleting from the database
+		//make a method that would cancel all the current status of events	i.e. deleting from the database
 		DBAdapter db = new DBAdapter(this); 
         db.open();
         db.deleteEvent(rID);

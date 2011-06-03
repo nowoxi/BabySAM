@@ -110,8 +110,9 @@ public final class R {
     public static final class menu {
         public static final int eventoptions=0x7f0a0000;
         public static final int faceoptions=0x7f0a0001;
-        public static final int oldoptions=0x7f0a0002;
-        public static final int settingsoptions=0x7f0a0003;
+        public static final int old_dis_options=0x7f0a0002;
+        public static final int oldoptions=0x7f0a0003;
+        public static final int settingsoptions=0x7f0a0004;
     }
     public static final class raw {
         public static final int help=0x7f060000;

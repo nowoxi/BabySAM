@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,7 +23,7 @@ public class Old_displayActivity extends babysamActivity {
 	
 	private String [] intentExtra = new String [5];
 	private String [] I_intExtra = new String [5];
-	private String [] eventDetails = new String [4];
+	private String [] eventDetails = new String [5];
 	
     //defining array here
     private ArrayList<String[]> eventData = new ArrayList<String[]>();
@@ -43,7 +45,7 @@ public class Old_displayActivity extends babysamActivity {
 	    //Retrieve listview
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
-	    //TODO ensure that f is a good idea please
+	    //TODO - ensure that f is a good idea please
 	    f = new functions(this);	   
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
@@ -117,7 +119,31 @@ public class Old_displayActivity extends babysamActivity {
 	    std.setAdapter(std_adapt);
 	    //adapt.notifyDataSetChanged();
 	    Log.i(TAG,"3 After call" );        
-    }       
+    }  
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+	    super.onCreateOptionsMenu(menu);
+	    getMenuInflater().inflate(R.menu.old_dis_options, menu);
+	    menu.findItem(R.id.help_menu_item).setIntent( new Intent(this, HelpActivity.class));
+	    return true;
+    }
+    
+    @Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+    	//this section will run the barcode scanner as an intent if student barcode scanning is enabled
+		LoadPref();
+		switch(item.getItemId()) { 	
+        	case R.id.event_aries:
+	        	f.sendAries();	
+            return true;
+        	case R.id.event_email:
+        		Log.i(TAG,"send email" );
+	        	//sendEmail(RowID);	
+        		f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
+            return true;
+        }
+		return super.onOptionsItemSelected(item);
+    }
     
     private void processData( XmlResourceParser event,ArrayList<String[]> eventData, int xeID) throws XmlPullParserException,IOException {
 		int doceventType = -1;

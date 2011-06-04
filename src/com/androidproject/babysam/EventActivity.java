@@ -34,9 +34,9 @@ public class EventActivity extends babysamActivity {
 	   // en_evsxan - event scan
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson; 
 	   private String format, scformat, contents, content_delimiter;
-	   private String [] ev_contents = new String [4];
-	   private long RowID, pRowID, stateID;
-	   private functions f;
+	   private String [] ev_contents = new String [5];
+	   private long RowID, pRowID;//, stateID;
+	   //private functions f;
 	   private ProgressDialog dialog;
 	   
 	   
@@ -52,7 +52,7 @@ public class EventActivity extends babysamActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.event);
-        f = new functions(this);
+        //f = new functions(this);
         LoadPref(); 
         getNextRow();
         checkstatus();
@@ -88,7 +88,8 @@ public class EventActivity extends babysamActivity {
 		protected void onDestroy() {
 			// TODO Auto-generated method stub
 			//   alert.dismiss();		
-			super.onDestroy();Log.i(TAG,"destroy oh" );
+			super.onDestroy();
+			Log.i(TAG,"destroy oh and row id is "+ RowID );
 		//clean db incase officials or students added and session not saved
 		   if(RowID != getLastEventRow() && checkperson()){
 			   event_cancel(RowID);
@@ -102,7 +103,7 @@ public class EventActivity extends babysamActivity {
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
-		Log.i(TAG,"resume oh and "+ RowID );
+		Log.i(TAG,"resume oh and roowid now is "+ RowID );
 	}
 
 	private void checkstatus (){
@@ -156,9 +157,9 @@ public class EventActivity extends babysamActivity {
                 // Handle successful scan
                 Log.i(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
                 Log.i(TAG,"Format = "+format+" / Contents = " +contents );
-              //split_content();
-    			if (en_stPerson==3)ev_contents = contents.split(content_delimiter);
-                add_dbdata(en_stPerson);
+              
+                if (en_stPerson==3)ev_contents = setevContent(contents, en_stPerson, content_delimiter);
+                add_dbdata(en_stPerson, ev_contents, contents, RowID);
                 entryDialog();
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
@@ -168,6 +169,17 @@ public class EventActivity extends babysamActivity {
     	
 	}
 
+
+	private String[] setevContent(String contents2, int p, String delimit) {		
+		String[] sev_contents= new String [4];
+		if (p==3)sev_contents = contents2.split(delimit);
+		String[] tev_contents= new String [5];
+		for (int i = 0 ; i < sev_contents.length; i++){				
+			tev_contents[i]=sev_contents[i];
+		}
+		tev_contents[4]=timeStamp();
+		return tev_contents;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -197,21 +209,26 @@ public class EventActivity extends babysamActivity {
 	        	sendAries();	
             return true;
         	case R.id.event_email:
-        		Log.i(TAG,"send email" );
-	        	//sendEmail(RowID);	
-        		//f.sendEmail(RowID, ev_contents, offeventData, stdeventData);
-        		dialog = ProgressDialog.show(this, "",
-        			     			"Please wait for few seconds...", true);
-        		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents, offeventData, stdeventData);
-                progThread.start();
+	        	sendMail();        		
             return true;
         }
 		
 		return super.onOptionsItemSelected(item);
 	}
     
+	private void sendMail() {
+		Log.i(TAG,"send email" );
+		dialog = ProgressDialog.show(this, "",
+     			"Please wait for few seconds...", true);
+		Log.i(TAG,"send email middle" );
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents, offeventData, stdeventData);
+		progThread.start();
+		Log.i(TAG,"send email end" );
+	}
+
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
+        	Log.i(TAG,"send email handler" );
         	dialog.dismiss();
         }
     };
@@ -243,7 +260,7 @@ public class EventActivity extends babysamActivity {
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 		final EditText input = new EditText(this);
-		//TODO-the value for en_stperson might be lost when calling intent please check  
+		//the value for en_stperson might be lost when calling intent please check  
 		//Log.i(TAG,"fail 1 " );
 	    LayoutInflater inflater = getLayoutInflater();
 			final View dialoglayout = inflater.inflate(R.layout.session, (ViewGroup) findViewById(R.id.layout_root3));
@@ -254,7 +271,7 @@ public class EventActivity extends babysamActivity {
 					(EditText) dialoglayout.findViewById(R.id.EditText03), (EditText) dialoglayout.findViewById(R.id.EditText04) };
 			
 			if (ev_contents != null){
-				for (int i = 0 ; i < ev_contents.length; i++){				
+				for (int i = 0 ; i < eventresult.length; i++){				
 					eventresult[i].setText(ev_contents[i]);
 				}
 			}
@@ -287,7 +304,7 @@ public class EventActivity extends babysamActivity {
 					if (en_evscan == 1){
 						upd_dbdata(en_stPerson, pRowID,RowID);
 					} else if (en_evscan == 0){
-						add_dbdata(en_stPerson);
+						add_dbdata(en_stPerson, ev_contents, contents, RowID);
 					}
 					
 					TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
@@ -304,7 +321,7 @@ public class EventActivity extends babysamActivity {
 							pRowID = getLastPersonRow();
 							upd_dbdata(en_stPerson, pRowID,RowID);
 						} else if (en_ofscan == 0){
-							add_dbdata(en_stPerson);
+							add_dbdata(en_stPerson, ev_contents, contents, RowID);
 						}
 						stdeventData.add(contents);
 						std_adapt.notifyDataSetChanged();
@@ -313,7 +330,7 @@ public class EventActivity extends babysamActivity {
 							pRowID = getLastPersonRow();
 							upd_dbdata(en_stPerson, pRowID,RowID);
 						} else if (en_ofscan == 0){
-							add_dbdata(en_stPerson);
+							add_dbdata(en_stPerson, ev_contents, contents, RowID);
 						}
 						offeventData.add(contents);
 						off_adapt.notifyDataSetChanged();
@@ -404,7 +421,7 @@ public class EventActivity extends babysamActivity {
         db.close();
     }
     
-	private void add_dbdata(int ptype){
+	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID){
     	//---add 2 events and persons---
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
@@ -412,13 +429,13 @@ public class EventActivity extends babysamActivity {
         if (ptype == 3){
         	try{
 	        db.insertEvent(
-	        		ev_contents[0],
-	        		ev_contents[1],
-	        		ev_contents[2],
-	        		Integer.parseInt(ev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
+	        		lev_contents[0],
+	        		lev_contents[1],
+	        		lev_contents[2],
+	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
 	        		//60,
 	        		0,
-	        		timeStamp());
+	        		lev_contents[4]);
 	        Log.i(TAG,"add data 2a" );
         	} catch (NumberFormatException e){
         		 Toast.makeText(this, "Invalid data format", 
@@ -426,10 +443,10 @@ public class EventActivity extends babysamActivity {
         	}
         } else {    
         	try{
-        		Long code = new Long (contents);
+        		Long code = new Long (lcontents);
         		String cdate = timeStamp();
 	        	Log.i(TAG,"add data 2" );
-	        	db.insertPerson(RowID,ptype,code,cdate);	        	
+	        	db.insertPerson(lRowID,ptype,code,cdate);	        	
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
               		Toast.LENGTH_SHORT).show();

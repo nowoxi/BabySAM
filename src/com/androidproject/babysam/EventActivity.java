@@ -8,6 +8,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,8 +36,8 @@ public class EventActivity extends babysamActivity {
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson; 
 	   private String format, scformat, contents, content_delimiter;
 	   private String [] ev_contents = new String [5];
-	   private long RowID, pRowID;//, stateID;
-	   //private functions f;
+	   private long RowID, pRowID, stateID;
+	   private functions f;
 	   private ProgressDialog dialog;
 	   
 	   
@@ -51,23 +52,8 @@ public class EventActivity extends babysamActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.event);
-        //f = new functions(this);
-        LoadPref(); 
-        getNextRow();
-        checkstatus();
-        content_delimiter = "\\|";
-        
-		//Retrieve listview
-	    ListView off = (ListView) findViewById(R.id.officials_view);
-	    ListView std = (ListView) findViewById(R.id.students_view);
-	    off_adapt = new ArrayAdapter<String>(this, R.layout.list_item, offeventData);        
-	    std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
-	    
-	    
-	    off.setAdapter(off_adapt);
-	    std.setAdapter(std_adapt);
-	    //Log.i(TAG,"3 After call" );
+        setupViews();
+        stateID=0;
     }
     
 	   @Override
@@ -96,9 +82,38 @@ public class EventActivity extends babysamActivity {
 			   Log.i(TAG,"Event not added session cleared" );
 			   Toast.makeText(this, "Event not added session cleared", Toast.LENGTH_SHORT).show();
 		   }
+		   //startActivity(new Intent(this, EventActivity.class));
+		  
 		} 
       
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		setupViews();
+		checkstatus();
+		
+	}
 	
+	private void setupViews() {
+		setContentView(R.layout.event);
+        f = new functions(this);
+        LoadPref(); 
+        getNextRow();
+        
+        content_delimiter = "\\|";
+        
+		//Retrieve listview
+	    ListView off = (ListView) findViewById(R.id.officials_view);
+	    ListView std = (ListView) findViewById(R.id.students_view);
+	    off_adapt = new ArrayAdapter<String>(this, R.layout.list_item, offeventData);        
+	    std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
+	    
+	    
+	    off.setAdapter(off_adapt);
+	    std.setAdapter(std_adapt);
+	    //Log.i(TAG,"3 After call" );
+		
+	}
+
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
@@ -109,6 +124,13 @@ public class EventActivity extends babysamActivity {
 	private void checkstatus (){
 		//you should have a row id that doesnt change...on load 
 		//on load if row id loaded from db is same as rowid 
+		RowID -= stateID;
+		String [] leventDetails = f.eventExtract(RowID);
+		TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
+    	    	(TextView) findViewById(R.id.TextView01)};
+    	for (int i = 0; i < 4 ; i++){
+    		text[i].setText(leventDetails[i]);
+    	}
 	}
 	private Boolean checkperson(){
 		// method used by dialog to check if person or offical have been added to the canceled unidentified session
@@ -159,16 +181,16 @@ public class EventActivity extends babysamActivity {
                 Log.i(TAG,"Format = "+format+" / Contents = " +contents );
               
                 if (en_stPerson==3)ev_contents = setevContent(contents, en_stPerson, content_delimiter);
-                add_dbdata(en_stPerson, ev_contents, contents, RowID);
+                Log.i(TAG, ""+stateID );
+                if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);
+                if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
                 entryDialog();
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
             	Log.i(TAG,"It failed oh" );
             }
-        }
-    	
+        }    	
 	}
-
 
 	private String[] setevContent(String contents2, int p, String delimit) {		
 		String[] sev_contents= new String [4];
@@ -219,7 +241,7 @@ public class EventActivity extends babysamActivity {
 	private void sendMail() {
 		Log.i(TAG,"send email" );
 		dialog = ProgressDialog.show(this, "",
-     			"Please wait for few seconds...", true);
+				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send email middle" );
 		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents, offeventData, stdeventData);
 		progThread.start();
@@ -302,7 +324,7 @@ public class EventActivity extends babysamActivity {
 					//update data if data was scanned, insert data if other wise
 					Log.i(TAG,"fail 4 " );
 					if (en_evscan == 1){
-						upd_dbdata(en_stPerson, pRowID,RowID);
+						upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents);
 					} else if (en_evscan == 0){
 						add_dbdata(en_stPerson, ev_contents, contents, RowID);
 					}
@@ -311,7 +333,9 @@ public class EventActivity extends babysamActivity {
 			    	    	(TextView) findViewById(R.id.TextView01)};
 					for (int i = 0; i < 4 ; i++){
 			    		text[i].setText(ev_contents[i]);
+			    		
 			    	}
+					stateID=1;		//variable used to control the correct session to load on rotation
 				}else {
 					contents = (String) input.getText().toString();
 					//this section adds to the database from the text box and also populates the listview
@@ -319,7 +343,7 @@ public class EventActivity extends babysamActivity {
 						if (en_stscan == 1){
 							//the value of pRowID must be the id of the recrd added by the scan intent
 							pRowID = getLastPersonRow();
-							upd_dbdata(en_stPerson, pRowID,RowID);
+							upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents);
 						} else if (en_ofscan == 0){
 							add_dbdata(en_stPerson, ev_contents, contents, RowID);
 						}
@@ -328,7 +352,7 @@ public class EventActivity extends babysamActivity {
 					} else if (en_stPerson == 2){
 						if (en_ofscan == 1){
 							pRowID = getLastPersonRow();
-							upd_dbdata(en_stPerson, pRowID,RowID);
+							upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents);
 						} else if (en_ofscan == 0){
 							add_dbdata(en_stPerson, ev_contents, contents, RowID);
 						}
@@ -385,7 +409,7 @@ public class EventActivity extends babysamActivity {
 		return LRowID;
 	}
 	
-	private void upd_dbdata(int ptype,long pID, long rID){
+	private void upd_dbdata(int ptype,long pID, long rID, String [] lev_contents, String lcontents){
     	//---add 2 events and persons---
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
@@ -394,10 +418,10 @@ public class EventActivity extends babysamActivity {
         	try{
 	        db.updateEvent(
 	        		rID,
-	        		ev_contents[0],
-	        		ev_contents[1],
-	        		ev_contents[2],
-	        		Integer.parseInt(ev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
+	        		lev_contents[0],
+	        		lev_contents[1],
+	        		lev_contents[2],
+	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
 	        		//60,
 	        		0,
 	        		timeStamp());
@@ -408,15 +432,14 @@ public class EventActivity extends babysamActivity {
         	}
         } else {    
         	try{
-        		Long code = new Long (contents);
+        		Long code = new Long (lcontents);
         		String cdate = timeStamp();
 	        	Log.i(TAG,"add data 2" );
 	        	db.updatePerson(pID,rID,ptype,code,cdate);
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
               		Toast.LENGTH_SHORT).show();
-        	}
-        	
+        	}        	
         }
         db.close();
     }
@@ -467,8 +490,5 @@ public class EventActivity extends babysamActivity {
 	
 	public String timeStamp(){
 		return (String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date());
-	}
-	
-	//junk code
-	//String value = input.getText().toString().trim();
+	}	
 }

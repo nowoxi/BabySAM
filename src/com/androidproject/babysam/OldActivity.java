@@ -22,8 +22,9 @@ public class OldActivity extends babysamActivity {
     /** Called when the activity is first created. */
 	private int DB_mode;
 	private final ArrayList<String[]> eventData = new ArrayList<String[]>();
-    private final ArrayList<String> meventData = new ArrayList<String>();
+    private ArrayList<String> meventData = new ArrayList<String>();
     private final ArrayList<Long> RowID = new ArrayList<Long>();
+    private ListView old;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -33,29 +34,14 @@ public class OldActivity extends babysamActivity {
         //defining array here
         
 	    //Retrieve listview
-	    ListView old = (ListView) findViewById(R.id.listView1);
+	    old = (ListView) findViewById(R.id.listView1);
 	    
 	    
 	    
 	    if (DB_mode == 0){
-	        // Retrieve XML
-		    //XmlResourceParser mockAllScores = getResources().getXml(R.xml.persons);
-		    XmlResourceParser eventxml = getResources().getXml(R.xml.event);
-		     
-		    //primarily should return eventdata which has the content so the file
-		    try {
-		    	processData(old,eventxml, eventData);
-		    } catch (Exception e) {
-	            Log.e(TAG, "Failed to load Events", e);
-	        }
-		    
-		    //put data in meventData after eventData comes back
-		    //if you send eventdata to another class you will need a way to call it	        
-		    for( int i = 0; i < eventData.size(); i++){
-		    		meventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
-		    }
+	        meventData = xmleventExtract();
 	    } else if (DB_mode == 1){
-	    	eventExtract();
+	    	meventData = eventExtract();
 	    }
 	    	    
 	    ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, R.layout.menu_item, meventData);        
@@ -86,7 +72,27 @@ public class OldActivity extends babysamActivity {
 	    
 	}
 	
-    @Override
+    private ArrayList<String> xmleventExtract() {
+    	// Retrieve XML
+	    //XmlResourceParser mockAllScores = getResources().getXml(R.xml.persons);
+	    XmlResourceParser eventxml = getResources().getXml(R.xml.event);
+	    ArrayList<String> leventData = new ArrayList<String>();
+	    
+	    //primarily should return eventdata which has the content so the file
+	    try {
+	    	processData(old,eventxml, eventData);
+	    } catch (Exception e) {
+            Log.e(TAG, "Failed to load Events", e);
+        }
+	    //put data in meventData after eventData comes back
+	    //if you send eventdata to another class you will need a way to call it	        
+	    for( int i = 0; i < eventData.size(); i++){
+	    		leventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
+	    }
+		return leventData;
+	}
+
+	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    super.onCreateOptionsMenu(menu);
 	    getMenuInflater().inflate(R.menu.oldoptions, menu);
@@ -146,7 +152,8 @@ public class OldActivity extends babysamActivity {
 	}
 
 	
-    public void eventExtract (){
+    public ArrayList<String> eventExtract (){
+    	ArrayList<String> leventData = new ArrayList<String>();
     	//create object of DB
     	DBAdapter db = new DBAdapter(this);
         
@@ -162,14 +169,14 @@ public class OldActivity extends babysamActivity {
         	/* Loop through all Results */             	
         	 do {
         		 /* Add current Entry to meventData. */
-                 meventData.add(c.getString(timeColumn)+"  "+c.getString(eventTypeColumn));
+                 leventData.add(c.getString(timeColumn)+"  "+c.getString(eventTypeColumn));
                  RowID.add(c.getLong(rowIDColumn));
              } while (c.moveToNext());
         else
             Toast.makeText(this, "No Events found", 
             		Toast.LENGTH_SHORT).show();
         db.close();
-    	
+    	return leventData;
     }
     
     public void personExtract (){
@@ -180,6 +187,5 @@ public class OldActivity extends babysamActivity {
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
-    }   
-    
+    }       
 }

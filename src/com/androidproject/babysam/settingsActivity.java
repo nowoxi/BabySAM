@@ -1,8 +1,6 @@
 package com.androidproject.babysam;
 
 
-
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -40,51 +38,14 @@ public class settingsActivity extends babysamActivity {
         menuList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         menuList.setItemsCanFocus(false);
         LoadPref();
-    }
-    
-    
+    }        
     
     @Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
-    	Save();
+		// TODO Auto-generated method stub    	
 		super.onPause();
+		Save();
 	}
-
-
-
-	@Override
-	protected void onRestart() {
-		// TODO Auto-generated method stub
-		super.onRestart();
-	}
-
-
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-
-
-	@Override
-	protected void onStart() {
-		// TODO Auto-generated method stub
-		super.onStart();
-	}
-
-
-
-	@Override
-	protected void onStop() {
-		// TODO Auto-generated method stub
-		//Save();
-		super.onStop();
-	}
-
-
 
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,8 +120,7 @@ public class settingsActivity extends babysamActivity {
 	            this.menuList.setItemChecked(i, true);
 	            if (en_scan[i] == 0) this.menuList.setItemChecked(i, false);		        
 	        }
-    }
-    
+    }    
     
     //to save all the preferences only used in settings activity
     private void Save(){
@@ -185,8 +145,7 @@ public class settingsActivity extends babysamActivity {
         for (int i = 0; i < count; i++) {
             this.menuList.setItemChecked(i, false);
         }
-    }
-    	
+    }    
     	
     private void SavePref(){
         for (int i = 0; i < count; i++) {
@@ -200,55 +159,3 @@ public class settingsActivity extends babysamActivity {
         editor.commit();
        }
 }
-//junk code
-//en_stscan = 0;
-//en_ofscan = 0;
-//en_evscan = 0;
-//SavePref();
-/* 
- * 
- * 
- * 	        en_stscan = eventSettings.getInt(ST_SCAN, 1);
-	        en_ofscan = eventSettings.getInt(OF_SCAN, 1);
-	        en_evscan = eventSettings.getInt(EV_SCAN, 1);
-	        
-	        if (en_stscan == 0){
-	        	this.menuList.setItemChecked(0, false);
-	        } else {
-	        	this.menuList.setItemChecked(0, true);
-	        }
-	        
-	        if (en_ofscan == 0){
-	        	this.menuList.setItemChecked(1, false);
-	        } else {
-	        	this.menuList.setItemChecked(1, true);
-	        }
-	        
-	        if (en_evscan == 0){
-	        	this.menuList.setItemChecked(2, false);
-	        } else {
-	        	this.menuList.setItemChecked(2, true);
-	        }  
-	        
-	        
-	        
-    	if (this.menuList.isItemChecked(0)) {
-    		en_stscan = 1;
-    	} else {
-    		en_stscan = 0;
-    	}
-    	if (this.menuList.isItemChecked(1)) {
-    		en_ofscan = 1;
-    	}else {
-    		en_ofscan = 0;
-    	}
-    	if (this.menuList.isItemChecked(2)) {
-    		en_evscan = 1;
-    	}else {
-    		en_evscan = 0;
-    	}
-    	
-    	        single_SavePref(ST_SCAN, en_stscan);
-        single_SavePref(OF_SCAN, en_ofscan);
-        single_SavePref(EV_SCAN, en_evscan);
- */

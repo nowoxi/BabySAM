@@ -14,7 +14,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="EventActivity"></activity>
+        <activity android:name="EventActivity"
+        android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name="babysamActivity"></activity>
         <activity android:name="FaceActivity"></activity>
         <activity android:name="Facerec_displayActivity"></activity>

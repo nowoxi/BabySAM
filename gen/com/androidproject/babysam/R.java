@@ -147,6 +147,7 @@ public final class R {
         public static final int option_event_set=0x7f09001b;
         public static final int option_event_upload=0x7f09001c;
         public static final int option_help=0x7f090015;
+        public static final int send_email=0x7f090032;
         public static final int ses_clear=0x7f090022;
         public static final int ses_course=0x7f090025;
         public static final int ses_event=0x7f090023;

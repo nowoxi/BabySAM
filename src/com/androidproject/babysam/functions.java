@@ -26,14 +26,12 @@ public class functions
       //---get all events---
         db.open();
         Cursor c = db.getEvent(extra_EID);
-        /* Get the indices of the Columns we will need */
-        //int timeColumn = c.getColumnIndex("timestamp");         
+        /* Get the indices of the Columns we will need */        
         int eventTypeColumn = c.getColumnIndex("evType");
         int venueColumn = c.getColumnIndex("venue");
         int courseColumn = c.getColumnIndex("course");
         int durColumn = c.getColumnIndex("duration");
         int timeColumn = c.getColumnIndex("timestamp");
-       // int rowIDColumn = c.getColumnIndex("_id") ;
         
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
@@ -115,8 +113,7 @@ public class functions
         }        
 	}
 	
-	private String mailSubject(String[] ev_contents) {
-		// TODO Auto-generated method stub		
+	private String mailSubject(String[] ev_contents) {				
 		@SuppressWarnings("unused")
 		String Subject;
 		return  Subject = " Attendance for "+ev_contents[0] +" on "+ev_contents[4];

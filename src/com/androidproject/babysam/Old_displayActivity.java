@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -14,7 +13,6 @@ import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
@@ -41,12 +39,8 @@ public class Old_displayActivity extends babysamActivity {
     private Long extra_EID;
     private functions f;
     
-    
-    ProgressThread progThread;
-    ProgressDialog progDialog;    
-	int typeBar;                        // Determines type progress bar: 0 = spinner, 1 = horizontal
-	int delay = 1;                   // Milliseconds of delay in the update loop
-	int maxBarValue = 2;      // Maximum value of horizontal progress bar
+    private ProgressDialog progDialog;    
+    private int typeBar;                        // Determines type progress bar: 0 = spinner, 1 = horizontal
 	
 	
     
@@ -108,8 +102,8 @@ public class Old_displayActivity extends babysamActivity {
 		    	if (num == 2 )offeventData.add("  "+eventData.get(i)[3]);
 		    	if (num == 1 )stdeventData.add("  "+eventData.get(i)[3]);
 		    }
-		    for( int i = 0; i < offeventData.size(); i++)Log.i(TAG,"2 "+ offeventData.get(i) );
-		    for( int i = 0; i < stdeventData.size(); i++)Log.i(TAG,"1 "+ stdeventData.get(i) );
+		   // for( int i = 0; i < offeventData.size(); i++)Log.i(TAG,"2 "+ offeventData.get(i) );
+		   // for( int i = 0; i < stdeventData.size(); i++)Log.i(TAG,"1 "+ stdeventData.get(i) );
 	    
 	    } else if (DB_mode == 1){
 	    	if ( intent != null){	    		
@@ -152,11 +146,7 @@ public class Old_displayActivity extends babysamActivity {
 	        	f.sendAries();	
             return true;
         	case R.id.event_email:
-        		//Log.i(TAG,"send email" );
-	        	//sendEmail(RowID);     
-        		
-        		//f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
-        		showDialog(typeBar);
+        		if (DB_mode == 1)showDialog(typeBar);
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -212,7 +202,7 @@ public class Old_displayActivity extends babysamActivity {
         case 0:                      // Spinner
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progDialog.setMessage("Sending Email...");
+            progDialog.setMessage(getResources().getString(R.string.send_email));
             ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, offeventData, stdeventData);
             progThread.start();
             return progDialog;        
@@ -226,94 +216,4 @@ public class Old_displayActivity extends babysamActivity {
         	dismissDialog(typeBar);
         }
     };
-
-    // Inner class that performs progress calculations on a second thread.  Implement
-    // the thread by subclassing Thread and overriding its run() method.  Also provide
-    // a setState(state) method to stop the thread gracefully.
-    
-    private class ProgressThreadd extends Thread {	
-
-        @Override
-        public void run() {
-        	Looper.prepare();
-            f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
-            handler.sendEmptyMessage(0);
-        }
-        
-    }
 }
-
-/*to be removed
- * 
- * 
- * 
- * public void personExtract (){
-    	//create object of DB
-    	DBAdapter db = new DBAdapter(this);
-        
-      //---get all events---
-        db.open();
-        Cursor c = db.getAllEventPersons(extra_EID);
-        // Get the indices of the Columns we will need 
-        //int timeColumn = c.getColumnIndex("timestamp"); 
-        int codeColumn = c.getColumnIndex("code");
-        int pTypeColumn = c.getColumnIndex("pType");
-        //int rowIDColumn = c.getColumnIndex("_id") ;
-        Log.i(TAG, " the value for eventID - "+ extra_EID);
-        if (c.moveToFirst()) 
-        	// Loop through all Results              	
-        	 do {
-        		 int pType = c.getInt(pTypeColumn);
-        		 // Add current Entry to offeventData and stdeventData. 
-        		 if(pType == 2){
-        			 offeventData.add("  "+c.getLong(codeColumn));
-                 //ofRowID.add(c.getLong(rowIDColumn));
-        		 }else if (pType == 1){
-        			 stdeventData.add("  "+c.getLong(codeColumn));
-                 //stRowID.add(c.getLong(rowIDColumn));
-        		 }
-                 
-                 
-             } while (c.moveToNext());
-        else
-            Toast.makeText(this, "No Persons found", 
-            		Toast.LENGTH_SHORT).show();
-        db.close();
-    	
-    }
- * 
- * 
- * 
- *  public void eventExtract (){
- 
- 	//create object of DB
- 	DBAdapter db = new DBAdapter(this);
-     
-   //---get all events---
-     db.open();
-     Cursor c = db.getEvent(extra_EID);
-     // Get the indices of the Columns we will need 
-     //int timeColumn = c.getColumnIndex("timestamp");         
-     int eventTypeColumn = c.getColumnIndex("evType");
-     int venueColumn = c.getColumnIndex("venue");
-     int courseColumn = c.getColumnIndex("course");
-     int durColumn = c.getColumnIndex("duration");
-    // int rowIDColumn = c.getColumnIndex("_id") ;
-     
-     if (c.moveToFirst()) {
-     	// Loop through all Results             	
-     	// do {
-     		 // Add current Entry to meventData. 
-              eventDetails[0] = c.getString(eventTypeColumn);
-              eventDetails[1] = c.getString(venueColumn);
-              eventDetails[2] = c.getString(courseColumn);
-              eventDetails[3] = c.getString(durColumn);
-              
-         // } while (c.moveToNext());
-     } else {
-         Toast.makeText(this, "Event found", 
-         		Toast.LENGTH_SHORT).show();
-     }
-     db.close();
- 	
- }*/

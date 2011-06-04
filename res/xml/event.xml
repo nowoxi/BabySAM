@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a demo event data XML chunk -->
+<event>
+	<event
+	ID="1"
+	EType="exam"
+	Venue="1"
+	course="Elect"
+	duration="60"
+	timestamp="12:00"
+	ariesREG="0" />
+	<event
+	ID="2"
+	EType="lecture"
+	Venue="3"
+	course="Elect 2"
+	duration="60"
+	timestamp="13:00"
+	ariesREG="1" />
+	<event
+	ID="3"
+	EType="seminar"
+	Venue="3" 
+	course="Elect 3"
+	duration="60"
+	timestamp="13:00"
+	ariesREG="0" />
+	<event
+	ID="4"
+	EType="Examination"
+	Venue="SW311" 
+	course="Electronic cumulation"
+	duration="60"
+	timestamp="10:00"
+	ariesREG="0" />
+</event>

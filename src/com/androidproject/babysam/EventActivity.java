@@ -4,11 +4,14 @@ package com.androidproject.babysam;
 import java.util.ArrayList;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -34,6 +37,7 @@ public class EventActivity extends babysamActivity {
 	   private String [] ev_contents = new String [4];
 	   private long RowID, pRowID, stateID;
 	   private functions f;
+	   private ProgressDialog dialog;
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -195,13 +199,22 @@ public class EventActivity extends babysamActivity {
         	case R.id.event_email:
         		Log.i(TAG,"send email" );
 	        	//sendEmail(RowID);	
-        		f.sendEmail(RowID, ev_contents, offeventData, stdeventData);
+        		//f.sendEmail(RowID, ev_contents, offeventData, stdeventData);
+        		dialog = ProgressDialog.show(this, "",
+        			     			"Please wait for few seconds...", true);
+        		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents, offeventData, stdeventData);
+                progThread.start();
             return true;
         }
 		
 		return super.onOptionsItemSelected(item);
 	}
     
+	final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+        	dialog.dismiss();
+        }
+    };
 	// the if would contain an or to join the 3 conditions
 	//this method is used to load the barcode scanner if option enabled
 	public void scanSet(int sett, String scan_format){

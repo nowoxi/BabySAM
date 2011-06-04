@@ -6,10 +6,16 @@ import java.util.ArrayList;
 
 import org.xmlpull.v1.XmlPullParserException;
 
+
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +40,15 @@ public class Old_displayActivity extends babysamActivity {
     //private final ArrayList<Long> stRowID = new ArrayList<Long>();
     private Long extra_EID;
     private functions f;
+    
+    
+    ProgressThread progThread;
+    ProgressDialog progDialog;    
+	int typeBar;                        // Determines type progress bar: 0 = spinner, 1 = horizontal
+	int delay = 1;                   // Milliseconds of delay in the update loop
+	int maxBarValue = 2;      // Maximum value of horizontal progress bar
+	
+	
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -131,15 +146,17 @@ public class Old_displayActivity extends babysamActivity {
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	//this section will run the barcode scanner as an intent if student barcode scanning is enabled
-		LoadPref();
+		LoadPref();		
 		switch(item.getItemId()) { 	
         	case R.id.event_aries:
 	        	f.sendAries();	
             return true;
         	case R.id.event_email:
-        		Log.i(TAG,"send email" );
-	        	//sendEmail(RowID);	
-        		f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
+        		//Log.i(TAG,"send email" );
+	        	//sendEmail(RowID);     
+        		
+        		//f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
+        		showDialog(typeBar);
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -188,6 +205,41 @@ public class Old_displayActivity extends babysamActivity {
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
+    }
+    
+    protected Dialog onCreateDialog(int id) {
+        switch(id) {
+        case 0:                      // Spinner
+            progDialog = new ProgressDialog(this);
+            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progDialog.setMessage("Sending Email...");
+            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, offeventData, stdeventData);
+            progThread.start();
+            return progDialog;        
+        default:
+            return null;
+        }
+    }
+    
+    final Handler handler = new Handler() {
+        public void handleMessage(Message msg) {
+        	dismissDialog(typeBar);
+        }
+    };
+
+    // Inner class that performs progress calculations on a second thread.  Implement
+    // the thread by subclassing Thread and overriding its run() method.  Also provide
+    // a setState(state) method to stop the thread gracefully.
+    
+    private class ProgressThreadd extends Thread {	
+
+        @Override
+        public void run() {
+        	Looper.prepare();
+            f.sendEmail(extra_EID, eventDetails, offeventData, stdeventData);
+            handler.sendEmptyMessage(0);
+        }
+        
     }
 }
 

@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+	android:id="@+id/event_edit_item2"
+	android:title="@string/event_edit"
+	android:icon="@android:drawable/ic_menu_edit"></item>
+	<item
+	android:id="@+id/event_rescan_item"
+	android:title="@string/event_rescan"
+	android:icon="@android:drawable/ic_menu_search"></item>
+	<item
+	android:id="@+id/event_delete_item"
+	android:title="@string/event_delete"
+	android:icon="@android:drawable/ic_menu_delete"></item>	
+</menu>

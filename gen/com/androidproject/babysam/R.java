@@ -51,21 +51,26 @@ public final class R {
         public static final int TextView04=0x7f0b001e;
         public static final int TextViewBottomVersion=0x7f0b0023;
         public static final int TextView_HelpText=0x7f0b000b;
-        public static final int add_data=0x7f0b0034;
+        public static final int add_data=0x7f0b0039;
         public static final int auth_but=0x7f0b000d;
         public static final int checkBox1=0x7f0b0022;
-        public static final int delete_alldb=0x7f0b0035;
-        public static final int event_addof=0x7f0b0027;
-        public static final int event_addse=0x7f0b0026;
-        public static final int event_addst=0x7f0b0028;
-        public static final int event_aries=0x7f0b002b;
-        public static final int event_cancel=0x7f0b002d;
-        public static final int event_email=0x7f0b002a;
-        public static final int event_help=0x7f0b0025;
-        public static final int event_save=0x7f0b002c;
-        public static final int event_set=0x7f0b002e;
-        public static final int event_upload=0x7f0b0029;
-        public static final int help_menu_item=0x7f0b002f;
+        public static final int delete_alldb=0x7f0b003a;
+        public static final int event_addof=0x7f0b002c;
+        public static final int event_addse=0x7f0b002b;
+        public static final int event_addst=0x7f0b002d;
+        public static final int event_aries=0x7f0b0030;
+        public static final int event_cancel=0x7f0b0032;
+        public static final int event_cancel_item=0x7f0b0026;
+        public static final int event_delete_item=0x7f0b0029;
+        public static final int event_edit_item=0x7f0b0025;
+        public static final int event_edit_item2=0x7f0b0027;
+        public static final int event_email=0x7f0b002f;
+        public static final int event_help=0x7f0b002a;
+        public static final int event_rescan_item=0x7f0b0028;
+        public static final int event_save=0x7f0b0031;
+        public static final int event_set=0x7f0b0033;
+        public static final int event_upload=0x7f0b002e;
+        public static final int help_menu_item=0x7f0b0034;
         public static final int imageView1=0x7f0b0011;
         public static final int layout_root3=0x7f0b0015;
         public static final int linearLayout1=0x7f0b0021;
@@ -78,10 +83,10 @@ public final class R {
         public static final int relativeLayout1=0x7f0b000c;
         public static final int relativeLayout2=0x7f0b000e;
         public static final int scrollView1=0x7f0b0016;
-        public static final int set_All=0x7f0b0032;
-        public static final int set_clear=0x7f0b0031;
-        public static final int set_debug=0x7f0b0033;
-        public static final int set_save=0x7f0b0030;
+        public static final int set_All=0x7f0b0037;
+        public static final int set_clear=0x7f0b0036;
+        public static final int set_debug=0x7f0b0038;
+        public static final int set_save=0x7f0b0035;
         public static final int settings_list=0x7f0b0020;
         public static final int students_view=0x7f0b000a;
         public static final int tableLayout1=0x7f0b0000;
@@ -108,11 +113,13 @@ public final class R {
         public static final int splash=0x7f03000d;
     }
     public static final class menu {
-        public static final int eventoptions=0x7f0a0000;
-        public static final int faceoptions=0x7f0a0001;
-        public static final int old_dis_options=0x7f0a0002;
-        public static final int oldoptions=0x7f0a0003;
-        public static final int settingsoptions=0x7f0a0004;
+        public static final int event_context=0x7f0a0000;
+        public static final int event_context2=0x7f0a0001;
+        public static final int eventoptions=0x7f0a0002;
+        public static final int faceoptions=0x7f0a0003;
+        public static final int old_dis_options=0x7f0a0004;
+        public static final int oldoptions=0x7f0a0005;
+        public static final int settingsoptions=0x7f0a0006;
     }
     public static final class raw {
         public static final int help=0x7f060000;
@@ -121,7 +128,11 @@ public final class R {
         public static final int app_name=0x7f090000;
         public static final int auth_but=0x7f09000e;
         public static final int event=0x7f090004;
+        public static final int event_cancel=0x7f090034;
+        public static final int event_delete=0x7f090031;
+        public static final int event_edit=0x7f090033;
         public static final int event_offlabel=0x7f09001f;
+        public static final int event_rescan=0x7f090032;
         public static final int event_stdlabel=0x7f090020;
         public static final int face=0x7f090007;
         public static final int facerec_display=0x7f09000c;
@@ -133,7 +144,7 @@ public final class R {
         public static final int menu_item_help=0x7f090014;
         public static final int menu_item_old=0x7f090011;
         public static final int menu_item_set=0x7f090013;
-        public static final int no_data=0x7f090031;
+        public static final int no_data=0x7f090036;
         public static final int officials=0x7f090009;
         public static final int old=0x7f090005;
         public static final int old_display=0x7f09000b;
@@ -147,7 +158,7 @@ public final class R {
         public static final int option_event_set=0x7f09001b;
         public static final int option_event_upload=0x7f09001c;
         public static final int option_help=0x7f090015;
-        public static final int send_email=0x7f090032;
+        public static final int send_email=0x7f090035;
         public static final int ses_clear=0x7f090022;
         public static final int ses_course=0x7f090025;
         public static final int ses_event=0x7f090023;

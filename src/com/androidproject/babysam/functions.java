@@ -18,6 +18,20 @@ public class functions
     {
         this.context = ctx;        
     }
+	
+	public long getPersonCode(long ilRowID) {
+		// TODO Auto-generated method stub
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        Cursor c = db.getPerson(ilRowID);
+        int codeIDColumn = c.getColumnIndex("code") ;
+        long LcodeID=0;
+		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
+        db.close();
+		return LcodeID;
+	}
+	
 	public String [] eventExtract (long extra_EID){
 		String [] eventDetails = new String [5];
     	//create object of DB
@@ -137,6 +151,61 @@ public class functions
 	
 	public void sendAries(){
 		
+	}
+
+	public boolean deletePerson(long ilRowID) {
+		//create object of DB
+    	DBAdapter db = new DBAdapter(context);
+		db.open();
+		db.deletePerson(ilRowID);
+		db.close();
+		return true;
+	}
+
+	public long getPersonID(long pos, int lpType, long lRowID) {
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        //Cursor c = db.getPersonx(pos, lpType, lRowID);
+        Cursor c = db.getAllEventPersons(lRowID);
+        int IDColumn = c.getColumnIndex("_id") ;
+        int pTypeColumn = c.getColumnIndex("pType");
+        int posColumn = c.getColumnIndex("position");
+        long LID=0;
+        do {
+	   		int pType = c.getInt(pTypeColumn);
+	   		long dpos = c.getLong(posColumn);
+	   		/* Add current Entry to offeventData and stdeventData. */
+	   		if(pType == lpType && dpos == pos)LID = c.getLong(IDColumn);    
+        } while (c.moveToNext()); 
+        db.close();
+		return LID;
+	}
+
+	public void updatePos(int lpType, int pos, long lRowID) {
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        //Cursor c = db.getPersonx(pos, lpType, lRowID);
+        Cursor c = db.getAllEventPersons(lRowID);
+        int IDColumn = c.getColumnIndex("_id") ;
+        int pTypeColumn = c.getColumnIndex("pType");
+        int posColumn = c.getColumnIndex("position");
+        do {
+	   		int pType = c.getInt(pTypeColumn);
+	   		long dpos = c.getLong(posColumn);
+	   		long rowID = c.getLong(IDColumn);
+	   		/* Add current Entry to offeventData and stdeventData. */
+	   		if(pType == lpType && dpos > pos){
+	   			dpos-=1;
+	   			 try{
+	   				 db.posChange(rowID,dpos);
+	   			 } catch (Exception e) {
+	 	            Log.e(TAG, "Failed to update persion poistion", e);
+	 	        }
+	   		}
+        } while (c.moveToNext()); 
+        db.close();
 	}
 	
 	

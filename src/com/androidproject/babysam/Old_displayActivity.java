@@ -72,13 +72,12 @@ public class Old_displayActivity extends babysamActivity {
 	        	for (int i = 0; i < 5 ; i++){
 	        		if (intent.hasExtra(intentExtra[i])) {
 		        		I_intExtra[i] = intent.getStringExtra(intentExtra[i]);
-		        		//Log.i(TAG," the extra is " + I_intExtra[i] );
 	        		}
 	        	}
 	        }
 	        // Retrieve XML
 		    XmlResourceParser eventxml = getResources().getXml(R.xml.persons);
-	        // setting the content of the textviews
+	        // setting the content of the text views
 	        for (int i = 0; i < 4 ; i++){
 	    		text[i].setText(I_intExtra[i+1]);
 	    	}
@@ -86,7 +85,6 @@ public class Old_displayActivity extends babysamActivity {
 		    //primarily should return eventdata which has the content so the file
 		    try {
 		    	int y = Integer.parseInt(I_intExtra[0]);
-		    	//Log.i(TAG," 1" );
 		    	processData(eventxml, eventData, y);
 		    } catch (Exception e) {
 	            Log.e(TAG, "Failed to load Events", e);
@@ -101,10 +99,7 @@ public class Old_displayActivity extends babysamActivity {
 		    	//Log.i(TAG,"num "+ num );
 		    	if (num == 2 )offeventData.add("  "+eventData.get(i)[3]);
 		    	if (num == 1 )stdeventData.add("  "+eventData.get(i)[3]);
-		    }
-		   // for( int i = 0; i < offeventData.size(); i++)Log.i(TAG,"2 "+ offeventData.get(i) );
-		   // for( int i = 0; i < stdeventData.size(); i++)Log.i(TAG,"1 "+ stdeventData.get(i) );
-	    
+		    }		     
 	    } else if (DB_mode == 1){
 	    	if ( intent != null){	    		
 	    		Log.i(TAG,"long extra"+intent.getLongExtra("EventID",1) );

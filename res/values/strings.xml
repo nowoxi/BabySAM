@@ -14,7 +14,7 @@
     <string name="old_display">HISTORY DETAILS</string>    
     <string name="facerec_display">Display Screen</string>
     
-    <string name="version">version 1.0</string>
+    <string name="version">version 0.3</string>
     <string name="auth_but">Login</string>
     <string name="zxing_but">Scan Code</string>
     
@@ -57,6 +57,11 @@
     <string name="set_option_delall">Empty dB</string>
     <string name="settings_save">Settings Saved</string>
     
-    <string name="no_data">No data</string>
+    <string name="event_delete">Delete Person</string>
+    <string name="event_rescan">Re-Scan Person</string>
+    <string name="event_edit">Edit</string>
+    <string name="event_cancel">Cancel Event</string>
     <string name="send_email">Please wait a few seconds, sending Email...</string>
+    <string name="no_data">No data</string>
+    
 </resources>

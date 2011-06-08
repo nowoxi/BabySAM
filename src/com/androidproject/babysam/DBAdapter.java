@@ -34,13 +34,13 @@ public class DBAdapter
 	public static final String KEY2_EVENTID = "eventid";
 	public static final String KEY2_PERSONTYPE = "pType";
 	public static final String KEY2_CODE = "code";
-	//public static final String KEY2_TIMESTAMP = "timestamp";
+	public static final String KEY2_POSITION = "position";
 	
 	private static final String DBTAG = "DBAdapter";
 	private static final String DATABASE_NAME = "babySAM";
 	private static final String DATABASE_TABLE1 = "session";
 	private static final String DATABASE_TABLE2 = "person";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 
     /* 
      * private static final String DATABASE_CREATE =
@@ -57,7 +57,7 @@ public class DBAdapter
 	private static final String DATABASE_T2_CREATE =
 		"create table "+DATABASE_TABLE2+" ("+KEY_ROWID+" integer primary key autoincrement, "
         + KEY2_EVENTID +" integer not null, "+KEY2_PERSONTYPE +" integer not null, "+KEY2_CODE+" integer not null, " 
-        + KEY_TIMESTAMP+" text not null);";
+        + KEY_TIMESTAMP+" text not null, "+KEY2_POSITION+" integer not null);";
 	
     private final Context context; 
     private DatabaseHelper DBHelper;
@@ -125,13 +125,14 @@ public class DBAdapter
     }
     
   //---insert a person into the database---
-    public long insertPerson(long eventid, int ptype, long code, String timestamp) 
+    public long insertPerson(long eventid, int ptype, long code, String timestamp, long position) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY2_EVENTID, eventid);
         initialValues.put(KEY2_PERSONTYPE, ptype);
         initialValues.put(KEY2_CODE, code);
         initialValues.put(KEY_TIMESTAMP, timestamp);
+        initialValues.put(KEY2_POSITION, position);
         return db.insert(DATABASE_TABLE2, null, initialValues);
     }
 
@@ -184,7 +185,8 @@ public class DBAdapter
         		KEY2_EVENTID,
         		KEY2_PERSONTYPE,
                 KEY2_CODE,
-                KEY_TIMESTAMP}, 
+                KEY_TIMESTAMP,
+                KEY2_POSITION}, 
                 KEY2_EVENTID+"="+eID, 
                 null, 
                 null, 
@@ -230,7 +232,8 @@ public class DBAdapter
                 		KEY2_EVENTID,
                 		KEY2_PERSONTYPE,
                         KEY2_CODE,
-                        KEY_TIMESTAMP}, 
+                        KEY_TIMESTAMP,
+                        KEY2_POSITION}, 
                 		KEY_ROWID + "=" + rowId, 
                 		null,
                 		null, 
@@ -257,14 +260,36 @@ public class DBAdapter
     }
     
     //---updates a person---
-    public boolean updatePerson(long rowId,long eventid, int ptype, long code, String timestamp) 
+    public boolean updatePerson(long rowId,long eventid, int ptype, long code, String timestamp, long position) 
     {
         ContentValues args = new ContentValues();
         args.put(KEY2_EVENTID, eventid);
         args.put(KEY2_PERSONTYPE, ptype);
         args.put(KEY2_CODE, code);
         args.put(KEY_TIMESTAMP, timestamp);
+        args.put(KEY2_POSITION, position);
         return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
+
+	public Cursor getAllPersons() {
+		return db.query(DATABASE_TABLE2, new String[] {
+        		KEY_ROWID, 
+        		KEY2_EVENTID,
+        		KEY2_PERSONTYPE,
+                KEY2_CODE,
+                KEY_TIMESTAMP,
+                KEY2_POSITION},  
+                null, 
+                null, 
+                null, 
+                null,
+                null);
+	}
+
+	public boolean posChange(long rowID, long position) {
+		 ContentValues args = new ContentValues();
+	        args.put(KEY2_POSITION, position);
+	        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowID, null) > 0;
+	}
 
 }

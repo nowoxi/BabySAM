@@ -1,6 +1,5 @@
 package com.androidproject.babysam;
 
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ public class settingsActivity extends babysamActivity {
 	   private int [] en_scan = new int [count];
 
 	   
-	   //TODO - I need to develop the xml to select settings and a method to save to the shareprefences
+	   //I need to develop the xml to select settings and a method to save to the share preferences
 	   //improve code here to use more of if and for loops instead of the repeated sequences
 	   
     /** Called when the activity is first created. */
@@ -41,8 +40,7 @@ public class settingsActivity extends babysamActivity {
     }        
     
     @Override
-	protected void onPause() {
-		// TODO Auto-generated method stub    	
+	protected void onPause() {	
 		super.onPause();
 		Save();
 	}
@@ -57,7 +55,6 @@ public class settingsActivity extends babysamActivity {
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	//this section will run the barcode scanner as an intent if student barcode scanning is enabled
-
 		switch(item.getItemId()) {        	
         	case R.id.set_save:
 	        	settingsActivity.this.finish();
@@ -95,14 +92,14 @@ public class settingsActivity extends babysamActivity {
         		0,
         		"12:00");
        // Long u = new Long ("20116001325041");
-        db.insertPerson(2,2,new Long ("23116001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23115001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23114001325041"),"12:00");
-        db.insertPerson(2,1,new Long ("23113001325041"),"12:00");
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00");
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00");
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00");
-        db.insertPerson(1,2,new Long ("23113001325041"),"12:00");
+        db.insertPerson(2,2,new Long ("23116001325041"),"12:00",0);
+        db.insertPerson(2,1,new Long ("23115001325041"),"12:00",0);
+        db.insertPerson(2,1,new Long ("23114001325041"),"12:00",1);
+        db.insertPerson(2,1,new Long ("23113001325041"),"12:00",2);
+        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",0);
+        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",1);
+        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",2);
+        db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);
         db.close();
     }
     

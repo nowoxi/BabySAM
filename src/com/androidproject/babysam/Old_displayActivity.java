@@ -54,19 +54,16 @@ public class Old_displayActivity extends babysamActivity {
 	    //Retrieve listview
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
-	    //TODO - ensure that f is a good idea please
 	    f = new functions(this);	   
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
 	    //get the event id from the intent that was passed
         Intent intent = getIntent();
         
-        Log.i(TAG," the extra is end" );
-        
+        //Log.i(TAG," the extra is end" );        
         if (DB_mode == 0){
         	for (int i = 0; i < 5 ; i++){
 	        	intentExtra[i]= "intExtra"+i ;
-	        	//Log.i(TAG, " this is the intent "+ intentExtra[i]);
 	        }
         	if ( intent != null){
 	        	for (int i = 0; i < 5 ; i++){
@@ -112,8 +109,6 @@ public class Old_displayActivity extends babysamActivity {
 		    	}
 		    	offeventData=f.personExtract(extra_EID, 2);
 		    	stdeventData=f.personExtract(extra_EID, 1);
-		    	
-		    	//personExtract();
 	    	}
 	    }        
         
@@ -121,7 +116,6 @@ public class Old_displayActivity extends babysamActivity {
 	    ArrayAdapter<String> std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
 	    off.setAdapter(off_adapt);
 	    std.setAdapter(std_adapt);
-	    //adapt.notifyDataSetChanged();
 	    Log.i(TAG,"3 After call" );        
     }  
     @Override
@@ -179,14 +173,14 @@ public class Old_displayActivity extends babysamActivity {
 		    doceventType = event.next();
 		}
 		
-		// Handle no scores available
+		// Handle no events available
 		if (bFoundEvents == false) {
 			String [] data = {getResources().getString(R.string.no_data)};
 			eventData.add(0,data);
 		}
 	}
         
-  //to load all prefences to their variables only used in event
+  //to load all preferences to their variables only used in event
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        

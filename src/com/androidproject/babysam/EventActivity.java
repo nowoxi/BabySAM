@@ -129,14 +129,12 @@ public class EventActivity extends babysamActivity {
 		int en=0;
 		if (Person == 1)en = en_stscan;
 		if (Person == 2)en = en_ofscan;
-		  scanSet(en,scformat,1, ilRowID);//3rd value set to 1 because it is a rescan
-		
+		  scanSet(en,scformat,1, ilRowID);//3rd value set to 1 because it is a rescan		
 	}
-
 
 	private void deleteContext(int pType, int pos, long ilRowID) {
 		//  TODO you need to update the pos of all persons after the deleted position
-		//  i am hopin u do this by fetching all persons then adding the Row ID of persons
+		//  i am hoping u do this by fetching all persons then adding the Row ID of persons
 		//  that have positions higher than deleted position and reducing by one then update them
 		f.updatePos(pType,pos,RowID);
 		if (f.deletePerson(ilRowID)){
@@ -146,43 +144,24 @@ public class EventActivity extends babysamActivity {
 			}else if(pType == 2){
 				offeventData.remove(pos);
 				off_adapt.notifyDataSetChanged();		   
-			}
-			
+			}			
 		}
 	}
 
 	private void editContext(long pos, int lpType, long lRowID, long ilRowID) {
-		//Log.i(TAG,"Before hangin ");
-		// = f.getPersonID(pos,lpType,lRowID);// get the row id for a person that is of type 2 and event .... and pos....
+		// get the row id for a person that is of type 2 and event .... and pos....
 		
 		// ilRowID is the row id of the person to be edited 
 		// get last row id of previous session then add it to the contextmenu +1
-		//long ilRowID=getLastPersonRow(lRowID-1)+ contextmenuID + 1 ;
-		//pEdit=1; //used to inform the entryDialog that
+		
 		Log.i(TAG,"the row id of selected: "+ilRowID);
 		if (en_stPerson == 2) offPos = pos;
 		if (en_stPerson == 1) stPos = pos;
 		contents = Long.toString(f.getPersonCode(ilRowID));		
-		entryDialog(1,ilRowID);
-		
+		entryDialog(1,ilRowID);		
 	}
 
-	/*private long getPersonCode(long ilRowID) {
-		// Auto-generated method stub
-		DBAdapter db = new DBAdapter(this);
-		//---get person---
-        db.open();
-        Cursor c = db.getPerson(ilRowID);
-        int codeIDColumn = c.getColumnIndex("code") ;
-        long LcodeID=0;
-		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
-        db.close();
-		return LcodeID;
-	}*/
-
-	private void setupViews() {
-		
-		
+	private void setupViews() {		
 		setContentView(R.layout.event);
         f = new functions(this);
         LoadPref(); 
@@ -364,30 +343,28 @@ public class EventActivity extends babysamActivity {
         	dialog.dismiss();
         }
     };
+    
 	// the if would contain an or to join the 3 conditions
 	//this method is used to load the barcode scanner if option enabled
 	public void scanSet(int sett, String scan_format, int scanT, long ilRowID){
 		reScan = scanT; //used to learn if this is a rescan or a 1scan
     	if (sett == 1){
-			Log.i(TAG,"2 scan" );
-				
+			Log.i(TAG,"2 scan" );				
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 			intent.setPackage("com.google.zxing.client.android");
 			intent.putExtra("SCAN_FORMATS", scan_format);
 			intent.putExtra("SCAN_WIDTH", 310 );
 			intent.putExtra("SCAN_HEIGHT", 240 );
 			startActivityForResult(intent, 0);
-    	} else {
-               	//method to create the dialog box straight
+    	} else {               	
     		contents = "";
     		if (scanT == 1){ //to edit the list view correctly on rescan
     			contents = Long.toString(f.getPersonCode(ilRowID));
-    			entryDialog(1,ilRowID);
+    			entryDialog(1,ilRowID);//method to create the dialog box straight//method to create the dialog box straight
     		} else{
     			Log.i(TAG,"2 no scan" );
     			entryDialog(0,0);
-    		}
-    		
+    		}    		
         }
 	}
 	
@@ -420,8 +397,7 @@ public class EventActivity extends babysamActivity {
 		} else {
 		//	final EditText input = new EditText(this);
 			alert.setView(input);			
-			input.setText(contents);			
-			
+			input.setText(contents);	
 		}
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -435,25 +411,19 @@ public class EventActivity extends babysamActivity {
 					EditText [] eventresult = { (EditText) dialoglayout.findViewById(R.id.EditText01), (EditText) dialoglayout.findViewById(R.id.EditText02),
 							(EditText) dialoglayout.findViewById(R.id.EditText03), (EditText) dialoglayout.findViewById(R.id.EditText04) };
 					
-					for (int i = 0 ; i < eventresult.length; i++){				
-						ev_contents[i]= eventresult[i].getText().toString();
-					}
-					
+					for (int i = 0 ; i < eventresult.length; i++)			
+						ev_contents[i]= eventresult[i].getText().toString();				
 					
 					//update data if data was scanned, insert data if other wise
 					Log.i(TAG,"on click ok for event dialog " );
-					if (en_evscan == 1){
-						upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,eventPos);
-					} else if (en_evscan == 0){
-						add_dbdata(en_stPerson, ev_contents, contents, RowID,eventPos);
-					}
+					if (en_evscan == 1)	upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,eventPos);
+					 else if (en_evscan == 0) add_dbdata(en_stPerson, ev_contents, contents, RowID,eventPos);
 					
 					TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
 			    	    	(TextView) findViewById(R.id.TextView01)};
-					for (int i = 0; i < 4 ; i++){
+					for (int i = 0; i < 4 ; i++)
 			    		text[i].setText(ev_contents[i]);
 			    		
-			    	}
 					stateID=1;		//variable used to control the correct session to load on rotation
 				}else {
 					contents = (String) input.getText().toString();
@@ -498,7 +468,7 @@ public class EventActivity extends babysamActivity {
 						}
 						if (pEdit == 0 )offeventData.add(contents);
 						if (pEdit == 1 ){
-							;//calculating position of item editted 
+							;//calculating position of item edited 
 							offeventData.remove(pos);
 							offeventData.add(pos, contents);
 						}
@@ -514,11 +484,9 @@ public class EventActivity extends babysamActivity {
 						dialog.cancel();
 					}
 				});
-		alert.show();
-		
+		alert.show();		
 	}
-	
-	
+		
 	//if i try to use a method that returns a value it would always try to recalculate 
 	// the next row id which would make the programming wrong as this activity would increase the 
 	// the rows during operation
@@ -535,13 +503,13 @@ public class EventActivity extends babysamActivity {
 	        Log.i(TAG,"Last Row ID : "+ LRowID );	
 		return LRowID;
 	}
+	
 	public void getNextRow(){
 			RowID = getLastEventRow()+1;
-			//getLastPersonRow(RowID-1);
 	        Log.i(TAG,"Next Row ID : "+ RowID );		
 	}
 	
-	public long getLastEventLastPersonRow(long lRowID){ //should be called getlasteventlastpersonrow
+	public long getLastEventLastPersonRow(long lRowID){ //should be called getlasteventlastpersonrow--not used
 		DBAdapter db = new DBAdapter(this);
         long r = lRowID-1;
 	      //---get all persons---
@@ -588,7 +556,6 @@ public class EventActivity extends babysamActivity {
 	        		lev_contents[1],
 	        		lev_contents[2],
 	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
-	        		//60,
 	        		0,
 	        		timeStamp());
 	        Log.i(TAG,"update event in db" );
@@ -622,7 +589,6 @@ public class EventActivity extends babysamActivity {
 	        		lev_contents[1],
 	        		lev_contents[2],
 	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
-	        		//60,
 	        		0,
 	        		lev_contents[4]);
 	        Log.i(TAG,"add Event to db" );

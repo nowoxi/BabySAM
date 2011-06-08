@@ -31,23 +31,15 @@ public class OldActivity extends babysamActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.old);
         LoadPref();
-        //defining array here
-        
 	    //Retrieve listview
-	    old = (ListView) findViewById(R.id.listView1);
+	    old = (ListView) findViewById(R.id.listView1);    
 	    
-	    
-	    
-	    if (DB_mode == 0){
-	        meventData = xmleventExtract();
-	    } else if (DB_mode == 1){
-	    	meventData = eventExtract();
-	    }
+	    if (DB_mode == 0) meventData = xmleventExtract();
+	     else if (DB_mode == 1)	meventData = eventExtract();
 	    	    
 	    ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, R.layout.menu_item, meventData);        
 	    old.setAdapter(adapt);
-	    //adapt.notifyDataSetChanged();
-	    Log.i(TAG,"3 After call" );
+	    Log.i(TAG,"List view pupolated" );
            
 	    old.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	    	public void onItemClick(AdapterView<?> parent, View itemClicked, int position, long id) {
@@ -55,12 +47,8 @@ public class OldActivity extends babysamActivity {
 	    		if (DB_mode == 0){
 		    		//Log.i(TAG,"4 After call "+ eventData.get(position)[0]+"  "+eventData.get(position)[1] );
 					String [] intentExtra = new String [5];
-					for (int i = 0; i < 5 ; i++){
-			        	intentExtra[i]= "intExtra"+i ;
-			        	//Log.i(TAG, " this is the intent 2 "+ intentExtra[i]);
-			        }
-					for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);
-													
+					for (int i = 0; i < 5 ; i++) intentExtra[i]= "intExtra"+i ;
+					for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);													
 		    	} else if (DB_mode == 1){
 		    		//send the event id to the new activity to be started
 		    		Log.i(TAG,"4 After call list postision: "+ position +" rowID:  "+RowID.get(position)+ ". I beleive it is easier to use " + (position+1)+" as Row ID");
@@ -68,8 +56,7 @@ public class OldActivity extends babysamActivity {
 		    	}
 	    		startActivity(intent);
 	    	}
-	    });
-	    
+	    });	    
 	}
 	
     private ArrayList<String> xmleventExtract() {
@@ -86,9 +73,7 @@ public class OldActivity extends babysamActivity {
         }
 	    //put data in meventData after eventData comes back
 	    //if you send eventdata to another class you will need a way to call it	        
-	    for( int i = 0; i < eventData.size(); i++){
-	    		leventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
-	    }
+	    for( int i = 0; i < eventData.size(); i++) leventData.add(eventData.get(i)[5]+"  "+eventData.get(i)[1]);
 		return leventData;
 	}
 
@@ -106,8 +91,7 @@ public class OldActivity extends babysamActivity {
     //depending on the structure of the constructor then insert the vlaue through the method
     private void processData(final ListView dataList, XmlResourceParser event,ArrayList<String[]> eventData) throws XmlPullParserException,IOException {
 		int doceventType = -1;
-		boolean bFoundEvents = false;   
-	    //int xnum = 0;
+		boolean bFoundEvents = false;  
 	    
 		// Find Event records from XML
 		while (doceventType != XmlResourceParser.END_DOCUMENT) {
@@ -119,38 +103,28 @@ public class OldActivity extends babysamActivity {
 		            bFoundEvents = true;
 		           		           
 		         //extracting information from xml
-		            //int eventID = Integer.parseInt(event.getAttributeValue(null, "ID"));
 		            String [] data = new String [7];
 		            data[0] = event.getAttributeValue(null, "ID");
 		            data[1] = event.getAttributeValue(null, "EType");
 		            data[2] = event.getAttributeValue(null, "Venue");
 		            data[3] = event.getAttributeValue(null, "course");
-		            //int eventDuration = Integer.parseInt(event.getAttributeValue(null, "duration"));
 		            data[4] = event.getAttributeValue(null, "duration");
 		            data[5] = event.getAttributeValue(null, "timestamp");
-		            //int eventaresREG = Integer.parseInt(event.getAttributeValue(null, "ariesREG"));
 		            data[6] = event.getAttributeValue(null, "ariesREG");
 		            
-		           // String [] eventData = { Integer.toString(eventID), eventType,};
-		           if (data[2] != null){
-		        	   eventData.add(0,data);		          
-		           } 		           
+		            if (data[2] != null) eventData.add(0,data);	 
 		        }
+		        
 		    }
 		    doceventType = event.next();
 		}
 		
-		// Handle no scores available
+		// Handle no events available
 		if (bFoundEvents == false) {
 			String [] data = {getResources().getString(R.string.no_data)};
-			eventData.add(0,data);
-			 //eventData.add(0,getResources().getString(R.string.no_data));
-		}
-	//	Log.i(TAG,"before call" );
-	//	insertEvent(dataList, eventData);
-	//	Log.i(TAG,"2 After call" );
+			eventData.add(0,data);			
+		}	
 	}
-
 	
     public ArrayList<String> eventExtract (){
     	ArrayList<String> leventData = new ArrayList<String>();

@@ -80,8 +80,7 @@ public class EventActivity extends babysamActivity {
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		setupViews();
-		checkstatus();
-		
+		checkstatus();		
 	}
 	
 	@Override
@@ -125,18 +124,17 @@ public class EventActivity extends babysamActivity {
 	}
 	
 	private void rescan(String scformat, int Person, long ilRowID) {
-		//TODO you need to set values for ptype and rpos from db
+		// you need to set values for ptype and rpos from db
 		int en=0;
 		if (Person == 1)en = en_stscan;
 		if (Person == 2)en = en_ofscan;
 		  scanSet(en,scformat,1, ilRowID);//3rd value set to 1 because it is a rescan		
 	}
 
-	private void deleteContext(int pType, int pos, long ilRowID) {
-		//  TODO you need to update the pos of all persons after the deleted position
+	private void deleteContext(int pType, int pos, long ilRowID) {		
 		//  i am hoping u do this by fetching all persons then adding the Row ID of persons
 		//  that have positions higher than deleted position and reducing by one then update them
-		f.updatePos(pType,pos,RowID);
+		f.updatePos(pType,pos,RowID);//   you need to update the pos of all persons after the deleted position
 		if (f.deletePerson(ilRowID)){
 			if(pType == 1){
 				stdeventData.remove(pos);
@@ -257,7 +255,6 @@ public class EventActivity extends babysamActivity {
                 if (en_stPerson==3){
                 	ev_contents = setevContent(contents, en_stPerson, content_delimiter);
                 	 if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID, pos);
-                     //if(pos != 0)pos-=1;
                      if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents, pos);
                 }else{
                     Log.i(TAG, "Array size"+offeventData.size() );
@@ -284,9 +281,8 @@ public class EventActivity extends babysamActivity {
 		String[] sev_contents= new String [4];
 		if (p==3)sev_contents = contents2.split(delimit);
 		String[] tev_contents= new String [5];
-		for (int i = 0 ; i < sev_contents.length; i++){				
+		for (int i = 0 ; i < sev_contents.length; i++)				
 			tev_contents[i]=sev_contents[i];
-		}
 		tev_contents[4]=timeStamp();
 		return tev_contents;
 	}
@@ -395,7 +391,6 @@ public class EventActivity extends babysamActivity {
 			}
            // Log.i(TAG,"fail 2 " );
 		} else {
-		//	final EditText input = new EditText(this);
 			alert.setView(input);			
 			input.setText(contents);	
 		}
@@ -427,53 +422,15 @@ public class EventActivity extends babysamActivity {
 					stateID=1;		//variable used to control the correct session to load on rotation
 				}else {
 					contents = (String) input.getText().toString();
-					int pos = 0 ;//calculating position of item edited 
-					//this section adds to the database from the text box and also populates the list view
-					if (en_stPerson == 1){						
-						if (en_stscan == 1 || pEdit == 1){ //if en_stscan is enabled scan would have added thats why we are updating only
-							//the value of pRowID must be the id of the record added by the scan intent TODO
-							Log.i(TAG,"fail" );
-							pRowID = getLastPersonRow(RowID);
-							pos = stdeventData.size();
-							Log.i(TAG,"rescanning or editing student" );
-							if (pEdit==1){
-								pRowID = iRowID;  //set the person rowID to the id to be edited, done a the unset of entrydialog
-								pos =(int) stPos ;//value of person to be edited
-							}
-							upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,pos);
-						} else if (en_ofscan == 0){
-							stPos = stdeventData.size();
-							add_dbdata(en_stPerson, ev_contents, contents, RowID, stPos);
-						}
-						
-						//this section is for editing the list view						
-						if (pEdit == 0 )stdeventData.add(contents);
-						if (pEdit == 1 ){							
-							stdeventData.remove(pos);
-							stdeventData.add(pos, contents);
-						}
-						std_adapt.notifyDataSetChanged();
-					} else if (en_stPerson == 2){
-						if (en_ofscan == 1|| pEdit == 1){//update info if scan enable or editing TODO
-							pRowID = getLastPersonRow(RowID);
-							pos = offeventData.size();
-							if (pEdit==1){
-								pRowID = iRowID;  //set the person rowID to the id to be edited
-								pos = (int) offPos ;//value of person to be edited
-							}
-							upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,pos);
-						} else if (en_ofscan == 0){
-							offPos = offeventData.size();
-							add_dbdata(en_stPerson, ev_contents, contents, RowID, offPos);
-						}
-						if (pEdit == 0 )offeventData.add(contents);
-						if (pEdit == 1 ){
-							;//calculating position of item edited 
-							offeventData.remove(pos);
-							offeventData.add(pos, contents);
-						}
-						off_adapt.notifyDataSetChanged();
-					} 
+					try {
+						@SuppressWarnings("unused")
+						long lcont = new Long(contents);
+						enterPerson(contents); //call method that will add the data to both the listview and database
+					}catch (NumberFormatException e){
+		        		 Toast.makeText(getApplicationContext(), "Invalid data format", 
+		                  		Toast.LENGTH_SHORT).show();
+		         	}
+					
 				}
 				Toast.makeText(getApplicationContext(), "content: " + contents, Toast.LENGTH_SHORT).show();
 			}
@@ -485,6 +442,56 @@ public class EventActivity extends babysamActivity {
 					}
 				});
 		alert.show();		
+	}
+	
+	private void enterPerson(String lcontents){
+		int pos = 0 ;//calculating position of item edited 
+		//this section adds to the database from the text box and also populates the list view
+		if (en_stPerson == 1){						
+			if (en_stscan == 1 || pEdit == 1){ //if en_stscan is enabled scan would have added thats why we are updating only
+				//the value of pRowID must be the id of the record added by the scan intent 
+				Log.i(TAG,"fail" );
+				pRowID = getLastPersonRow(RowID);
+				pos = stdeventData.size();
+				Log.i(TAG,"rescanning or editing student" );
+				if (pEdit==1){
+					pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
+					pos =(int) stPos ;//value of person to be edited
+				}
+				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents,pos);
+			} else if (en_ofscan == 0){
+				stPos = stdeventData.size();
+				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, stPos);
+			}
+			
+			//this section is for editing the list view						
+			if (pEdit == 0 )stdeventData.add(lcontents);
+			if (pEdit == 1 ){							
+				stdeventData.remove(pos);
+				stdeventData.add(pos, lcontents);
+			}
+			std_adapt.notifyDataSetChanged();
+		} else if (en_stPerson == 2){
+			if (en_ofscan == 1|| pEdit == 1){//update info if scan enable or editing 
+				pRowID = getLastPersonRow(RowID);
+				pos = offeventData.size();
+				if (pEdit==1){
+					pRowID = iRowID;  //set the person rowID to the id to be edited
+					pos = (int) offPos ;//value of person to be edited
+				}
+				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents,pos);
+			} else if (en_ofscan == 0){
+				offPos = offeventData.size();
+				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, offPos);
+			}
+			if (pEdit == 0 )offeventData.add(lcontents);
+			if (pEdit == 1 ){
+				;//calculating position of item edited 
+				offeventData.remove(pos);
+				offeventData.add(pos, lcontents);
+			}
+			off_adapt.notifyDataSetChanged();
+		} 
 	}
 		
 	//if i try to use a method that returns a value it would always try to recalculate 

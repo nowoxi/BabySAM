@@ -14,7 +14,7 @@
     <string name="old_display">HISTORY DETAILS</string>    
     <string name="facerec_display">Display Screen</string>
     
-    <string name="version">version 0.3</string>
+    <string name="version">version 1.3</string>
     <string name="auth_but">Login</string>
     <string name="zxing_but">Scan Code</string>
     
@@ -22,6 +22,8 @@
     <string name="menu_item_old">History</string>
     <string name="menu_item_facerec">Face Recognition</string>
     <string name="menu_item_set">Settings</string>
+    <string name="menu_item_slist">Students List</string>
+    <string name="menu_item_olist">Officials List</string>
     <string name="menu_item_help">Help</string>
     
     <string name="option_help">Help</string>
@@ -63,5 +65,11 @@
     <string name="event_cancel">Cancel Event</string>
     <string name="send_email">Please wait a few seconds, sending Email...</string>
     <string name="no_data">No data</string>
+    
+    <string name="option_list_s">Add single Person</string>
+    <string name="option_list_m">Add Multiple Persons</string>
+    
+    <string name="invalid_data">Invalid data format</string>
+    
     
 </resources>

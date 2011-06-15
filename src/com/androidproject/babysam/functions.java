@@ -19,12 +19,15 @@ public class functions
         this.context = ctx;        
     }
 	
+	
+	//TODO find out who using the getpersoncode... i think its the edit probably then modify to get data from the student list or officials list tables
+	// as required
 	public long getPersonCode(long ilRowID) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
         Cursor c = db.getPerson(ilRowID);
-        int codeIDColumn = c.getColumnIndex("code") ;
+        int codeIDColumn = c.getColumnIndex(db.KEY_CODE) ;//this will not work again modified to remove error but logically wrong
         long LcodeID=0;
 		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
         db.close();
@@ -40,11 +43,11 @@ public class functions
         db.open();
         Cursor c = db.getEvent(extra_EID);
         /* Get the indices of the Columns we will need */        
-        int eventTypeColumn = c.getColumnIndex("evType");
-        int venueColumn = c.getColumnIndex("venue");
-        int courseColumn = c.getColumnIndex("course");
-        int durColumn = c.getColumnIndex("duration");
-        int timeColumn = c.getColumnIndex("timestamp");
+        int eventTypeColumn = c.getColumnIndex(db.KEY1_EVENTTYPE);
+        int venueColumn = c.getColumnIndex(db.KEY1_VENUE);
+        int courseColumn = c.getColumnIndex(db.KEY1_COURSE);
+        int durColumn = c.getColumnIndex(db.KEY1_DURATION);
+        int timeColumn = c.getColumnIndex(db.KEY_TIMESTAMP);
         
         if (c.moveToFirst()) {
         	/* Loop through all Results */  
@@ -61,7 +64,7 @@ public class functions
         db.close();
     	return eventDetails;
     }	
-	
+	//TODO change this method to extract the rows
 	public ArrayList<String> personExtract (long extra_EID, int tpType){
 		ArrayList<String> eventData = new ArrayList<String>();
       //create object of DB
@@ -72,8 +75,8 @@ public class functions
         Cursor c = db.getAllEventPersons(extra_EID);
         
       /* Get the indices of the Columns we will need */        
-        int codeColumn = c.getColumnIndex("code");
-        int pTypeColumn = c.getColumnIndex("pType");
+        int codeColumn = c.getColumnIndex(db.KEY_CODE);//this will not work again modified to remove error sbut logically wrong
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
         //Log.i(TAG, " the value for eventID - "+ extra_EID);
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
@@ -145,14 +148,15 @@ public class functions
 		return true;
 	}
 
+	//rows in table 2 are completely made unique by the rowid or a combination of eventid, persontype and position
 	public long getPersonID(long pos, int lpType, long lRowID) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
         Cursor c = db.getAllEventPersons(lRowID);
-        int IDColumn = c.getColumnIndex("_id") ;
-        int pTypeColumn = c.getColumnIndex("pType");
-        int posColumn = c.getColumnIndex("position");
+        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int posColumn = c.getColumnIndex(db.KEY2_POSITION);
         long LID=0;
         do {
 	   		int pType = c.getInt(pTypeColumn);
@@ -169,9 +173,9 @@ public class functions
 		//---get person---
         db.open();
         Cursor c = db.getAllEventPersons(lRowID);
-        int IDColumn = c.getColumnIndex("_id") ;
-        int pTypeColumn = c.getColumnIndex("pType");
-        int posColumn = c.getColumnIndex("position");
+        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int posColumn = c.getColumnIndex(db.KEY2_POSITION);
         do {
 	   		int pType = c.getInt(pTypeColumn);
 	   		long dpos = c.getLong(posColumn);
@@ -187,5 +191,58 @@ public class functions
 	   		}
         } while (c.moveToNext()); 
         db.close();
+	}
+	
+	public void add_dbpersondata(int ptype, String fname, String lname,long code,String uname, String pass){
+    	//---add 2 events and persons---
+    	DBAdapter db = new DBAdapter(context); 
+        db.open();       
+        Log.i(TAG,"add data method" );
+        if (ptype == 1){
+        	try{
+		        db.insertStudent(code, lname, fname);
+		        Log.i(TAG,"add student to db" );
+        	} catch (NumberFormatException e){
+        		 Toast.makeText(context, context.getResources().getString( R.string.invalid_data), Toast.LENGTH_SHORT).show();
+        	}
+        } else if (ptype == 2){    
+        	try{
+	        	db.insertOfficial(code, lname, fname, uname, pass);	
+	        	Log.i(TAG,"add official to db" );
+        	} catch (NumberFormatException e){
+       		 Toast.makeText(context, "Invalid data format", Toast.LENGTH_SHORT).show();
+        	}
+        	
+        }
+        db.close();
+    }
+	
+	public void upd_dbpersondata(int ptype,long pID, String fname, String lname,long code,String uname, String pass){
+    	//---add 2 events and persons---
+    	DBAdapter db = new DBAdapter(context); 
+        db.open();       
+        Log.i(TAG,"update person db method" );
+        if (ptype == 1){
+        	try{
+        		db.updateStudent(pID,code,lname,fname);
+	        Log.i(TAG,"update student in db" );
+        	} catch (NumberFormatException e){
+        		 Toast.makeText(context, "Invalid data format", 
+                 		Toast.LENGTH_SHORT).show();
+        	}
+        } else if (ptype == 2){    
+        	try{
+	        	db.updateOfficial(pID,code,lname,fname, uname, pass);
+	        	Log.i(TAG,"updated official in db" );
+        	} catch (NumberFormatException e){
+       		 Toast.makeText(context, "Invalid data format", 
+              		Toast.LENGTH_SHORT).show();
+        	}        	
+        }
+        db.close();
+    }
+	
+	public String timeStamp(){
+		return (String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date());
 	}
 }

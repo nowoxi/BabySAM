@@ -21,6 +21,8 @@ public class MenuActivity extends babysamActivity {
         String[] menuitems = { getResources().getString(R.string.menu_item_event),
         		getResources().getString(R.string.menu_item_old),
         		getResources().getString(R.string.menu_item_facerec),
+        		getResources().getString(R.string.menu_item_olist),
+        		getResources().getString(R.string.menu_item_slist),
         		getResources().getString(R.string.menu_item_set),
         		getResources().getString(R.string.menu_item_help) };
         
@@ -49,6 +51,12 @@ public class MenuActivity extends babysamActivity {
 		    	} else if (strText.equalsIgnoreCase(getResources().getString( R.string.menu_item_set))) {
 	    			// Launch the old session Activity
 	    			startActivity(new Intent(MenuActivity.this,	settingsActivity.class));
+		    	}else if (strText.equalsIgnoreCase(getResources().getString( R.string.menu_item_olist))) {
+	    			// Launch the facerec Activity
+	    			startActivity(new Intent(MenuActivity.this, olistActivity.class));
+		    	} else if (strText.equalsIgnoreCase(getResources().getString( R.string.menu_item_slist))) {
+	    			// Launch the old session Activity
+	    			startActivity(new Intent(MenuActivity.this,	slistActivity.class));
 		    	}
 		    }
     	});

@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+	android:id="@+id/help_menu_item"
+	android:title="@string/option_help"
+	android:icon="@android:drawable/ic_menu_help"></item>
+	<item
+	android:id="@+id/list_add"
+	android:title="@string/option_event_upload"
+	android:icon="@android:drawable/ic_menu_add">
+			<menu>
+	            <item android:id="@+id/list_single"
+	                  android:title="@string/option_list_s"
+	                  android:icon="@android:drawable/ic_menu_send" />
+	            <item android:id="@+id/list_multiple"
+	                  android:title="@string/option_list_m" 
+	                  android:icon="@android:drawable/ic_menu_upload"/>
+	        </menu> 
+	</item>
+</menu>

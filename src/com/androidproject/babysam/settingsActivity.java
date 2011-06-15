@@ -20,6 +20,12 @@ public class settingsActivity extends babysamActivity {
 	   //I need to develop the xml to select settings and a method to save to the share preferences
 	   //improve code here to use more of if and for loops instead of the repeated sequences
 	   
+	   
+	   
+	   /* TODO 
+	    * add setting for adding users to the database for test purposes. Add setting on scanning list and individual users
+	    */
+	   
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,7 +97,9 @@ public class settingsActivity extends babysamActivity {
         		60,
         		0,
         		"12:00");
-       // Long u = new Long ("20116001325041");
+       /* Long u = new Long ("20116001325041");
+        * 
+        //TODO
         db.insertPerson(2,2,new Long ("23116001325041"),"12:00",0);
         db.insertPerson(2,1,new Long ("23115001325041"),"12:00",0);
         db.insertPerson(2,1,new Long ("23114001325041"),"12:00",1);
@@ -99,7 +107,7 @@ public class settingsActivity extends babysamActivity {
         db.insertPerson(1,1,new Long ("23113001325041"),"12:00",0);
         db.insertPerson(1,1,new Long ("23113001325041"),"12:00",1);
         db.insertPerson(1,1,new Long ("23113001325041"),"12:00",2);
-        db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);
+        db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);*/
         db.close();
     }
     

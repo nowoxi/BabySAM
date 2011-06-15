@@ -32,6 +32,15 @@ import android.widget.Toast;
 public class EventActivity extends babysamActivity {
     /** Called when the activity is first created. */
 	
+	//TODO you need to scan event student lists. Compare them to the students on the list and add which ever is missing ( i am thinking
+	/*of having the mixed method as described which would probably have a size constraints and a large class style). 
+	 * after list is checked then get the row id's of the students in the list and use it to populate the event table. 
+	 * Use the student names to populate the list view. 
+	 * Remove the edit options, the option 
+	 * Change the add officials option also as you changed the student list option, so when you click add student or official it should
+	 * do the new activities described above 
+	 */
+	
 	   
 	// the en_stscan should eventually become a share preference that would determine if information is scanned or not
 	   // en_stscan - student scan , scformat - scanformat to use , format - format of scanned code
@@ -63,7 +72,6 @@ public class EventActivity extends babysamActivity {
 
 	@Override
 		protected void onDestroy() {
-			//  Auto-generated method stub
 			//   alert.dismiss();		
 			super.onDestroy();
 			Log.i(TAG,"destroy oh and row id is "+ RowID );
@@ -503,7 +511,7 @@ public class EventActivity extends babysamActivity {
 	      //---get all events---
 	        db.open();
 	        Cursor c = db.getAllEvents();
-	        int rowIDColumn = c.getColumnIndex("_id") ;
+	        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
 	        long LRowID=0;
 			if (c.moveToLast())LRowID = c.getLong(rowIDColumn);	        
 	        db.close();
@@ -530,7 +538,7 @@ public class EventActivity extends babysamActivity {
 		        	c = db.getAllEventPersons(r);
 		        }
 	        }
-	        int rowIDColumn = c.getColumnIndex("_id") ;
+	        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
 	        long LRowID=0;
 			if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        
 	        db.close();
@@ -542,7 +550,7 @@ public class EventActivity extends babysamActivity {
 		DBAdapter db = new DBAdapter(this);
 		db.open();
 		Cursor c = db.getAllEventPersons(lRowID);        	
-        int rowIDColumn = c.getColumnIndex("_id") ;
+        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
         long LRowID=0;
 		if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        
         db.close();
@@ -550,6 +558,9 @@ public class EventActivity extends babysamActivity {
 		return LRowID;
 	}
 	
+	
+	//TODO this should change as we are not going to be using code any more in event tables
+	//decide if you are leaving this as i
 	private void upd_dbdata(int ptype,long pID, long rID, String [] lev_contents, String lcontents,long pos){
     	//---add 2 events and persons---
     	DBAdapter db = new DBAdapter(this); 
@@ -574,7 +585,7 @@ public class EventActivity extends babysamActivity {
         	try{
         		Long code = new Long (lcontents);
         		String cdate = timeStamp();	        	
-	        	db.updatePerson(pID,rID,ptype,code,cdate,pos);
+	        	//TODO db.updatePerson(pID,rID,ptype,code,cdate,pos);
 	        	Log.i(TAG,"updated person in db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -607,7 +618,7 @@ public class EventActivity extends babysamActivity {
         	try{
         		Long code = new Long (lcontents);
         		String cdate = timeStamp();	        	
-	        	db.insertPerson(lRowID,ptype,code,cdate,pos);	
+	        	// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);	
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 

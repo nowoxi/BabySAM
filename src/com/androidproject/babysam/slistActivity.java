@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,20 +33,31 @@ public class slistActivity extends babysamActivity {
     private ListView slist;
     
     private long RowID, stPos, iRowID;
-    private int en_stPerson, pEdit, en_stscan, en_ofscan, en_evscan, reScan;//pEdit is used to reflect if edit or rescan has been set by context menu
+    private int en_stPerson, pEdit, en_stscan,  reScan;//pEdit is used to reflect if edit or rescan has been set by context menu
     private functions f;
-    private String contents, blank, scformat, format, efname, elname;
+    private String contents, scformat, format;//,  blank,efname, elname;
     private ArrayAdapter<String> adapt;
-    private String [] en_content;// TODO assign value to it from the entry dialog method
+    //private String [] en_content;// TODO assign value to it from the entry dialog method
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.slist);
+        setupViews();
+    }
+    
+    public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		setupViews();
+		//checkstatus();		
+	}
+    
+    private void setupViews() {
+		// TODO Auto-generated method stub
+    	setContentView(R.layout.slist);
         
         LoadPref();
         f = new functions(this);
-        blank = " ";
+        //blank = " ";
         en_stPerson =1;
         
         registerForContextMenu(findViewById(R.id.slistView));
@@ -57,9 +69,9 @@ public class slistActivity extends babysamActivity {
 	    adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdData);        
 	    slist.setAdapter(adapt);
 	    Log.i(TAG,"List view pupolated" );
-    }
-    
-    private ArrayList<String> studentlistExtract() {
+	}
+
+	private ArrayList<String> studentlistExtract() {
     	ArrayList<String> leventData = new ArrayList<String>();
     	//create object of DB
     	DBAdapter db = new DBAdapter(this);
@@ -120,7 +132,7 @@ public class slistActivity extends babysamActivity {
 	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	  Log.i(TAG,"Context menu" );
 	  //long ilRowID = 0;//f.getPersonID(info.id,en_stPerson,RowID);
-	  
+	  RowID = f.getPersonID(en_stPerson, info.id);
 	  switch (item.getItemId()) {
 	  case R.id.event_delete_item:
 		  Log.i(TAG,"item id: "+info.id );
@@ -129,8 +141,8 @@ public class slistActivity extends babysamActivity {
 	  case R.id.event_rescan_item:
 		  rescan("CODABAR",en_stPerson,info.id);
 		  return true;
-	  case R.id.event_edit_item:
-		;
+	  case R.id.event_edit_item2:		  
+		  entryDialog(1,RowID);
 		return true;
 	  default:
 	    return super.onContextItemSelected(item);
@@ -138,20 +150,22 @@ public class slistActivity extends babysamActivity {
 	}
 
 	private void rescan(String sformat, int pType, long id) {
-		// TODO handle context menu rescan
-		int en=0;
+		//  handle context menu rescan
+		//int en=0;
 		stPos = id; //position of row to be edited
-		RowID = id +1;
-		scanSet(en,sformat,1, RowID);//3rd value set to 1 because it is a rescan
+		scanSet(en_stscan,sformat,1, RowID);//3rd value set to 1 because it is a rescan
 	}
 
-	private void deleteContext(int en_stPerson2, long id) {
-		// TODO delete context menu
-		RowID = id +1;
-		if (f.deletePerson(RowID,en_stPerson2)){
-				stdData.remove((int) id);
-				adapt.notifyDataSetChanged();
-		}		
+	private void deleteContext(int pType, long id) {
+		//  delete context menu
+		//RowID = f.getPersonID(pType, id);
+		Log.i(TAG,"RowID "+ RowID );
+		if (RowID != 0){
+			if (f.deletePerson(RowID,pType)){
+					stdData.remove((int) id);
+					adapt.notifyDataSetChanged();
+			}		
+		}
 	}
 	
 	public void entryDialog (int psEdit, long psRowID){
@@ -242,7 +256,7 @@ public class slistActivity extends babysamActivity {
 			}
 			
 			if (en_stPerson == 1)f.upd_dbpersondata(pRowID, fname, lname, code);
-		} else if (en_ofscan == 0){
+		} else if (en_stscan == 0){
 			if (en_stPerson == 1)f.add_dbpersondata( fname, lname, code);
 		}
 		
@@ -342,7 +356,7 @@ public class slistActivity extends babysamActivity {
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        en_stscan = eventSettings.getInt(ST_SCAN, 1);
-	        en_ofscan = eventSettings.getInt(OF_SCAN, 1);
-	        en_evscan = eventSettings.getInt(EV_SCAN, 1);
+	        //en_ofscan = eventSettings.getInt(OF_SCAN, 1);
+	        //en_evscan = eventSettings.getInt(EV_SCAN, 1);
     }
 }

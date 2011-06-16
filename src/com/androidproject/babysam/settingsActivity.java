@@ -121,7 +121,10 @@ public class settingsActivity extends babysamActivity {
         db.insertEventPerson(2, 2, 1, f.timeStamp(), 0, 0, 1);
         
         for (int i = 0; i<3;i++)db.insertStudent(u + randomGenerator.nextInt(1000), getRandomfName(), getRandomlName());        
-        for (int i = 0; i<3;i++)db.insertOfficial(u + randomGenerator.nextInt(1000), getRandomfName(), getRandomlName(), getRandomlName(),"pass");        
+        for (int i = 0; i<3;i++){
+        	String name = getRandomlName();
+        	db.insertOfficial(u + randomGenerator.nextInt(1000), getRandomfName(), name, name,"pass");        
+        }
         db.close();
     }
     

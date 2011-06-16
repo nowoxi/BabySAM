@@ -48,6 +48,23 @@ public class functions
 		return name;
 	}
 	
+	public long getPersonID(int pType, long pos){// used in delete context to find the aprpopriate row to delete
+		long rowID = 0;
+		//pos+=1;
+		DBAdapter db = new DBAdapter(context);
+		db.open();
+		Cursor c= null;
+		if (pType == 1)c = db.getAllStudents();
+		if (pType == 2)c = db.getAllOfficials();
+		int IDcolumn = c.getColumnIndex(db.KEY_ROWID);
+		if (c.moveToPosition((int) pos)){
+			rowID = c.getLong(IDcolumn);
+		} else
+            Toast.makeText(context, "No Person found at position", Toast.LENGTH_SHORT).show();
+		db.close();
+		return rowID;
+	}
+	
 	public String [] eventExtract (long extra_EID){
 		String [] eventDetails = new String [5];
       //create object of DB
@@ -119,7 +136,7 @@ public class functions
     }
 	
 	public String [] single_personExtract (long pRowID, int tpType){
-		String [] eventData = new String [4];
+		String [] eventData = new String [5];
       //create object of DB
     	DBAdapter db = new DBAdapter(context);
         
@@ -133,6 +150,12 @@ public class functions
         int firstColumn = c.getColumnIndex(db.KEY_FIRSTNAME);         
         int lastColumn = c.getColumnIndex(db.KEY_LASTNAME);
         int codeColumn = c.getColumnIndex(db.KEY_CODE);
+        int unameColumn = 0;
+        int passColumn = 0;
+        if(tpType == 2){
+	        unameColumn = c.getColumnIndex(db.KEY4_USERNAME);
+	        passColumn = c.getColumnIndex(db.KEY4_PASS);
+        }
         //Log.i(TAG, " the value for eventID - "+ extra_EID);
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
@@ -141,6 +164,10 @@ public class functions
         			 eventData[0]=c.getString(firstColumn);
         			 eventData[1]=c.getString(lastColumn);
         			 eventData[2]= Long.toString(c.getLong(codeColumn));
+        			 if(tpType == 2){
+	        			 eventData[3]=c.getString(unameColumn);
+	        			 eventData[4]=c.getString(passColumn);
+        			 }
              } while (c.moveToNext());
         else
             Toast.makeText(context, "No Persons found", 

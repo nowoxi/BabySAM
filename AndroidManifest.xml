@@ -13,8 +13,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="EventActivity"
-        android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name="EventActivity" android:configChanges="keyboardHidden|orientation"></activity>
         <activity android:name="babysamActivity"></activity>
         <activity android:name="FaceActivity"></activity>
         <activity android:name="Facerec_displayActivity"></activity>
@@ -24,7 +23,7 @@
         <activity android:name="Old_displayActivity"></activity>
         <activity android:name="OldActivity"></activity>
         <activity android:name="settingsActivity"></activity>
-        <activity android:name="olistActivity"></activity>
-        <activity android:name="slistActivity"></activity>
+        <activity android:name="olistActivity" android:configChanges="keyboardHidden|orientation"></activity>
+        <activity android:name="slistActivity" android:configChanges="keyboardHidden|orientation"></activity>
     </application>
 </manifest>

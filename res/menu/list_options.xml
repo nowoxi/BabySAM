@@ -5,7 +5,7 @@
 	android:icon="@android:drawable/ic_menu_help"></item>
 	<item
 	android:id="@+id/list_add"
-	android:title="@string/option_event_upload"
+	android:title="@string/option_load"
 	android:icon="@android:drawable/ic_menu_add">
 			<menu>
 	            <item android:id="@+id/list_single"

@@ -66,10 +66,18 @@
     <string name="send_email">Please wait a few seconds, sending Email...</string>
     <string name="no_data">No data</string>
     
+    <string name="option_load">Load Persons</string>
     <string name="option_list_s">Add single Person</string>
     <string name="option_list_m">Add Multiple Persons</string>
     
     <string name="invalid_data">Invalid data format</string>
     
+    <string name="student">Student Details</string>
+    <string name="official">Official Details</string>
+    <string name="fname">First Name</string>
+    <string name="lname">Last Name</string>
+    <string name="uname">Username</string>
+    <string name="pass">Password</string>
+    <string name="Code">Code</string>
     
 </resources>

@@ -6,6 +6,7 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/menu_item_slist"
+    android:textSize="@dimen/menu_item_med"
     android:gravity="center_vertical|center_horizontal"/>
 <ListView android:layout_height="wrap_content" android:id="@+id/slistView" android:layout_width="fill_parent" android:scrollbars="vertical"></ListView>
 </LinearLayout>

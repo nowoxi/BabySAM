@@ -135,8 +135,8 @@ public class DBAdapter
         return db.insert(DATABASE_TABLE1, null, initialValues);
     }
     
-  //---insert a person into the database---
-    public long insertPerson(long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
+  //---insert a person for event into the database---
+    public long insertEventPerson(long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY2_EVENTID, eventid);
@@ -196,6 +196,16 @@ public class DBAdapter
     public boolean deletePerson(long rowId) 
     {
         return db.delete(DATABASE_TABLE2, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+  //---deletes a particular person---
+    public boolean deleteStudent(long rowId) 
+    {
+        return db.delete(DATABASE_TABLE3, KEY_ROWID + "=" + rowId, null) > 0;
+    }
+  //---deletes a particular person---
+    public boolean deleteOfficial(long rowId) 
+    {
+        return db.delete(DATABASE_TABLE4, KEY_ROWID + "=" + rowId, null) > 0;
     }
 
     //---retrieves all the events---

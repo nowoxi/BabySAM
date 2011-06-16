@@ -39,6 +39,7 @@ public class EventActivity extends babysamActivity {
 	 * Remove the edit options, the option 
 	 * Change the add officials option also as you changed the student list option, so when you click add student or official it should
 	 * do the new activities described above 
+	 * Makes sure that students arent added to the event list twice or event the student or officials list
 	 */
 	
 	   
@@ -106,7 +107,7 @@ public class EventActivity extends babysamActivity {
 	  //iRowID is the row id of the person to be edited or deleted 
 		// get last row id of previous session then add it to the contextmenu +1
 	 // long ilRowID=getLastEventLastPersonRow(RowID)+ info.id + 1 ;
-	  long ilRowID = f.getPersonID(info.id,en_stPerson,RowID);
+	  long ilRowID = f.getEventPersonID(info.id,en_stPerson,RowID);
 	  
 	  switch (item.getItemId()) {
 	  case R.id.event_edit_item2:
@@ -143,7 +144,7 @@ public class EventActivity extends babysamActivity {
 		//  i am hoping u do this by fetching all persons then adding the Row ID of persons
 		//  that have positions higher than deleted position and reducing by one then update them
 		f.updatePos(pType,pos,RowID);//   you need to update the pos of all persons after the deleted position
-		if (f.deletePerson(ilRowID)){
+		if (f.deletePerson(ilRowID,3)){
 			if(pType == 1){
 				stdeventData.remove(pos);
 				std_adapt.notifyDataSetChanged();		   
@@ -163,7 +164,7 @@ public class EventActivity extends babysamActivity {
 		Log.i(TAG,"the row id of selected: "+ilRowID);
 		if (en_stPerson == 2) offPos = pos;
 		if (en_stPerson == 1) stPos = pos;
-		contents = Long.toString(f.getPersonCode(ilRowID));		
+		contents = Long.toString(f.getPersonCode(ilRowID,0));		
 		entryDialog(1,ilRowID);		
 	}
 
@@ -363,8 +364,8 @@ public class EventActivity extends babysamActivity {
     	} else {               	
     		contents = "";
     		if (scanT == 1){ //to edit the list view correctly on rescan
-    			contents = Long.toString(f.getPersonCode(ilRowID));
-    			entryDialog(1,ilRowID);//method to create the dialog box straight//method to create the dialog box straight
+    			contents = Long.toString(f.getPersonCode(ilRowID,0));
+    			entryDialog(1,ilRowID);//method to create the dialog box straight
     		} else{
     			Log.i(TAG,"2 no scan" );
     			entryDialog(0,0);

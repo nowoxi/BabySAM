@@ -34,8 +34,6 @@ public class Old_displayActivity extends babysamActivity {
     private ArrayList<String> offeventData = new ArrayList<String>();
     private ArrayList<String> stdeventData = new ArrayList<String>();
     private int DB_mode;
-    //private final ArrayList<Long> ofRowID = new ArrayList<Long>();
-    //private final ArrayList<Long> stRowID = new ArrayList<Long>();
     private Long extra_EID;
     private functions f;
     

@@ -33,7 +33,7 @@ public class olistActivity extends babysamActivity {
     private ListView olist;
     
     private long RowID, stPos, iRowID;
-    private int en_stPerson, pEdit, en_ofscan,  reScan;//pEdit is used to reflect if edit or rescan has been set by context menu
+    private int en_stPerson, pEdit, en_ofscan,  reScan, fromIntent;//pEdit is used to reflect if edit or rescan has been set by context menu
     private functions f;
     private String contents, scformat, format;//, efname, elname;
     private ArrayAdapter<String> adapt;
@@ -59,6 +59,7 @@ public class olistActivity extends babysamActivity {
         f = new functions(this);
         //blank = " ";
         en_stPerson =2;
+        fromIntent=0;
         
         registerForContextMenu(findViewById(R.id.olistView));
       //Retrieve listview
@@ -69,6 +70,16 @@ public class olistActivity extends babysamActivity {
 	    adapt = new ArrayAdapter<String>(this, R.layout.list_item, offData);        
 	    olist.setAdapter(adapt);
 	    Log.i(TAG,"List view pupolated" );
+	    
+	  //get the event id from the intent that was passed
+        Intent intent = getIntent();
+        if ( intent != null){
+        	if (intent.hasExtra("code")){
+        		contents= intent.getStringExtra("code");
+        		fromIntent=1;
+        		entryDialog(0,0);
+        	}
+        }
 	}
 
 	private ArrayList<String> studentlistExtract() {
@@ -216,14 +227,29 @@ public class olistActivity extends babysamActivity {
 					ev_contents[i]= eventresult[i].getText().toString();
 				
 					//contents = (String) input.getText().toString();
+				boolean pass;// variable to know if try failed or not
 				try {
 					@SuppressWarnings("unused")
 					long lcont = new Long(ev_contents[2]);
 					enterPerson(ev_contents); //call method that will add the data to both the listview and database
+					pass = true;
 				}catch (NumberFormatException e){
 	        		 Toast.makeText(getApplicationContext(), "Invalid data format", 
 	                  		Toast.LENGTH_SHORT).show();
+	        		 pass = false;
 	         	}
+				// checking if loaded from intent and returning
+				if (fromIntent==1){
+					Intent intent = new Intent();
+					if(pass){
+						intent.putExtra("PersonID", f.getPersonID(new Long(ev_contents[2]), en_stPerson));
+						setResult(RESULT_OK, intent);
+					}else{
+						setResult(RESULT_CANCELED, intent);
+					}
+					//slistActivity.this.
+					finish();
+				}
 				Toast.makeText(getApplicationContext(), "content: " + ev_contents[2], Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -231,6 +257,9 @@ public class olistActivity extends babysamActivity {
 		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						dialog.cancel();
+						if (fromIntent==1){
+							finish();
+						}
 					}
 		});
 		alert.show();	
@@ -259,9 +288,11 @@ public class olistActivity extends babysamActivity {
 				pos =(int) stPos ;//value of person to be edited on listview
 			}
 			
-			if (en_stPerson == 1)f.upd_dbpersondata(pRowID, fname, lname, code, uname, pass);
+			//if (en_stPerson == 2)f.upd_dbpersondata(pRowID, fname, lname, code, uname, pass);
+			f.upd_dbpersondata(pRowID, fname, lname, code, uname, pass);
 		} else if (en_ofscan == 0){
-			if (en_stPerson == 1)f.add_dbpersondata( fname, lname, code, uname, pass);
+			//if (en_stPerson == 2)f.add_dbpersondata( fname, lname, code, uname, pass);
+			f.add_dbpersondata( fname, lname, code, uname, pass);
 		}
 		
 		//this section is for editing the list view	

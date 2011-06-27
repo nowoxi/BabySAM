@@ -647,7 +647,7 @@ public class EventActivity extends babysamActivity {
 	        		lev_contents[2],
 	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
 	        		0,
-	        		timeStamp());
+	        		lev_contents[4]);
 	        Log.i(TAG,"update event in db" );
         	} catch (NumberFormatException e){
         		 Toast.makeText(this, "Invalid data format", 
@@ -658,6 +658,8 @@ public class EventActivity extends babysamActivity {
         		Long code = new Long (lcontents);
         		String cdate = timeStamp();	        	
 	        	//TODO db.updatePerson(pID,rID,ptype,code,cdate,pos);
+        		populate_table2(ptype,lcontents,rID,pos);
+        		
 	        	Log.i(TAG,"updated person in db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -669,7 +671,7 @@ public class EventActivity extends babysamActivity {
     
 	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID, long pos){
     	//---add 2 events and persons---
-		int intentEnabled = 0;
+		
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
         Log.i(TAG,"add data method" );
@@ -690,33 +692,9 @@ public class EventActivity extends babysamActivity {
         } else {    
         	try{
         		Long code = new Long (lcontents);
-        		String cdate = timeStamp();
-        		long pID = 0;
-	        	// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
-        		//check if exists in any persons list
-        		//if so get row id---else create(ask for details) and then get row id
-        		if(f.codeCHECK(code)){
-        			pID = f.getPersonID(code, ptype);
-        			
-        		}else{// create person, to set pID
-        			//I thank God for this solution that occurred to me
-        			/* create a method that returns a long
-        			 * in the method create an intent to load student list or official list and go straight to the add student or official panel
-        			 * get the ID of the student or official and return it to the row with the intent 
-        			 */
-        			Class<?> cls= olistActivity.class;
-        			if(en_stPerson == 1)cls = slistActivity.class;
-        			Intent intent = new Intent(EventActivity.this,cls);	
-        			//intent.putExtra("code", code);
-        			intent.putExtra("code", lcontents);
-        			startActivityForResult(intent,1);
-        			rPos= pos;
-        			intentEnabled=1;
-        			//pID = 0; // TODO create record n return pid please
-        		}
-        		//check if exist in attendance list 
-        		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
-        		if(intentEnabled == 0)attdList(pID,lRowID, ptype, cdate, pID);
+        		//String cdate = timeStamp();
+        		// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
+        		populate_table2(ptype,lcontents,lRowID,pos);
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -728,6 +706,37 @@ public class EventActivity extends babysamActivity {
         
     }
 	
+	private void populate_table2(int ptype, String lcontents, long lRowID, long pos) {
+		Long code = new Long (lcontents);
+		String cdate = timeStamp();
+		// TODO Auto-generated method stub
+		long pID = 0;
+    	
+		//check if exists in any persons list
+		//if so get row id---else create(ask for details) and then get row id
+		if(f.codeCHECK(code)){
+			pID = f.getPersonID(code, ptype);
+			attdList(pID,lRowID, ptype, cdate, pID);
+		}else{// create person, to set pID
+			//I thank God for this solution that occurred to me
+			/* create a method that returns a long
+			 * in the method create an intent to load student list or official list and go straight to the add student or official panel
+			 * get the ID of the student or official and return it to the row with the intent 
+			 */
+			Class<?> cls= olistActivity.class;
+			if(en_stPerson == 1)cls = slistActivity.class;
+			Intent intent = new Intent(EventActivity.this,cls);	
+			//intent.putExtra("code", code);
+			intent.putExtra("code", lcontents);
+			startActivityForResult(intent,1);
+			rPos= pos;
+			//pID = 0; // TODO create record n return pid please
+		}
+		
+	}
+
+		//check if exist in attendance list 
+		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
 	private void attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
 		long present = 1, list = 0;
 		DBAdapter db = new DBAdapter(this); 

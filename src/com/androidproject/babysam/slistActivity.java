@@ -241,7 +241,7 @@ public class slistActivity extends babysamActivity {
 				if (fromIntent==1){
 					Intent intent = new Intent();
 					if(pass){
-						intent.putExtra("PersonID", f.getPersonID(new Long(ev_contents[2]), 1));
+						intent.putExtra("PersonID", f.getPersonID(new Long(ev_contents[2]), en_stPerson));
 						setResult(RESULT_OK, intent);
 					}else{
 						setResult(RESULT_CANCELED, intent);

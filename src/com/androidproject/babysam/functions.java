@@ -344,6 +344,51 @@ public class functions
 		return exist;		
 	}
 	
+	public boolean codeCHECK(long code,int pType){ //to check if code exists and in correct table if it does then return true.
+		Log.i(TAG,"checking codes..." );
+		DBAdapter db = new DBAdapter(context);
+		boolean exist = false;
+		int personType =0;
+		//boolean stdexist = false;
+        db.open();
+        Cursor c = db.getAllOfficials();
+        int codeIDColumn = c.getColumnIndex(db.KEY_CODE) ;
+        long LcodeID=0;
+        if (c.moveToFirst()) {
+        	/* Loop through all Results */   
+        	personType = 2;
+        	 do {
+        		 Log.i(TAG,"still checking codes..." );
+        		 LcodeID = c.getLong(codeIDColumn);
+        	     if(code == LcodeID && personType == pType) exist = true ;  
+        		
+             } while (c.moveToNext() && exist != true);
+        }else{
+            Toast.makeText(context, "No Officials found", 
+            		Toast.LENGTH_SHORT).show();
+        }
+        Log.i(TAG,"checking codes a finished ..." );
+        if ( exist != true){
+        	Log.i(TAG,"checking codes b started..." );
+	        c = db.getAllStudents();
+	        Log.i(TAG,"checking codes dead..." );
+	        if (c.moveToFirst()) {
+	        	/* Loop through all Results */
+	        	personType = 1;
+	        	 do {
+	        		 LcodeID = c.getLong(codeIDColumn);
+	        		 if(code == LcodeID && personType == pType) exist = true ;
+	             } while (c.moveToNext() && exist != true);
+	        }
+	        else
+	            Toast.makeText(context, "No Students found", 
+	            		Toast.LENGTH_SHORT).show();
+        }
+        
+        db.close();
+		return exist;		
+	}
+	
 	public boolean codeCHECK(long code, long lRowID){ //to check if code exists if it does then return true.
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;

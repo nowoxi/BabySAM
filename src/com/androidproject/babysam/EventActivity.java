@@ -53,6 +53,7 @@ public class EventActivity extends babysamActivity {
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos, rPos;
 	   private functions f;
 	   private ProgressDialog dialog;
+	   private boolean correctTable;//used to contrl if the list view should be updated after checking if added person belongs to correct table
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -390,6 +391,7 @@ public class EventActivity extends babysamActivity {
         	dialog.dismiss();
         }
     };
+	
     
 	// the if would contain an or to join the 3 conditions
 	//this method is used to load the barcode scanner if option enabled
@@ -526,14 +528,16 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, stPos);
 			}
 			
-			lData = listview_Format(lcontents,en_stPerson);
-			//this section is for editing the list view						
-			if (pEdit == 0 )stdeventData.add(lData);
-			if (pEdit == 1 ){							
-				stdeventData.remove(pos);
-				stdeventData.add(pos, lData);
+			if (correctTable){
+				lData = listview_Format(lcontents,en_stPerson);
+				//this section is for editing the list view						
+				if (pEdit == 0 )stdeventData.add(lData);
+				if (pEdit == 1 ){							
+					stdeventData.remove(pos);
+					stdeventData.add(pos, lData);
+				}
+				std_adapt.notifyDataSetChanged();
 			}
-			std_adapt.notifyDataSetChanged();
 		} else if (en_stPerson == 2){
 			if (en_ofscan == 1|| pEdit == 1){//update info if scan enable or editing 
 				pRowID = getLastPersonRow(RowID);
@@ -547,13 +551,14 @@ public class EventActivity extends babysamActivity {
 				offPos = offeventData.size();
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, offPos);
 			}
-			
-			lData = listview_Format(lcontents,en_stPerson);
-			if (pEdit == 0 )offeventData.add(lData);
-			if (pEdit == 1 ){
-				;//calculating position of item edited 
-				offeventData.remove(pos);
-				offeventData.add(pos, lData);
+			if (correctTable){
+				lData = listview_Format(lcontents,en_stPerson);
+				if (pEdit == 0 )offeventData.add(lData);
+				if (pEdit == 1 ){
+					;//calculating position of item edited 
+					offeventData.remove(pos);
+					offeventData.add(pos, lData);
+				}
 			}
 			off_adapt.notifyDataSetChanged();
 		} 
@@ -671,7 +676,6 @@ public class EventActivity extends babysamActivity {
     
 	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID, long pos){
     	//---add 2 events and persons---
-		
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
         Log.i(TAG,"add data method" );
@@ -715,8 +719,15 @@ public class EventActivity extends babysamActivity {
 		//check if exists in any persons list
 		//if so get row id---else create(ask for details) and then get row id
 		if(f.codeCHECK(code)){
-			pID = f.getPersonID(code, ptype);
-			attdList(pID,lRowID, ptype, cdate, pID);
+			if(f.codeCHECK(code,ptype)){//check if code exists in correct table
+				pID = f.getPersonID(code, ptype);
+				attdList(pID,lRowID, ptype, cdate, pID);
+				correctTable = true;
+			}else {
+				Log.i(TAG,"wrong row "+ ptype );
+				correctTable = false;
+				Toast.makeText(this, "Adding person to wrong group", Toast.LENGTH_SHORT).show();
+			}
 		}else{// create person, to set pID
 			//I thank God for this solution that occurred to me
 			/* create a method that returns a long
@@ -730,7 +741,7 @@ public class EventActivity extends babysamActivity {
 			intent.putExtra("code", lcontents);
 			startActivityForResult(intent,1);
 			rPos= pos;
-			//pID = 0; // TODO create record n return pid please
+			//pID = 0; //  create record n return pid please
 		}
 		
 	}

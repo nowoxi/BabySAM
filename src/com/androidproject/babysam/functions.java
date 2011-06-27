@@ -35,6 +35,27 @@ public class functions
 		return LcodeID;
 	}
 	
+	public long getPersonID(long code, int pType) { //for event activity
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        Cursor c = db.getAllStudents();
+        if(pType == 2)c = db.getAllOfficials();
+        int codeColumn = c.getColumnIndex(db.KEY_CODE) ;
+        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        long LcodeID=0;
+        long lRowID=0;
+        if (c.moveToFirst()){
+        	do{
+				LcodeID = c.getLong(codeColumn);
+				if(code == LcodeID) lRowID = c.getLong(IDColumn) ;  
+        	}while (c.moveToNext() && code != LcodeID); 
+        }      
+        db.close();
+		return lRowID;
+	}
+	
+	
 	public String getPersonName(long ilRowID, int pType, String column) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
@@ -48,7 +69,7 @@ public class functions
 		return name;
 	}
 	
-	public long getPersonID(int pType, long pos){// used in delete context to find the aprpopriate row to delete
+	public long getPersonID(int pType, long pos){// used in delete context to find the appropriate row to delete
 		long rowID = 0;
 		//pos+=1;
 		DBAdapter db = new DBAdapter(context);
@@ -104,37 +125,43 @@ public class functions
       //---get all events---
         db.open();
         Cursor c = db.getAllEventPersons(extra_EID);
-        Cursor d = db.getStudent(1);
+        Cursor d = db.getAllStudents();
         int pType;
         long pRowID;
-        
       /* Get the indices of the Columns we will need */        
         int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
         int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
         int firstColumn = d.getColumnIndex(db.KEY_FIRSTNAME);         
         int lastColumn = d.getColumnIndex(db.KEY_LASTNAME);
         int codeColumn = d.getColumnIndex(db.KEY_CODE);
-        //Log.i(TAG, " the value for eventID - "+ extra_EID);
-        if (c.moveToFirst()) 
+        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        if (c.moveToFirst()) {
         	/* Loop through all Results */             	
         	 do {
         		 pType = c.getInt(pTypeColumn);
         		 pRowID = c.getLong(pIDColumn);
-        		 if (tpType == 1)d = db.getStudent(pRowID);
-        		 if (tpType == 2)d = db.getOfficial(pRowID);
         		 
+        		 Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
         		 /* Add current Entry to offeventData and stdeventData. */
-        		 if(pType == tpType){        			 
-        			 eventData.add(d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getString(codeColumn));
+        		 if(pType == tpType){   
+        			 if (tpType == 1)d = db.getStudent(pRowID);
+        			 if (tpType == 2)d = db.getOfficial(pRowID);     	
+        			 Log.i(TAG,d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));		 
+        			 eventData.add(d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));
+        			 
         		}
+        		 Log.i(TAG,"person extraction" );
              } while (c.moveToNext());
-        else
+        } else
             Toast.makeText(context, "No Persons found", 
             		Toast.LENGTH_SHORT).show();
         db.close();
+        Log.i(TAG,"person extraction 2" );
     	return eventData;
     }
 	
+	
+	// Used to get all the information of a particular person from the table
 	public String [] single_personExtract (long pRowID, int tpType){
 		String [] eventData = new String [5];
       //create object of DB
@@ -357,6 +384,35 @@ public class functions
         db.close();
 		return exist;		
 	}
+	
+	
+	public boolean eventCHECK(long pID, long leventID){ //to check if code exists if it does then return true.
+		DBAdapter db = new DBAdapter(context);
+		boolean exist = false;
+		//boolean stdexist = false;
+        db.open();
+        Cursor c = db.getAllEventPersons(leventID);
+        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);
+        int eIDColumn = c.getColumnIndex(db.KEY2_EVENTID) ;
+        
+        long LpID=0,eventID=0;
+        if (c.moveToFirst()) 
+        	/* Loop through all Results */             	
+        	 do {
+        		 LpID = c.getLong(pIDColumn);
+        		 eventID = c.getLong(eIDColumn);
+        	     if(pID == LpID && eventID != leventID) exist = true ; 
+        	     Log.i(TAG,"checking codes..." );
+        		
+             } while (c.moveToNext() && exist != true);
+        else
+            Toast.makeText(context, "No Persons found for events", Toast.LENGTH_SHORT).show();
+        
+        db.close();
+		return exist;		
+	}
+	
+	
 	public void add_dbpersondata(int ptype, long code){//method used when creating a record with only code available
 		Log.i(TAG,"add person method codes..." );
 			String blank = "";		
@@ -389,16 +445,7 @@ public class functions
 	    	DBAdapter db = new DBAdapter(context); 
 	        db.open();       
 	        Log.i(TAG,"add data method" );
-	        /* //if (ptype == 1){
-	        	try{
-			        db.insertStudent(code, lname, fname);
-			        Log.i(TAG,"add student to db" );
-	        	} catch (NumberFormatException e){
-	        		 Toast.makeText(context, context.getResources().getString( R.string.invalid_data), Toast.LENGTH_SHORT).show();
-	        	}
-	       } else if (ptype == 2){
-	        *     
-	        */
+	        
 	        	try{
 		        	db.insertOfficial(code, lname, fname, uname, pass);	
 		        	Log.i(TAG,"add official to db" );
@@ -409,8 +456,7 @@ public class functions
 	       // }
 	        db.close();
         }else{
-            Toast.makeText(context, "Record exists", 
-            		Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Record exists", Toast.LENGTH_SHORT).show();
             }
     }
 	
@@ -439,10 +485,8 @@ public class functions
 	        
 	        db.close();
 		}else{
-            Toast.makeText(context, "Record exists", 
-            		Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Record exists", Toast.LENGTH_SHORT).show();
             }
-        
     }
 	
 	public void upd_dbpersondata(long pID, String fname, String lname,long code,String uname, String pass){
@@ -451,15 +495,6 @@ public class functions
 	    	DBAdapter db = new DBAdapter(context); 
 	        db.open();       
 	        Log.i(TAG,"update person db method" );
-	        /*if (ptype == 1){
-	        	try{
-	        		db.updateStudent(pID,code,lname,fname);
-		        Log.i(TAG,"update student in db" );
-	        	} catch (NumberFormatException e){
-	        		 Toast.makeText(context, "Invalid data format", 
-	                 		Toast.LENGTH_SHORT).show();
-	        	}
-	        } else if (ptype == 2){ */   
 	        	try{
 		        	db.updateOfficial(pID,code,lname,fname, uname, pass);
 		        	Log.i(TAG,"updated official in db" );

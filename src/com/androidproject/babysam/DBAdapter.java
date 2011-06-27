@@ -123,7 +123,7 @@ public class DBAdapter
     }
     
     //---insert a Event into the database---
-    public long insertEvent(String event, String venue, String course, int duration, int aries, String timestamp) 
+    public boolean insertEvent(String event, String venue, String course, int duration, int aries, String timestamp) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY1_EVENTTYPE, event);
@@ -132,7 +132,7 @@ public class DBAdapter
         initialValues.put(KEY1_DURATION, duration);
         initialValues.put(KEY1_ARIES, aries);
         initialValues.put(KEY_TIMESTAMP, timestamp);
-        return db.insert(DATABASE_TABLE1, null, initialValues);
+        return db.insert(DATABASE_TABLE1, null, initialValues) > 0;
     }
     
   //---insert a person for event into the database---
@@ -387,7 +387,19 @@ public class DBAdapter
         args.put(KEY_TIMESTAMP, timestamp);
         return db.update(DATABASE_TABLE1, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
-    
+  //---insert a person for event into the database---
+    public long updateEventPerson(long rowId, long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
+    {
+        ContentValues args = new ContentValues();
+        args.put(KEY2_EVENTID, eventid);
+        args.put(KEY2_PERSONTYPE, ptype);
+        args.put(KEY2_PERSONID, pID);
+        args.put(KEY_TIMESTAMP, timestamp);
+        args.put(KEY2_POSITION, position);
+        args.put(KEY2_PRESENT, present);
+        args.put(KEY2_LIST, list);
+        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null);
+    }
     //---updates a person in an event---
     public boolean updatePerson(long rowId,long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
     {

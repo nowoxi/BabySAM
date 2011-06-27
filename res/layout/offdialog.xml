@@ -26,7 +26,7 @@
             </TableRow>
             <TableRow android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/TableRow05" android:gravity="center_vertical|center_horizontal">
                 <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:id="@+id/TextView05" android:text="@string/pass"></TextView>
-                <EditText android:layout_height="wrap_content" android:id="@+id/EditText05" android:layout_width="wrap_content"></EditText>
+                <EditText android:layout_height="wrap_content" android:id="@+id/EditText05" android:layout_width="wrap_content" android:inputType="textPassword"></EditText>
             </TableRow>
         </TableLayout>
     </ScrollView>

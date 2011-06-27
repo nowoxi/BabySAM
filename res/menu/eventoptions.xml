@@ -1,9 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 	<item
-	android:id="@+id/event_help"
-	android:title="@string/option_help"
-	android:icon="@android:drawable/ic_menu_help"></item>
-	<item
 	android:id="@+id/event_addse"
 	android:title="@string/option_event_addse"
 	android:icon="@android:drawable/ic_menu_add"></item>
@@ -29,6 +25,19 @@
 	        </menu>
 	</item>
 	<item
+	android:id="@+id/event_list"
+	android:title="@string/option_event_list"
+	android:icon="@android:drawable/ic_menu_agenda">
+			<menu>
+	            <item android:id="@+id/student_list"
+	                  android:title="@string/option_event_std"
+	                  android:icon="@android:drawable/ic_menu_send" />
+	            <item android:id="@+id/official_list"
+	                  android:title="@string/option_event_off" 
+	                  android:icon="@android:drawable/ic_menu_upload"/>
+	        </menu>
+	</item>
+	<item
 	android:id="@+id/event_save"
 	android:title="@string/option_event_save"
 	android:icon="@android:drawable/ic_menu_save"></item>
@@ -36,9 +45,12 @@
 	android:id="@+id/event_cancel"
 	android:title="@string/option_event_cancel"
 	android:icon="@android:drawable/ic_menu_close_clear_cancel"></item>
-	
 	<item
 	android:id="@+id/event_set"
 	android:title="@string/option_event_set"
 	android:icon="@android:drawable/ic_menu_manage"></item>
+	<item
+	android:id="@+id/event_help"
+	android:title="@string/option_help"
+	android:icon="@android:drawable/ic_menu_help"></item>
 </menu>

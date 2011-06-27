@@ -33,7 +33,7 @@ public class slistActivity extends babysamActivity {
     private ListView slist;
     
     private long RowID, stPos, iRowID;
-    private int en_stPerson, pEdit, en_stscan,  reScan;//pEdit is used to reflect if edit or rescan has been set by context menu
+    private int en_stPerson, pEdit, en_stscan,  reScan, fromIntent;//pEdit is used to reflect if edit or rescan has been set by context menu
     private functions f;
     private String contents, scformat, format;//,  blank,efname, elname;
     private ArrayAdapter<String> adapt;
@@ -59,6 +59,7 @@ public class slistActivity extends babysamActivity {
         f = new functions(this);
         //blank = " ";
         en_stPerson =1;
+        fromIntent=0;
         
         registerForContextMenu(findViewById(R.id.slistView));
       //Retrieve listview
@@ -69,6 +70,17 @@ public class slistActivity extends babysamActivity {
 	    adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdData);        
 	    slist.setAdapter(adapt);
 	    Log.i(TAG,"List view pupolated" );
+	    
+	  //get the event id from the intent that was passed
+        Intent intent = getIntent();
+        if ( intent != null){
+        	if (intent.hasExtra("code")){
+        		contents= intent.getStringExtra("code");
+        		fromIntent=1;
+        		entryDialog(0,0);
+        	}
+        }
+	    
 	}
 
 	private ArrayList<String> studentlistExtract() {
@@ -214,14 +226,29 @@ public class slistActivity extends babysamActivity {
 					ev_contents[i]= eventresult[i].getText().toString();
 				
 					//contents = (String) input.getText().toString();
+				boolean pass;// variable to know if try failed or not
 				try {
 					@SuppressWarnings("unused")
 					long lcont = new Long(ev_contents[2]);
 					enterPerson(ev_contents); //call method that will add the data to both the listview and database
+					pass = true;
 				}catch (NumberFormatException e){
 	        		 Toast.makeText(getApplicationContext(), "Invalid data format", 
 	                  		Toast.LENGTH_SHORT).show();
+	        		 pass = false;
 	         	}
+				// checking if loaded from intent and returning
+				if (fromIntent==1){
+					Intent intent = new Intent();
+					if(pass){
+						intent.putExtra("PersonID", f.getPersonID(new Long(ev_contents[2]), 1));
+						setResult(RESULT_OK, intent);
+					}else{
+						setResult(RESULT_CANCELED, intent);
+					}
+					//slistActivity.this.
+					finish();
+				}
 				Toast.makeText(getApplicationContext(), "content: " + ev_contents[2], Toast.LENGTH_SHORT).show();
 			}
 		});
@@ -229,6 +256,10 @@ public class slistActivity extends babysamActivity {
 		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						dialog.cancel();
+						// checking if loaded from intent and returning
+						if (fromIntent==1){
+							finish();
+						}
 					}
 		});
 		alert.show();	
@@ -274,7 +305,6 @@ public class slistActivity extends babysamActivity {
 		DBAdapter db = new DBAdapter(this);
 		db.open();
 		Cursor c = db.getAllStudents();
-		if (en_stPerson == 2) c = db.getAllOfficials();
         int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
         long LRowID=0;
 		if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        

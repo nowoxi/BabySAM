@@ -5,6 +5,7 @@ import java.util.Random;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
@@ -17,6 +18,8 @@ public class settingsActivity extends babysamActivity {
 	   private ListView menuList;
 	   private int count = T_SCAN.length;
 	   private int [] en_scan = new int [count];
+	   private long EventID;
+	   private String uri;
 	   private functions f;
 	   
 	   //I need to develop the xml to select settings and a method to save to the share preferences
@@ -114,18 +117,19 @@ public class settingsActivity extends babysamActivity {
         db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);*/
         
       //db.insertEventPerson(eventid, ptype, pID, timestamp, position, present, list)
-        db.insertEventPerson(1, 1, 1, f.timeStamp(), 0, 0, 1);
-        db.insertEventPerson(1, 2, 1, f.timeStamp(), 0, 0, 1);
-        
-        db.insertEventPerson(2, 1, 1, f.timeStamp(), 0, 0, 1);
-        db.insertEventPerson(2, 2, 1, f.timeStamp(), 0, 0, 1);
+        for (int i = 0; i<3;i++)db.insertEventPerson(EventID, 1, (i+1)*EventID, f.timeStamp(), i, 0, 1);
+        db.insertEventPerson(EventID, 2, EventID, f.timeStamp(), 0, 0, 1);
+        Log.i(TAG," "+EventID );
+        //for (int i = 0; i<3;i++)db.insertEventPerson(2, 1, i+1, f.timeStamp(), i, 0, 1);
+        //db.insertEventPerson(2, 2, 1, f.timeStamp(), 0, 0, 1);
         
         for (int i = 0; i<3;i++)db.insertStudent(u + randomGenerator.nextInt(1000), getRandomfName(), getRandomlName());        
-        for (int i = 0; i<3;i++){
+        for (int i = 0; i<1;i++){
         	String name = getRandomlName();
         	db.insertOfficial(u + randomGenerator.nextInt(1000), getRandomfName(), name, name,"pass");        
         }
         db.close();
+        EventID += 1;
     }
     
     private void delete_db_Tab(){
@@ -142,6 +146,8 @@ public class settingsActivity extends babysamActivity {
 	            this.menuList.setItemChecked(i, true);
 	            if (en_scan[i] == 0) this.menuList.setItemChecked(i, false);		        
 	        }
+	    	uri = eventSettings.getString(NEW_SET[1], "http://aries.aston.ac.uk");
+	    	EventID = eventSettings.getLong(NEW_SET[0], 1);
     }    
     
     //to save all the preferences only used in settings activity
@@ -151,6 +157,8 @@ public class settingsActivity extends babysamActivity {
             en_scan[i] = 0;
             if (this.menuList.isItemChecked(i))en_scan[i] = 1; 
         }
+    	
+    	//URI AND EVENT ID NOT NECESSARY TO BE SET HERE
     	SavePref();
     	Toast.makeText(getApplicationContext(), R.string.settings_save, Toast.LENGTH_SHORT).show();
     }
@@ -173,11 +181,23 @@ public class settingsActivity extends babysamActivity {
         for (int i = 0; i < count; i++) {
         	single_SavePref(T_SCAN[i], en_scan[i]);
         }
+        single_SavePref(NEW_SET[0], EventID);
+        single_SavePref(NEW_SET[1], uri);
        }
     
     private void single_SavePref(String key, int value){
         SharedPreferences.Editor editor = eventSettings.edit();
         editor.putInt(key, value);
+        editor.commit();
+       }
+    private void single_SavePref(String key, String value){
+        SharedPreferences.Editor editor = eventSettings.edit();
+        editor.putString(key, value);
+        editor.commit();
+       }
+    private void single_SavePref(String key, long value){
+        SharedPreferences.Editor editor = eventSettings.edit();
+        editor.putLong(key, value);
         editor.commit();
        }
     

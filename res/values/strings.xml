@@ -36,6 +36,9 @@
     <string name="option_event_upload">Upload</string>
     <string name="option_event_aries">Aries Upload</string>
     <string name="option_event_email">Send to Email</string>
+    <string name="option_event_std">Student List</string>
+    <string name="option_event_off">Officials List</string>
+    <string name="option_event_list">Attendance List</string>
     
     <string name="event_offlabel">Officials </string>
     <string name="event_stdlabel">Students </string>

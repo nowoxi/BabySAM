@@ -226,12 +226,12 @@ public class EventActivity extends babysamActivity {
 		return check ;
 	}
     //to load all prefences to their variables only used in event
-       private void LoadPref(){
-	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-	        en_stscan = eventSettings.getInt(ST_SCAN, 1);
-	        en_ofscan = eventSettings.getInt(OF_SCAN, 1);
-	        en_evscan = eventSettings.getInt(EV_SCAN, 1);
-       }
+    private void LoadPref(){
+    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        en_stscan = eventSettings.getInt(ST_SCAN, 1);
+        en_ofscan = eventSettings.getInt(OF_SCAN, 1);
+        en_evscan = eventSettings.getInt(EV_SCAN, 1);
+    }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -283,7 +283,16 @@ public class EventActivity extends babysamActivity {
                 // Handle cancel
             	Log.i(TAG,"It failed oh" );
             }
-        }    	
+        } else if (requestCode == 1){//TODO
+        	if (resultCode == RESULT_OK){
+        		long pID = intent.getLongExtra("PersonID", 0);
+        		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp(), rPos);
+        	}else if (resultCode == RESULT_CANCELED) {
+        		// Handle cancel
+        		Log.i(TAG,"Saving single person failed oh" );
+        	}
+            	
+        }   	
 	}
 
 	private String[] setevContent(String contents2, int p, String delimit) {		
@@ -308,6 +317,11 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_stscan, scformat, scanNew,0);
 	        return true;
         	case R.id.event_addof:
+        		//check if exists in any persons list
+        		//if so get row id---else create(ask for details) and then get row id
+        		//check if exist in attendance list 
+        		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
+        		//
 	        	en_stPerson = 2;
 	        	scformat = "CODABAR";
 	        	scanSet(en_ofscan, scformat,scanNew,0);	
@@ -326,6 +340,17 @@ public class EventActivity extends babysamActivity {
             return true;
         	case R.id.event_email:
 	        	sendMail();        		
+            return true;
+        	case R.id.student_list:
+        		//check if each exists in student list or official
+        		//yes - dont add move to next,get rowid
+        		//no - add move to next, get rowid
+        		//add row id to event table with list set to 1 n present to 0
+        		
+	        	;        		
+            return true;
+        	case R.id.official_list:
+	        	;        		
             return true;
         }
 		
@@ -377,6 +402,15 @@ public class EventActivity extends babysamActivity {
 		
 	}
 		
+	
+	//TODO this will change from entering values to checking the list if exist and changing present to 1. Also it would
+	//check if in event list
+	// yes get row id change persent to 1 and list to 1
+	// no check students and official list if exist
+	//    yes get rowid add to event list set list to 0 and present to 1
+	//    no add to list and get row id and add to eventlist set list to 0 and present to 1
+	//    
+	//
 	public void entryDialog (int psEdit, long psRowID){
 		pEdit=psEdit;
 		iRowID=psRowID;  //setting the row id of person
@@ -453,7 +487,9 @@ public class EventActivity extends babysamActivity {
 		alert.show();		
 	}
 	
+	//TODO do not add to list if present set to 0
 	private void enterPerson(String lcontents){
+		String lData;
 		int pos = 0 ;//calculating position of item edited 
 		//this section adds to the database from the text box and also populates the list view
 		if (en_stPerson == 1){						
@@ -473,11 +509,12 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, stPos);
 			}
 			
+			lData = listview_Format(lcontents,en_stPerson);
 			//this section is for editing the list view						
-			if (pEdit == 0 )stdeventData.add(lcontents);
+			if (pEdit == 0 )stdeventData.add(lData);
 			if (pEdit == 1 ){							
 				stdeventData.remove(pos);
-				stdeventData.add(pos, lcontents);
+				stdeventData.add(pos, lData);
 			}
 			std_adapt.notifyDataSetChanged();
 		} else if (en_stPerson == 2){
@@ -493,16 +530,29 @@ public class EventActivity extends babysamActivity {
 				offPos = offeventData.size();
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, offPos);
 			}
-			if (pEdit == 0 )offeventData.add(lcontents);
+			
+			lData = listview_Format(lcontents,en_stPerson);
+			if (pEdit == 0 )offeventData.add(lData);
 			if (pEdit == 1 ){
 				;//calculating position of item edited 
 				offeventData.remove(pos);
-				offeventData.add(pos, lcontents);
+				offeventData.add(pos, lData);
 			}
 			off_adapt.notifyDataSetChanged();
 		} 
 	}
-		
+	
+	
+	//formating the string to be used for the list view
+	private String listview_Format(String lcontents, int pType) {
+		long code = new Long (lcontents);
+		long lpRowID = f.getPersonID( code, pType);
+		Log.i(TAG," list Row ID : "+ lpRowID );
+		String [] data = f.single_personExtract(lpRowID, pType);
+		return data[0]+" "+data[1]+" "+data[2];
+	}
+
+
 	//if i try to use a method that returns a value it would always try to recalculate 
 	// the next row id which would make the programming wrong as this activity would increase the 
 	// the rows during operation
@@ -610,7 +660,7 @@ public class EventActivity extends babysamActivity {
 	        		Integer.parseInt(lev_contents[3]),//TODO ENSURE U CORRECT THIS FORMAT PROBLEM
 	        		0,
 	        		lev_contents[4]);
-	        Log.i(TAG,"add Event to db" );
+	        Log.i(TAG,"add Event to db. The last row now is "+ getLastEventRow() );
         	} catch (NumberFormatException e){
         		 Toast.makeText(this, "Invalid data format", 
                  		Toast.LENGTH_SHORT).show();
@@ -618,8 +668,32 @@ public class EventActivity extends babysamActivity {
         } else {    
         	try{
         		Long code = new Long (lcontents);
-        		String cdate = timeStamp();	        	
-	        	// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);	
+        		String cdate = timeStamp();
+        		long pID = 0;
+	        	// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
+        		//check if exists in any persons list
+        		//if so get row id---else create(ask for details) and then get row id
+        		if(f.codeCHECK(code)){
+        			pID = f.getPersonID(code, ptype);
+        			
+        		}else{// create person, to set pID
+        			//I thank God for this solution that occurred to me
+        			/* create a method that returns a long
+        			 * in the method create an intent to load student list or official list and go straight to the add student or official panel
+        			 * get the ID of the student or official and return it to the row with the intent 
+        			 */
+        			Class<?> cls= olistActivity.class;
+        			if(en_stPerson == 1)cls = slistActivity.class;
+        			Intent intent = new Intent(EventActivity.this,cls);	
+        			//intent.putExtra("code", code);
+        			intent.putExtra("code", lcontents);
+        			startActivityForResult(intent,1);
+        			rPos= pos;
+        			//pID = 0; // TODO create record n return pid please
+        		}
+        		//check if exist in attendance list 
+        		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
+        		attdList(pID,lRowID, ptype, cdate, pID);
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -628,8 +702,26 @@ public class EventActivity extends babysamActivity {
         	
         }
         db.close();
+        
     }
 	
+	private void attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
+		long present = 1, list = 0;
+		DBAdapter db = new DBAdapter(this); 
+        db.open(); 
+		if(f.eventCHECK(pID, lRowID)){
+			long epID=f.getEventPersonID(pos, ptype, lRowID);
+			list = 1;
+			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);
+		}else{
+			list = 0;
+			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
+		}
+		db.close();
+		
+	}
+
+
 	public void event_cancel(long rID){
 		//make a method that would cancel all the current status of events	i.e. deleting from the database
 		DBAdapter db = new DBAdapter(this); 

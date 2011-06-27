@@ -136,7 +136,7 @@ public class DBAdapter
     }
     
   //---insert a person for event into the database---
-    public long insertEventPerson(long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
+    public boolean insertEventPerson(long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY2_EVENTID, eventid);
@@ -146,7 +146,7 @@ public class DBAdapter
         initialValues.put(KEY2_POSITION, position);
         initialValues.put(KEY2_PRESENT, present);
         initialValues.put(KEY2_LIST, list);
-        return db.insert(DATABASE_TABLE2, null, initialValues);
+        return db.insert(DATABASE_TABLE2, null, initialValues)> 0;
     }
 
   //---insert a Student in an event---

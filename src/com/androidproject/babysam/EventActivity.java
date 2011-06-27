@@ -286,7 +286,24 @@ public class EventActivity extends babysamActivity {
         } else if (requestCode == 1){//TODO
         	if (resultCode == RESULT_OK){
         		long pID = intent.getLongExtra("PersonID", 0);
+        		Log.i(TAG,"the new person ID is "+ pID );
         		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp(), rPos);
+        		
+        		String lData = listview_Format(pID,en_stPerson);
+    			//this section is for editing the list view	
+        		if (en_stPerson == 1){
+        			int pos = stdeventData.size()-1;
+    				stdeventData.remove(pos);
+    				stdeventData.add(lData);
+    				std_adapt.notifyDataSetChanged();
+        		}
+        		else if (en_stPerson == 2){
+        			int pos = offeventData.size()-1;
+    				offeventData.remove(pos);
+    				offeventData.add(lData);
+    				off_adapt.notifyDataSetChanged();
+        		}
+        		
         	}else if (resultCode == RESULT_CANCELED) {
         		// Handle cancel
         		Log.i(TAG,"Saving single person failed oh" );
@@ -451,7 +468,7 @@ public class EventActivity extends babysamActivity {
 					
 					for (int i = 0 ; i < eventresult.length; i++)			
 						ev_contents[i]= eventresult[i].getText().toString();				
-					
+					ev_contents[4]= timeStamp();
 					//update data if data was scanned, insert data if other wise
 					Log.i(TAG,"on click ok for event dialog " );
 					if (en_evscan == 1)	upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,eventPos);
@@ -459,7 +476,7 @@ public class EventActivity extends babysamActivity {
 					
 					TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
 			    	    	(TextView) findViewById(R.id.TextView01)};
-					for (int i = 0; i < 4 ; i++)
+					for (int i = 0; i < text.length ; i++)
 			    		text[i].setText(ev_contents[i]);
 			    		
 					stateID=1;		//variable used to control the correct session to load on rotation
@@ -551,7 +568,11 @@ public class EventActivity extends babysamActivity {
 		String [] data = f.single_personExtract(lpRowID, pType);
 		return data[0]+" "+data[1]+" "+data[2];
 	}
-
+	private String listview_Format(long lpRowID, int pType) {
+		Log.i(TAG," list Row ID : "+ lpRowID );
+		String [] data = f.single_personExtract(lpRowID, pType);
+		return data[0]+" "+data[1]+" "+data[2];
+	}
 
 	//if i try to use a method that returns a value it would always try to recalculate 
 	// the next row id which would make the programming wrong as this activity would increase the 
@@ -648,6 +669,7 @@ public class EventActivity extends babysamActivity {
     
 	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID, long pos){
     	//---add 2 events and persons---
+		int intentEnabled = 0;
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
         Log.i(TAG,"add data method" );
@@ -689,11 +711,12 @@ public class EventActivity extends babysamActivity {
         			intent.putExtra("code", lcontents);
         			startActivityForResult(intent,1);
         			rPos= pos;
+        			intentEnabled=1;
         			//pID = 0; // TODO create record n return pid please
         		}
         		//check if exist in attendance list 
         		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
-        		attdList(pID,lRowID, ptype, cdate, pID);
+        		if(intentEnabled == 0)attdList(pID,lRowID, ptype, cdate, pID);
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This is a demo event data XML chunk -->
+<persons>
+<official fname = "williams" lname= "Junior" code="3615001325095"/>
+<student fname = "williams" lname= "Gray" code="23615001325095"/>
+<student fname = "Marc" lname= "Gray" code="23615001326015"/>
+<student fname = "williams" lname= "Marc" code="23615001325095"/>
+<student fname = "Purple" lname= "Gray" code="23615001378015"/>
+<student fname = "williams" lname= "Purple" code="23615042725095"/>
+<student fname = "Marc" lname= "Purple" code="23615001376395"/>
+</persons>

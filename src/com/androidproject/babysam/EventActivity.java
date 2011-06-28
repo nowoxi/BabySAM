@@ -1,7 +1,10 @@
 package com.androidproject.babysam;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -9,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
@@ -39,7 +43,7 @@ public class EventActivity extends babysamActivity {
 	 * Remove the edit options, the option 
 	 * Change the add officials option also as you changed the student list option, so when you click add student or official it should
 	 * do the new activities described above 
-	 * Makes sure that students arent added to the event list twice or event the student or officials list
+	 * Makes sure that students aren't added to the event list twice or event the student or officials list
 	 */
 	
 	   
@@ -48,7 +52,7 @@ public class EventActivity extends babysamActivity {
 	   // en_ofscan - Official scan, contents - data in scanned code
 	   // en_evsxan - event scan
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson, pEdit, reScan; 
-	   private String format, scformat, contents, content_delimiter;
+	   private String format, scformat, contents, content_delimiter,FirstName, LastName;
 	   private String [] ev_contents = new String [5];
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos, rPos;
 	   private functions f;
@@ -284,7 +288,7 @@ public class EventActivity extends babysamActivity {
                 // Handle cancel
             	Log.i(TAG,"It failed oh" );
             }
-        } else if (requestCode == 1){//TODO
+        } else if (requestCode == 1){
         	if (resultCode == RESULT_OK){
         		long pID = intent.getLongExtra("PersonID", 0);
         		Log.i(TAG,"the new person ID is "+ pID );
@@ -365,7 +369,7 @@ public class EventActivity extends babysamActivity {
         		//no - add move to next, get rowid
         		//add row id to event table with list set to 1 n present to 0
         		
-	        	;        		
+	        	importAttendance();        		
             return true;
         	case R.id.official_list:
 	        	;        		
@@ -375,6 +379,18 @@ public class EventActivity extends babysamActivity {
 		return super.onOptionsItemSelected(item);
 	}
     
+	private void importAttendance() {
+		// TODO Auto-generated method stub
+		// Retrieve XML
+	    XmlResourceParser eventxml = getResources().getXml(R.xml.list);
+	    try {
+	    	processData(eventxml);
+	    } catch (Exception e) {
+            Log.e(TAG, "Failed to load Events", e);
+        }
+	}
+
+
 	private void sendMail() {
 		Log.i(TAG,"send email" );
 		dialog = ProgressDialog.show(this, "",
@@ -422,7 +438,7 @@ public class EventActivity extends babysamActivity {
 	}
 		
 	
-	//TODO this will change from entering values to checking the list if exist and changing present to 1. Also it would
+	// this will change from entering values to checking the list if exist and changing present to 1. Also it would
 	//check if in event list
 	// yes get row id change persent to 1 and list to 1
 	// no check students and official list if exist
@@ -528,7 +544,7 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, stPos);
 			}
 			
-			if (correctTable){
+			if (correctTable){//TODO also consider if present set to 1
 				lData = listview_Format(lcontents,en_stPerson);
 				//this section is for editing the list view						
 				if (pEdit == 0 )stdeventData.add(lData);
@@ -573,7 +589,7 @@ public class EventActivity extends babysamActivity {
 		String [] data = f.single_personExtract(lpRowID, pType);
 		return data[0]+" "+data[1]+" "+data[2];
 	}
-	private String listview_Format(long lpRowID, int pType) {
+	private String listview_Format(long lpRowID, int pType) {//  if person rowid is know
 		Log.i(TAG," list Row ID : "+ lpRowID );
 		String [] data = f.single_personExtract(lpRowID, pType);
 		return data[0]+" "+data[1]+" "+data[2];
@@ -640,6 +656,7 @@ public class EventActivity extends babysamActivity {
 	//decide if you are leaving this as i
 	private void upd_dbdata(int ptype,long pID, long rID, String [] lev_contents, String lcontents,long pos){
     	//---add 2 events and persons---
+		int sourceList = 0;
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
         Log.i(TAG,"update db method" );
@@ -662,8 +679,8 @@ public class EventActivity extends babysamActivity {
         	try{
         		Long code = new Long (lcontents);
         		String cdate = timeStamp();	        	
-	        	//TODO db.updatePerson(pID,rID,ptype,code,cdate,pos);
-        		populate_table2(ptype,lcontents,rID,pos);
+	        	// db.updatePerson(pID,rID,ptype,code,cdate,pos);
+        		populate_table2(sourceList,ptype,lcontents,rID,pos);
         		
 	        	Log.i(TAG,"updated person in db" );
         	} catch (NumberFormatException e){
@@ -676,6 +693,7 @@ public class EventActivity extends babysamActivity {
     
 	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID, long pos){
     	//---add 2 events and persons---
+		int sourceList = 0;
     	DBAdapter db = new DBAdapter(this); 
         db.open();       
         Log.i(TAG,"add data method" );
@@ -695,10 +713,11 @@ public class EventActivity extends babysamActivity {
         	}
         } else {    
         	try{
-        		Long code = new Long (lcontents);
+        		@SuppressWarnings("unused")
+				Long code = new Long (lcontents);
         		//String cdate = timeStamp();
-        		// TODO db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
-        		populate_table2(ptype,lcontents,lRowID,pos);
+        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
+        		populate_table2(sourceList,ptype,lcontents,lRowID,pos);
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -710,25 +729,32 @@ public class EventActivity extends babysamActivity {
         
     }
 	
-	private void populate_table2(int ptype, String lcontents, long lRowID, long pos) {
+	private void populate_table2(int sourceList,int ptype, String lcontents, long lRowID, long pos) {
 		Long code = new Long (lcontents);
 		String cdate = timeStamp();
-		// TODO Auto-generated method stub
 		long pID = 0;
+		String blank =" ";
     	
-		//check if exists in any persons list
+ 		//check if exists in any persons list
 		//if so get row id---else create(ask for details) and then get row id
 		if(f.codeCHECK(code)){
 			if(f.codeCHECK(code,ptype)){//check if code exists in correct table
 				pID = f.getPersonID(code, ptype);
-				attdList(pID,lRowID, ptype, cdate, pID);
+				if(sourceList == 0)attdList(pID,lRowID, ptype, cdate, pID);
+				if(sourceList == 1)add_attdList(pID, lRowID, ptype, cdate, stPos);
 				correctTable = true;
 			}else {
 				Log.i(TAG,"wrong row "+ ptype );
 				correctTable = false;
 				Toast.makeText(this, "Adding person to wrong group", Toast.LENGTH_SHORT).show();
 			}
-		}else{// create person, to set pID
+		}else if(sourceList == 1){
+			//TODO this is used to save none existent students on a list to the students list and
+			// same for officials also
+			if(ptype == 1)f.add_dbpersondata(FirstName, LastName, code);
+			if(ptype == 2)f.add_dbpersondata(FirstName, LastName, code, blank, blank);
+		} else{// create person, to set pID
+		
 			//I thank God for this solution that occurred to me
 			/* create a method that returns a long
 			 * in the method create an intent to load student list or official list and go straight to the add student or official panel
@@ -755,13 +781,72 @@ public class EventActivity extends babysamActivity {
 		if(f.eventCHECK(pID, lRowID)){
 			long epID=f.getEventPersonID(pos, ptype, lRowID);
 			list = 1;
-			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);
+			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);//TODO when updating i might only want it to update a few detais not all
 		}else{
 			list = 0;
 			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
 		}
 		db.close();
 		
+	}
+	private void add_attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
+		int list = 1;
+		int present= 0;
+		DBAdapter db = new DBAdapter(this); 
+        db.open(); 
+			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
+		db.close();
+		
+	}
+	private void processData( XmlResourceParser list) throws XmlPullParserException,IOException {
+		//no need for data to show in list view until studnet present
+		
+		int doceventType = -1;
+		boolean bFoundEvents = false;  
+	    String lcontents;
+	    int sourceList=1;
+		// Find Event records from XML
+		while (doceventType != XmlResourceParser.END_DOCUMENT) {
+		    if (doceventType == XmlResourceParser.START_TAG) {		    	
+		        // Get the name of the tag (eg scores or score)
+		    	
+		        String strName = list.getName();
+		        if (strName.equals("student")) {
+		            bFoundEvents = true;
+		            en_stPerson = 1;	           
+		        }
+		        if (strName.equals("official")) {
+		            bFoundEvents = true;
+		            en_stPerson = 2;	           
+		        }
+		        if (bFoundEvents == true) {
+			      //extracting information from XML
+			        FirstName = list.getAttributeValue(null, "fname");
+		            LastName = list.getAttributeValue(null, "lname");
+		            lcontents = list.getAttributeValue(null, "code");
+		        
+			        try{
+		        		@SuppressWarnings("unused")
+						Long code = new Long (lcontents);
+						//String cdate = timeStamp();
+		        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
+		        		populate_table2(sourceList,en_stPerson,lcontents,RowID,stPos);
+			        	Log.i(TAG,"add person to db" );
+		        	} catch (NumberFormatException e){
+		       		 Toast.makeText(this, "Invalid data format", 
+		              		Toast.LENGTH_SHORT).show();
+		        	}
+		        }
+		    }
+		    doceventType = list.next();
+		}
+		
+		// Handle no events available
+		if (bFoundEvents == false) {
+			String data = getResources().getString(R.string.no_data);
+			Toast.makeText(this, data, 
+              		Toast.LENGTH_SHORT).show();
+		}	
 	}
 
 

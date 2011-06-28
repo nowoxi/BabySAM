@@ -112,7 +112,7 @@ public class OldActivity extends babysamActivity {
 		            data[5] = event.getAttributeValue(null, "timestamp");
 		            data[6] = event.getAttributeValue(null, "ariesREG");
 		            
-		            if (data[2] != null) eventData.add(0,data);	 
+		            if (data[2] != null) eventData.add(data);	 
 		        }
 		        
 		    }

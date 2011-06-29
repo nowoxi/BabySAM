@@ -259,21 +259,43 @@ public class functions
 		return true;
 	}
 
-	//rows in table 2 are completely made unique by the rowid or a combination of eventid, persontype and position
-	public long getEventPersonID(long pos, int lpType, long lRowID) {
+	//rows in table 2 are completely made unique by the rowID or a combination of eventID, person type and position
+	//used to identify selected student via context menu 
+	public long getEventPersonID(String bad,long pos, int lpType, long lRowID) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
         Cursor c = db.getAllEventPersons(lRowID);
         int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
         int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int posColumn = c.getColumnIndex(db.KEY2_POSITION);
+        int presentColumn = c.getColumnIndex(db.KEY2_PRESENT);
+        long LID=0,count=0;
+        do {
+	   		int pType = c.getInt(pTypeColumn);
+	   		int present = c.getInt(presentColumn);
+	   		/* Add current Entry to offeventData and stdeventData.*/ 
+	   		if(pType == lpType && count == pos)LID = c.getLong(IDColumn);    
+	   		if(pType == lpType && present == 1 )count++;
+        } while (c.moveToNext() && LID == 0); 
+        db.close();
+		return LID;
+	}
+	
+	//rows in table 2 are completely made unique by the rowid or a combination of eventid, persontype and position
+	public long getEventPersonID( long pID, int lpType, long lRowID) {
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        Cursor c = db.getAllEventPersons(lRowID);
+        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);
         long LID=0;
         do {
 	   		int pType = c.getInt(pTypeColumn);
-	   		long dpos = c.getLong(posColumn);
+	   		long dpID = c.getLong(pIDColumn);
 	   		/* Add current Entry to offeventData and stdeventData. */
-	   		if(pType == lpType && dpos == pos)LID = c.getLong(IDColumn);    
+	   		if(pType == lpType && dpID == pID)LID = c.getLong(IDColumn);    
         } while (c.moveToNext()); 
         db.close();
 		return LID;
@@ -431,7 +453,7 @@ public class functions
 	}
 	
 	
-	public boolean eventCHECK(long pID, long leventID){ //to check if code exists if it does then return true.
+	public boolean eventCHECK(long pID, long leventID, int pType){ //to check if code exists if it does then return true.
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;
 		//boolean stdexist = false;
@@ -439,14 +461,17 @@ public class functions
         Cursor c = db.getAllEventPersons(leventID);
         int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);
         int eIDColumn = c.getColumnIndex(db.KEY2_EVENTID) ;
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
         
         long LpID=0,eventID=0;
+        int ptype = 0;
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
         	 do {
         		 LpID = c.getLong(pIDColumn);
         		 eventID = c.getLong(eIDColumn);
-        	     if(pID == LpID && eventID != leventID) exist = true ; 
+        		 ptype = c.getInt(pTypeColumn);
+        	     if(pID == LpID && eventID == leventID && ptype == pType) exist = true ; 
         	     Log.i(TAG,"checking codes..." );
         		
              } while (c.moveToNext() && exist != true);

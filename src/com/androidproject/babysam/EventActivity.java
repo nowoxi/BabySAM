@@ -2,8 +2,17 @@ package com.androidproject.babysam;
 
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
@@ -112,7 +121,7 @@ public class EventActivity extends babysamActivity {
 	  //iRowID is the row id of the person to be edited or deleted 
 		// get last row id of previous session then add it to the contextmenu +1
 	 // long ilRowID=getLastEventLastPersonRow(RowID)+ info.id + 1 ;
-	  long ilRowID = f.getEventPersonID(info.id,en_stPerson,RowID);
+	  long ilRowID = f.getEventPersonID("bad",info.id,en_stPerson,RowID);
 	  
 	  switch (item.getItemId()) {
 	  case R.id.event_edit_item2:
@@ -369,25 +378,78 @@ public class EventActivity extends babysamActivity {
         		//no - add move to next, get rowid
         		//add row id to event table with list set to 1 n present to 0
         		
-	        	importAttendance();        		
+	        	importAttendance(0);        		
             return true;
         	case R.id.official_list:
-	        	;        		
+        		importAttendance(1);        		
             return true;
         }
 		
 		return super.onOptionsItemSelected(item);
 	}
     
-	private void importAttendance() {
+	private void importAttendance(int Mode) {
 		// TODO Auto-generated method stub
-		// Retrieve XML
-	    XmlResourceParser eventxml = getResources().getXml(R.xml.list);
-	    try {
-	    	processData(eventxml);
-	    } catch (Exception e) {
-            Log.e(TAG, "Failed to load Events", e);
-        }
+		boolean bFoundEvents = false;  
+	    String lcontents;
+	    int sourceList=1;
+		if ( Mode == 0){
+			// Retrieve XML
+		    XmlResourceParser eventxml = getResources().getXml(R.xml.list);
+		    try {
+		    	processData(eventxml);
+		    } catch (Exception e) {
+	            Log.e(TAG, "Failed to load Events", e);
+	        }
+		} else if( Mode == 1){
+			try {
+
+				URL url = new URL(
+						"http://babysam.ucoz.com/list.xml");
+				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+				DocumentBuilder db = dbf.newDocumentBuilder();
+				Document doc = db.parse(new InputSource(url.openStream()));
+				doc.getDocumentElement().normalize();
+
+				NodeList [] nodeList = {doc.getElementsByTagName("student"),doc.getElementsByTagName("official")};
+				
+				for (int j = 0; j<nodeList.length; j++){
+					for (int i = 0; i < nodeList[j].getLength(); i++) {
+						Node node = nodeList[j].item(i);
+						Element fstElmnt = (Element) node;
+						Log.i(TAG,i+" "+fstElmnt.getAttribute("fname"));
+				        if (j==0) {
+				            bFoundEvents = true;
+				            en_stPerson = 1;	           
+				        }
+				        if (j==1) {
+				            bFoundEvents = true;
+				            en_stPerson = 2;	           
+				        }
+				        if (bFoundEvents == true) {
+					      //extracting information from XML
+					        FirstName =fstElmnt.getAttribute("fname");//name[i] = new TextView(this);
+				            LastName = fstElmnt.getAttribute("lname");
+				            lcontents = fstElmnt.getAttribute("code");
+				        
+					        try{
+				        		@SuppressWarnings("unused")
+								Long code = new Long (lcontents);
+								//String cdate = timeStamp();
+				        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
+				        		populate_table2(sourceList,en_stPerson,lcontents,RowID,stPos);
+					        	Log.i(TAG,"add person to db" );
+				        	} catch (NumberFormatException e){
+				       		 Toast.makeText(this, "Invalid data format", 
+				              		Toast.LENGTH_SHORT).show();
+				        	}
+				        }
+					}
+				}
+			} catch (Exception e) {
+				Log.e(TAG, "XML Pasing Excpetion = " + e);
+			}
+		}
 	}
 
 
@@ -778,8 +840,8 @@ public class EventActivity extends babysamActivity {
 		long present = 1, list = 0;
 		DBAdapter db = new DBAdapter(this); 
         db.open(); 
-		if(f.eventCHECK(pID, lRowID)){
-			long epID=f.getEventPersonID(pos, ptype, lRowID);
+		if(f.eventCHECK(pID, lRowID, ptype)){
+			long epID=f.getEventPersonID(pID, ptype, lRowID);
 			list = 1;
 			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);//TODO when updating i might only want it to update a few detais not all
 		}else{

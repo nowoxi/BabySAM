@@ -460,4 +460,11 @@ public class DBAdapter
 	        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowID, null) > 0;
 	}
 
+	public boolean ariesupdate(long lRowID) {
+		int aries = 1;
+		ContentValues args = new ContentValues();
+        args.put(KEY1_ARIES, aries);
+        return db.update(DATABASE_TABLE1, args, KEY_ROWID + "=" + lRowID, null) > 0;
+	}
+
 }

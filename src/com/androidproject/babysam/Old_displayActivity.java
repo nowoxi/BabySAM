@@ -130,10 +130,13 @@ public class Old_displayActivity extends babysamActivity {
 		LoadPref();		
 		switch(item.getItemId()) { 	
         	case R.id.event_aries:
-	        	f.sendAries();	
+	        	f.sendAries(extra_EID);	
             return true;
         	case R.id.event_email:
         		if (DB_mode == 1)showDialog(typeBar);
+            return true;
+        	case R.id.event_file:
+	        	f.saveasFile(extra_EID);	
             return true;
         }
 		return super.onOptionsItemSelected(item);

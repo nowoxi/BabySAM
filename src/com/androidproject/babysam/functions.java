@@ -1,11 +1,31 @@
 package com.androidproject.babysam;
 
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.ByteArrayBuffer;
+import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Environment;
 import android.util.Log;
+import android.util.Xml;
 import android.widget.Toast;
 
 public class functions 
@@ -161,6 +181,62 @@ public class functions
     }
 	
 	
+	public ArrayList<String []> aries_personExtract (long extra_EID, int tpType){
+		ArrayList<String []> eventData = new ArrayList<String []>();
+		//ArrayList <object> Data = new ArrayList <>();
+      //create object of DB
+    	DBAdapter db = new DBAdapter(context);
+        
+      //---get all events---
+        db.open();
+        Cursor c = db.getAllEventPersons(extra_EID);
+        Cursor d = db.getAllStudents();
+        int pType;
+        long pRowID;
+      /* Get the indices of the Columns we will need */        
+        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
+        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int firstColumn = d.getColumnIndex(db.KEY_FIRSTNAME);         
+        int lastColumn = d.getColumnIndex(db.KEY_LASTNAME);
+        int codeColumn = d.getColumnIndex(db.KEY_CODE);
+        int presentColumn = c.getColumnIndex(db.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(db.KEY2_LIST);
+        int timestampColumn = c.getColumnIndex(db.KEY_TIMESTAMP);
+        
+        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        //String [] test;
+        if (c.moveToFirst()) {
+        	/* Loop through all Results */             	
+        	 do {
+        		 pType = c.getInt(pTypeColumn);
+        		 pRowID = c.getLong(pIDColumn);
+        		 
+        		 Log.i(TAG," ARIES person extraction " +pRowID+ "THEN ptype is " + pType);
+        		 /* Add current Entry to offeventData and stdeventData. */
+        		 if(pType == tpType){   
+        			 if (tpType == 1)d = db.getStudent(pRowID);
+        			 if (tpType == 2)d = db.getOfficial(pRowID);     
+        			 Log.i(TAG,d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));
+        			 String [] test = new String [6];
+        			 test[0] = Long.toString(d.getLong(codeColumn));
+        			 test[1] = Integer.toString(c.getInt(presentColumn));
+        			 test[2] = Integer.toString(c.getInt(listColumn));
+        			 test[3] = c.getString(timestampColumn);
+        			 test[4] = d.getString(firstColumn);
+        			 test[5] = d.getString(lastColumn);//Log.i(TAG," Lastname: "+test[5]);
+        			 eventData.add(test);
+        		 }
+        		// Log.i(TAG,"Aries person extraction" );
+             } while (c.moveToNext());
+        } else{
+            Toast.makeText(context, "No Persons found", 
+            		Toast.LENGTH_SHORT).show();
+            }
+        db.close();
+        Log.i(TAG,"Aries person extraction End" );
+    	return eventData;
+    }
+	
 	// Used to get all the information of a particular person from the table
 	public String [] single_personExtract (long pRowID, int tpType){
 		String [] eventData = new String [5];
@@ -244,10 +320,52 @@ public class functions
 		return Body;
 	}
 	
-	public void sendAries(){
-		
+	public void sendAries(long lRowID){
+		// Create a new HttpClient and Post Header  
+	    HttpClient httpclient = new DefaultHttpClient();  
+	    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
+
+    	try {  
+    		// Add your data  
+    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
+	    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
+	    	nameValuePairs.add(new BasicNameValuePair("eventdata", "f.eventExtract(RowID)"));
+	    	nameValuePairs.add(new BasicNameValuePair("studentdata", "f.aries_personExtract(RowID, 1)"));
+	    	nameValuePairs.add(new BasicNameValuePair("officialdata", "f.aries_personExtract(RowID, 2)"));
+	    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+
+	    	// Execute HTTP Post Request  
+	    	HttpResponse response = httpclient.execute(httppost);
+	    	
+	    	InputStream is = response.getEntity().getContent();
+	    	BufferedInputStream bis = new BufferedInputStream(is);
+	    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
+
+	    	 int current = 0;  
+	    	 while((current = bis.read()) != -1){  
+	    	 	baf.append((byte)current);  
+	    	 }  
+	    	   
+	    	/* Convert the Bytes read to a String. */  
+	    	String text = new String(baf.toByteArray()); 
+	    	Toast.makeText(context,"upload status: "+ text, Toast.LENGTH_SHORT).show();
+	    	ariesReg(lRowID);
+
+    	} catch (ClientProtocolException e) {  
+    		// TODO Auto-generated catch block  
+    		Log.i(TAG," client protocol exception error");
+    	} catch (IOException e) {  
+    		// TODO Auto-generated catch block 
+    		Log.i(TAG," IO exception error");
+    	}  
 	}
 
+	private void ariesReg(long lRowID) {
+		DBAdapter db = new DBAdapter(context);
+    	db.open();
+    	db.ariesupdate(lRowID);
+    	db.close();
+	}
 	public boolean deletePerson(long ilRowID, int pType) {
 		//create object of DB
     	DBAdapter db = new DBAdapter(context);
@@ -595,5 +713,95 @@ public class functions
 	public void upd_dbPerson(int en_stPerson, long rowID, String contents, String efname, String elname, String uname, String pass) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void saveasFile(long lRowID) {
+		ArrayList<String[]> officalData = aries_personExtract(lRowID, 2);
+		ArrayList<String[]> studentData = aries_personExtract(lRowID, 1);
+		String [] eventDetails = eventExtract(lRowID);
+		
+		//String fileName = eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+eventDetails[4]+".xml";
+		String fileName ="test.xml";
+		File newxmlfile = new File(Environment.getExternalStorageDirectory(),fileName);
+		String eventTag = "EventDetails";
+		String studentTag = "Student";
+		String officialTag = "Official";
+		String rootTag = "Event";
+		Log.i(TAG, "save file 1");
+
+        try{
+                newxmlfile.createNewFile();
+        }catch(IOException e){
+                Log.e(TAG, "exception in createNewFile() method");
+        }
+        
+        //we have to bind the new file with a FileOutputStream
+        FileOutputStream fileos = null;        
+        try{
+                fileos = new FileOutputStream(newxmlfile);
+        }catch(FileNotFoundException e){
+                Log.e(TAG, "can't create FileOutputStream");
+        }
+        
+        //we create a XmlSerializer in order to write xml data
+        XmlSerializer serializer = Xml.newSerializer();
+        try {
+        	Log.i(TAG, "save file 0");
+                //we set the FileOutputStream as output for the serializer, using UTF-8 encoding
+                        serializer.setOutput(fileos, "UTF-8");
+                        //Write <?xml declaration with encoding (if encoding not null) and standalone flag (if standalone not null)
+                        serializer.startDocument(null, Boolean.valueOf(true));
+                        //set indentation option
+                        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+                        //start a tag called "root"
+                        serializer.startTag(null, rootTag);
+                        //i indent code just to have a view similar to xml-tree
+                        //building xml section for eventdetails
+                        		serializer.startTag(null, eventTag);
+			                        //set an attribute called "attribute" with a "value" for <eventdetails>
+			                        serializer.attribute(null, "Event_Type", eventDetails[0]);
+			                        serializer.attribute(null, "Venue", eventDetails[1]);
+			                        serializer.attribute(null, "Course", eventDetails[2]);
+			                        serializer.attribute(null, "Duration", eventDetails[3]);
+			                        serializer.attribute(null, "Time_Stamp", eventDetails[4]);
+		                        serializer.endTag(null, eventTag);
+		                        
+                                //building xml section for officials
+                                for (int i = 0; i < officalData.size();i++){
+                                	serializer.startTag(null, officialTag);
+                                    	//set an attribute called "attribute" with a "value" for <child2>
+                                    	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
+                                    	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
+                                    	serializer.attribute(null, "Code", officalData.get(i)[0]);
+                                    	serializer.attribute(null, "Present", officalData.get(i)[1]);
+                                    	serializer.attribute(null, "List", officalData.get(i)[2]);
+                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
+                                    serializer.endTag(null, officialTag);
+                                }
+                                Log.i(TAG, "save file 2");
+                                //building xml section for student
+                                for (int i = 0; i < studentData.size();i++){
+                                	serializer.startTag(null, studentTag);
+                                    	//set an attribute called "attribute" with a "value" for <child2>
+                                    	serializer.attribute(null, "First_Name", studentData.get(i)[5]);
+                                    	serializer.attribute(null, "Last_Name", studentData.get(i)[4]);
+                                    	serializer.attribute(null, "Code", studentData.get(i)[0]);
+                                    	serializer.attribute(null, "Present", studentData.get(i)[1]);
+                                    	serializer.attribute(null, "List", studentData.get(i)[2]);
+                                    	serializer.attribute(null, "Time_Stamp", studentData.get(i)[3]);
+                                    serializer.endTag(null, studentTag);
+                                    Log.i(TAG, "save file: "+ studentData.get(i)[5]);
+                                }
+                        serializer.endTag(null, rootTag);
+                        serializer.endDocument();Log.i(TAG, "save file 3");
+                        //write xml data into the FileOutputStream
+                        serializer.flush();
+                        //finally we close the file stream
+                        fileos.close();
+                       
+                        Toast.makeText(context, "file has been created on SD card", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                        Log.e(TAG,"error occurred while creating xml file");
+                }
 	}
 }

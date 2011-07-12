@@ -1,19 +1,35 @@
 package com.androidproject.babysam;
 
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.ByteArrayBuffer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlSerializer;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -24,9 +40,11 @@ import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Xml;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -66,7 +84,7 @@ public class EventActivity extends babysamActivity {
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos, rPos;
 	   private functions f;
 	   private ProgressDialog dialog;
-	   private boolean correctTable;//used to contrl if the list view should be updated after checking if added person belongs to correct table
+	   private boolean correctTable;//used to control if the list view should be updated after checking if added person belongs to correct table
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -90,7 +108,7 @@ public class EventActivity extends babysamActivity {
 			//   alert.dismiss();		
 			super.onDestroy();
 			Log.i(TAG,"destroy oh and row id is "+ RowID );
-		//clean db incase officials or students added and session not saved
+		//clean db in case officials or students added and session not saved
 		   if(RowID != getLastEventRow() && checkperson()){
 			   event_cancel(RowID);
 			   Log.i(TAG,"Event not added session cleared" );
@@ -264,7 +282,6 @@ public class EventActivity extends babysamActivity {
 		//stateId will always be 1 as long as event details have been entered
 		//persons dont need to be edited with 
 		
-		
     	Log.i(TAG,"to check that onactivity result happens" );
     	
         if (requestCode == 0) {
@@ -367,7 +384,10 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_evscan, scformat, scanNew,0);	
             return true;  
         	case R.id.event_aries:
-	        	sendAries();	
+	        	sendAries(RowID);	
+            return true;
+        	case R.id.event_file:
+	        	f.saveasFile(RowID);	
             return true;
         	case R.id.event_email:
 	        	sendMail();        		
@@ -388,6 +408,96 @@ public class EventActivity extends babysamActivity {
 		return super.onOptionsItemSelected(item);
 	}
     
+	private void saveasFile(long lRowID) {
+		// TODO Auto-generated method stub
+		ArrayList<String[]> officalData = f.aries_personExtract(lRowID, 2);
+		ArrayList<String[]> studentData = f.aries_personExtract(lRowID, 1);
+		String [] eventDetails = f.eventExtract(lRowID);
+		
+		String fileName = eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+eventDetails[4]+".xml";
+		File newxmlfile = new File(Environment.getExternalStorageDirectory(),fileName);
+		String eventTag = "EventDetails";
+		String studentTag = "Student";
+		String officialTag = "Official";
+		String rootTag = "Event";
+		Log.i(TAG, "save file 1");
+		
+        try{
+                newxmlfile.createNewFile();
+        }catch(IOException e){
+                Log.e("IOException", "exception in createNewFile() method");
+        }
+        
+        //we have to bind the new file with a FileOutputStream
+        FileOutputStream fileos = null;        
+        try{
+                fileos = new FileOutputStream(newxmlfile);
+        }catch(FileNotFoundException e){
+                Log.e("FileNotFoundException", "can't create FileOutputStream");
+        }
+        
+        //we create a XmlSerializer in order to write xml data
+        XmlSerializer serializer = Xml.newSerializer();
+        try {
+                //we set the FileOutputStream as output for the serializer, using UTF-8 encoding
+                        serializer.setOutput(fileos, "UTF-8");
+                        //Write <?xml declaration with encoding (if encoding not null) and standalone flag (if standalone not null)
+                        serializer.startDocument(null, Boolean.valueOf(true));
+                        //set indentation option
+                        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+                        //start a tag called "root"
+                        serializer.startTag(null, rootTag);
+                        //i indent code just to have a view similar to xml-tree
+                        //building xml section for eventdetails
+                        		serializer.startTag(null, eventTag);
+			                        //set an attribute called "attribute" with a "value" for <eventdetails>
+			                        serializer.attribute(null, "Event Type", eventDetails[0]);
+			                        serializer.attribute(null, "Venue", eventDetails[1]);
+			                        serializer.attribute(null, "Course", eventDetails[2]);
+			                        serializer.attribute(null, "Duration", eventDetails[3]);
+			                        serializer.attribute(null, "Time_Stamp", eventDetails[4]);
+		                        serializer.endTag(null, eventTag);
+		                        
+                                //building xml section for officials
+                                for (int i = 0; i < officalData.size();i++){
+                                	serializer.startTag(null, officialTag);
+                                    	//set an attribute called "attribute" with a "value" for <child2>
+                                    	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
+                                    	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
+                                    	serializer.attribute(null, "Code", officalData.get(i)[0]);
+                                    	serializer.attribute(null, "Present", officalData.get(i)[1]);
+                                    	serializer.attribute(null, "List", officalData.get(i)[2]);
+                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
+                                    serializer.endTag(null, officialTag);
+                                }
+                                
+                                //building xml section for student
+                                for (int i = 0; i < studentData.size();i++){
+                                	serializer.startTag(null, studentTag);
+                                    	//set an attribute called "attribute" with a "value" for <child2>
+                                    	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
+                                    	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
+                                    	serializer.attribute(null, "Code", officalData.get(i)[0]);
+                                    	serializer.attribute(null, "Present", officalData.get(i)[1]);
+                                    	serializer.attribute(null, "List", officalData.get(i)[2]);
+                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
+                                    serializer.endTag(null, officialTag);
+                                }
+                       
+                        serializer.endTag(null, rootTag);
+                        serializer.endDocument();
+                        //write xml data into the FileOutputStream
+                        serializer.flush();
+                        //finally we close the file stream
+                        fileos.close();
+                       
+                        Toast.makeText(this, "file has been created on SD card", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                        Log.e("Exception","error occurred while creating xml file");
+                }
+	}
+
+
 	private void importAttendance(int Mode) {
 		// TODO Auto-generated method stub
 		boolean bFoundEvents = false;  
@@ -495,11 +605,57 @@ public class EventActivity extends babysamActivity {
         }
 	}
 	
-	public void sendAries(){
+	public void sendAries(long lRowID){
+		// Create a new HttpClient and Post Header  
+	    HttpClient httpclient = new DefaultHttpClient();  
+	    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
+
+    	try {  
+    		// Add your data  
+    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
+	    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
+	    	nameValuePairs.add(new BasicNameValuePair("eventdata", "f.eventExtract(RowID)"));
+	    	nameValuePairs.add(new BasicNameValuePair("studentdata", "f.aries_personExtract(RowID, 1)"));
+	    	nameValuePairs.add(new BasicNameValuePair("officialdata", "f.aries_personExtract(RowID, 2)"));
+	    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+
+	    	// Execute HTTP Post Request  
+	    	HttpResponse response = httpclient.execute(httppost);
+	    	
+	    	InputStream is = response.getEntity().getContent();
+	    	BufferedInputStream bis = new BufferedInputStream(is);
+	    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
+
+	    	 int current = 0;  
+	    	 while((current = bis.read()) != -1){  
+	    	 	baf.append((byte)current);  
+	    	 }  
+	    	   
+	    	/* Convert the Bytes read to a String. */  
+	    	String text = new String(baf.toByteArray()); 
+	    	Toast.makeText(this,"upload status: "+ text, Toast.LENGTH_SHORT).show();
+	    	ariesReg(lRowID);
+
+    	} catch (ClientProtocolException e) {  
+    		// TODO Auto-generated catch block  
+    		Log.i(TAG," client protocol exception error");
+    	} catch (IOException e) {  
+    		// TODO Auto-generated catch block 
+    		Log.i(TAG," IO exception error");
+    	}  
+    	
 		
 	}
 		
 	
+	private void ariesReg(long lRowID) {
+		DBAdapter db = new DBAdapter(this);
+    	db.open();
+    	db.ariesupdate(lRowID);
+    	db.close();
+	}
+
+
 	// this will change from entering values to checking the list if exist and changing present to 1. Also it would
 	//check if in event list
 	// yes get row id change persent to 1 and list to 1

@@ -22,6 +22,9 @@
 	            <item android:id="@+id/event_aries"
 	                  android:title="@string/option_event_aries" 
 	                  android:icon="@android:drawable/ic_menu_upload"/>
+	            <item android:id="@+id/event_file"
+	                  android:title="@string/option_event_file" 
+	                  android:icon="@android:drawable/ic_menu_upload"/>
 	        </menu>
 	</item>
 	<item

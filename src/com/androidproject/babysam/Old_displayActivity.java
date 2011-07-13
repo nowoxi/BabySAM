@@ -130,7 +130,7 @@ public class Old_displayActivity extends babysamActivity {
 		LoadPref();		
 		switch(item.getItemId()) { 	
         	case R.id.event_aries:
-	        	f.sendAries(extra_EID);	
+	        	f.sendAries(extra_EID,1);	
             return true;
         	case R.id.event_email:
         		if (DB_mode == 1)showDialog(typeBar);
@@ -193,7 +193,7 @@ public class Old_displayActivity extends babysamActivity {
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));
-            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, offeventData, stdeventData);
+            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails);
             progThread.start();
             return progDialog;        
         default:

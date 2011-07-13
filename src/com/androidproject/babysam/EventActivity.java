@@ -84,7 +84,7 @@ public class EventActivity extends babysamActivity {
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos, rPos;
 	   private functions f;
 	   private ProgressDialog dialog;
-	   private boolean correctTable;//used to control if the list view should be updated after checking if added person belongs to correct table
+	   private boolean correctTable,listCheck;//used to control if the list view should be updated after checking if added person belongs to correct table
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -320,7 +320,7 @@ public class EventActivity extends babysamActivity {
         		Log.i(TAG,"the new person ID is "+ pID );
         		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp(), rPos);
         		
-        		String lData = listview_Format(pID,en_stPerson);
+        		String lData = listview_Format(pID,en_stPerson,RowID);
     			//this section is for editing the list view	
         		if (en_stPerson == 1){
         			int pos = stdeventData.size()-1;
@@ -568,7 +568,7 @@ public class EventActivity extends babysamActivity {
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send email middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents, offeventData, stdeventData);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents);
 		progThread.start();
 		Log.i(TAG,"send email end" );
 	}
@@ -763,7 +763,7 @@ public class EventActivity extends babysamActivity {
 			}
 			
 			if (correctTable){//TODO also consider if present set to 1
-				lData = listview_Format(lcontents,en_stPerson);
+				lData = listview_Format(lcontents,en_stPerson, RowID);
 				//this section is for editing the list view						
 				if (pEdit == 0 )stdeventData.add(lData);
 				if (pEdit == 1 ){							
@@ -786,7 +786,7 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, offPos);
 			}
 			if (correctTable){
-				lData = listview_Format(lcontents,en_stPerson);
+				lData = listview_Format(lcontents,en_stPerson, RowID);
 				if (pEdit == 0 )offeventData.add(lData);
 				if (pEdit == 1 ){
 					;//calculating position of item edited 
@@ -800,17 +800,19 @@ public class EventActivity extends babysamActivity {
 	
 	
 	//formating the string to be used for the list view
-	private String listview_Format(String lcontents, int pType) {
+	private String listview_Format(String lcontents, int pType,long lRowID) {
 		long code = new Long (lcontents);
 		long lpRowID = f.getPersonID( code, pType);
-		Log.i(TAG," list Row ID : "+ lpRowID );
-		String [] data = f.single_personExtract(lpRowID, pType);
-		return data[0]+" "+data[1]+" "+data[2];
+		//Log.i(TAG," list Row ID : "+ lpRowID );
+		//String [] data = f.single_personExtract(lpRowID, pType);
+		return listview_Format(lpRowID, pType, lRowID);//data[0]+" "+data[1]+" "+data[2];
 	}
-	private String listview_Format(long lpRowID, int pType) {//  if person rowid is know
+	private String listview_Format(long lpRowID, int pType, long lRowID) {//  if person rowid is known
 		Log.i(TAG," list Row ID : "+ lpRowID );
 		String [] data = f.single_personExtract(lpRowID, pType);
-		return data[0]+" "+data[1]+" "+data[2];
+		String list = "";
+		if (!listCheck)list = "**";
+		return data[0]+" "+data[1]+" "+data[2]+" "+list;
 	}
 
 	//if i try to use a method that returns a value it would always try to recalculate 
@@ -999,14 +1001,17 @@ public class EventActivity extends babysamActivity {
 		if(f.eventCHECK(pID, lRowID, ptype)){
 			long epID=f.getEventPersonID(pID, ptype, lRowID);
 			list = 1;
+			listCheck=true;
 			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);//TODO when updating i might only want it to update a few detais not all
 		}else{
 			list = 0;
+			listCheck=false;
 			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
 		}
 		db.close();
 		
 	}
+	//used to add persons from attendance list
 	private void add_attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
 		int list = 1;
 		int present= 0;

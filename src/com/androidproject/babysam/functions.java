@@ -146,11 +146,14 @@ public class functions
         db.open();
         Cursor c = db.getAllEventPersons(extra_EID);
         Cursor d = db.getAllStudents();
-        int pType;
+        int pType,present, list;
         long pRowID;
+        String SPresent = "", SList = "";
       /* Get the indices of the Columns we will need */        
         int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
         int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int preColumn = c.getColumnIndex(db.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(db.KEY2_LIST);
         int firstColumn = d.getColumnIndex(db.KEY_FIRSTNAME);         
         int lastColumn = d.getColumnIndex(db.KEY_LASTNAME);
         int codeColumn = d.getColumnIndex(db.KEY_CODE);
@@ -160,14 +163,19 @@ public class functions
         	 do {
         		 pType = c.getInt(pTypeColumn);
         		 pRowID = c.getLong(pIDColumn);
+        		 present = c.getInt(preColumn);
+        		 list = c.getInt(listColumn);
         		 
         		 Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
         		 /* Add current Entry to offeventData and stdeventData. */
         		 if(pType == tpType){   
         			 if (tpType == 1)d = db.getStudent(pRowID);
-        			 if (tpType == 2)d = db.getOfficial(pRowID);     	
-        			 Log.i(TAG,d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));		 
-        			 eventData.add(d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));
+        			 if (tpType == 2)d = db.getOfficial(pRowID);  
+        			 if (present == 0)SPresent = "AB";
+        			 if (list == 0)SList = "**";
+        			 String data= d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn)+" "+SList+" "+SPresent;
+        			 Log.i(TAG,data);		 
+        			 eventData.add(data);
         			 
         		}
         		 Log.i(TAG,"person extraction" );
@@ -279,7 +287,9 @@ public class functions
     	return eventData;
     }
 	
-	public void sendEmail(long rID, String [] ev_contents, ArrayList<String> offeventData, ArrayList<String> stdeventData){
+	public void sendEmail(long rID, String [] ev_contents ){
+		ArrayList<String[]> offeventData = aries_personExtract(rID, 2);
+		ArrayList<String[]> stdeventData = aries_personExtract(rID, 1);
 		Mail m = new Mail("babysam.proj@gmail.com", "babysamproj"); 
 		String Body = mailBody(ev_contents, offeventData, stdeventData);
 		String Subject = mailSubject(ev_contents);
@@ -310,55 +320,87 @@ public class functions
 		return " Attendance for "+ev_contents[0] +" on "+ev_contents[4];
 	}
 	
-	private String mailBody(String [] ev_contents, ArrayList<String> offeventData, ArrayList<String> stdeventData){		
+	private String mailBody(String [] ev_contents, ArrayList<String[]> offeventData, ArrayList<String[]> stdeventData){		
 		String Body = "Event: "+ev_contents[0] + "\n Venue: "+ev_contents[1]+"\n"
 		+" Course: "+ev_contents[2]+"\n Duration: "+ev_contents[3]+"\n \nOfficials\n";
 		
-		for (int i=0;i<offeventData.size();i++) Body += " "+offeventData.get(i)+" \n";		
+		String SPresent="",SList="";
+		for (int i=0;i<offeventData.size();i++) {
+			String [] Data = offeventData.get(i);
+			if (Integer.parseInt(Data[1]) == 0)SPresent = "AB";
+			if (Integer.parseInt(Data[2]) == 0)SList = "**";
+			 //String data= d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn)+" "+SList+" "+SPresent
+			Body += " "+Data[4]+" "+Data[5]+" "+Data[0]+" "+SList+" "+SPresent+" \n";		
+		}
 		Body = Body+"\n \nStudents\n";
-		for (int i=0;i<stdeventData.size();i++) Body += " "+stdeventData.get(i)+" \n";
+		for (int i=0;i<stdeventData.size();i++) {
+			String [] Data = stdeventData.get(i);
+			if (Integer.parseInt(Data[1]) == 0)SPresent = "AB";
+			if (Integer.parseInt(Data[2]) == 0)SList = "**";
+			Body += " "+Data[4]+" "+Data[5]+" "+Data[0]+" "+SList+" "+SPresent+" \n";	
+		}
 		return Body;
 	}
 	
-	public void sendAries(long lRowID){
-		// Create a new HttpClient and Post Header  
-	    HttpClient httpclient = new DefaultHttpClient();  
-	    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
-
-    	try {  
-    		// Add your data  
-    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
-	    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
-	    	nameValuePairs.add(new BasicNameValuePair("eventdata", "f.eventExtract(RowID)"));
-	    	nameValuePairs.add(new BasicNameValuePair("studentdata", "f.aries_personExtract(RowID, 1)"));
-	    	nameValuePairs.add(new BasicNameValuePair("officialdata", "f.aries_personExtract(RowID, 2)"));
-	    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
-
-	    	// Execute HTTP Post Request  
-	    	HttpResponse response = httpclient.execute(httppost);
-	    	
-	    	InputStream is = response.getEntity().getContent();
-	    	BufferedInputStream bis = new BufferedInputStream(is);
-	    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
-
-	    	 int current = 0;  
-	    	 while((current = bis.read()) != -1){  
-	    	 	baf.append((byte)current);  
-	    	 }  
-	    	   
-	    	/* Convert the Bytes read to a String. */  
-	    	String text = new String(baf.toByteArray()); 
-	    	Toast.makeText(context,"upload status: "+ text, Toast.LENGTH_SHORT).show();
-	    	ariesReg(lRowID);
-
-    	} catch (ClientProtocolException e) {  
-    		// TODO Auto-generated catch block  
-    		Log.i(TAG," client protocol exception error");
-    	} catch (IOException e) {  
-    		// TODO Auto-generated catch block 
-    		Log.i(TAG," IO exception error");
-    	}  
+	public void sendAries(long lRowID, int age){// age is used to check if its coming from a new event or from history (if history - 1 if new event - 0)
+		
+		int ariesReg=1;
+		if ( age == 1) ariesReg = getEventReg(lRowID);
+		Log.i(TAG, ""+ariesReg);
+		if(age == 0 || ariesReg == 0){
+			// Create a new HttpClient and Post Header  
+		    HttpClient httpclient = new DefaultHttpClient();  
+		    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
+	
+	    	try {  
+	    		// Add your data  
+	    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
+		    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
+		    	nameValuePairs.add(new BasicNameValuePair("eventdata", eventExtract(lRowID).toString()));
+		    	nameValuePairs.add(new BasicNameValuePair("studentdata", aries_personExtract(lRowID,1).toString()));
+		    	nameValuePairs.add(new BasicNameValuePair("officialdata", aries_personExtract(lRowID, 2).toString()));
+		    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
+		    	
+		    	Log.i(TAG, aries_personExtract(lRowID,1).toString());
+		    	// Execute HTTP Post Request  
+		    	HttpResponse response = httpclient.execute(httppost);
+		    	
+		    	InputStream is = response.getEntity().getContent();
+		    	BufferedInputStream bis = new BufferedInputStream(is);
+		    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
+	
+		    	 int current = 0;  
+		    	 while((current = bis.read()) != -1){  
+		    	 	baf.append((byte)current);  
+		    	 }  
+		    	   
+		    	/* Convert the Bytes read to a String. */  
+		    	String text = new String(baf.toByteArray()); 
+		    	Toast.makeText(context,"upload status: "+ text, Toast.LENGTH_SHORT).show();
+		    	ariesReg(lRowID);
+	
+	    	} catch (ClientProtocolException e) {  
+	    		// TODO Auto-generated catch block  
+	    		Log.i(TAG," client protocol exception error");
+	    	} catch (IOException e) {  
+	    		// TODO Auto-generated catch block 
+	    		Log.i(TAG," IO exception error");
+	    	}  
+		}
 	}
+
+	private int getEventReg(long lRowID) {
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        Cursor c = db.getEvent(lRowID);
+        int ariesregIDColumn = c.getColumnIndex(db.KEY1_ARIES) ;
+        int ariesReg=0;
+		if (c.moveToFirst())ariesReg = c.getInt(ariesregIDColumn);	        
+        db.close();
+		return ariesReg;
+	}
+
 
 	private void ariesReg(long lRowID) {
 		DBAdapter db = new DBAdapter(context);
@@ -571,7 +613,7 @@ public class functions
 	}
 	
 	
-	public boolean eventCHECK(long pID, long leventID, int pType){ //to check if code exists if it does then return true.
+	public boolean eventCHECK(long pID, long leventID, int pType){ //to check if code exists in attendance list if it does then return true.
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;
 		//boolean stdexist = false;
@@ -589,7 +631,10 @@ public class functions
         		 LpID = c.getLong(pIDColumn);
         		 eventID = c.getLong(eIDColumn);
         		 ptype = c.getInt(pTypeColumn);
-        	     if(pID == LpID && eventID == leventID && ptype == pType) exist = true ; 
+        	     if(pID == LpID && eventID == leventID && ptype == pType) {
+        	    	 Log.i(TAG,"checking codes...test"+ LpID+eventID+ptype );
+        	    	 exist = true ; 
+        	     }
         	     Log.i(TAG,"checking codes..." );
         		
              } while (c.moveToNext() && exist != true);
@@ -597,6 +642,7 @@ public class functions
             Toast.makeText(context, "No Persons found for events", Toast.LENGTH_SHORT).show();
         
         db.close();
+        Log.i(TAG,"checking codes..."+exist );
 		return exist;		
 	}
 	
@@ -720,9 +766,8 @@ public class functions
 		ArrayList<String[]> studentData = aries_personExtract(lRowID, 1);
 		String [] eventDetails = eventExtract(lRowID);
 		
-		//String fileName = eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+eventDetails[4]+".xml";
-		String fileName ="test.xml";
-		File newxmlfile = new File(Environment.getExternalStorageDirectory(),fileName);
+		File newxmlfile = makeFile(lRowID,eventDetails);
+		
 		String eventTag = "EventDetails";
 		String studentTag = "Student";
 		String officialTag = "Official";
@@ -770,12 +815,12 @@ public class functions
                                 for (int i = 0; i < officalData.size();i++){
                                 	serializer.startTag(null, officialTag);
                                     	//set an attribute called "attribute" with a "value" for <child2>
+                                	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
                                     	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
                                     	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
                                     	serializer.attribute(null, "Code", officalData.get(i)[0]);
                                     	serializer.attribute(null, "Present", officalData.get(i)[1]);
                                     	serializer.attribute(null, "List", officalData.get(i)[2]);
-                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
                                     serializer.endTag(null, officialTag);
                                 }
                                 Log.i(TAG, "save file 2");
@@ -783,12 +828,12 @@ public class functions
                                 for (int i = 0; i < studentData.size();i++){
                                 	serializer.startTag(null, studentTag);
                                     	//set an attribute called "attribute" with a "value" for <child2>
-                                    	serializer.attribute(null, "First_Name", studentData.get(i)[5]);
-                                    	serializer.attribute(null, "Last_Name", studentData.get(i)[4]);
-                                    	serializer.attribute(null, "Code", studentData.get(i)[0]);
-                                    	serializer.attribute(null, "Present", studentData.get(i)[1]);
-                                    	serializer.attribute(null, "List", studentData.get(i)[2]);
                                     	serializer.attribute(null, "Time_Stamp", studentData.get(i)[3]);
+                                    	serializer.attribute(null, "List", studentData.get(i)[2]);
+                                    	serializer.attribute(null, "Present", studentData.get(i)[1]);
+                                    	serializer.attribute(null, "Code", studentData.get(i)[0]);
+                                    	serializer.attribute(null, "Last_Name", studentData.get(i)[4]);
+                                    	serializer.attribute(null, "First_Name", studentData.get(i)[5]);
                                     serializer.endTag(null, studentTag);
                                     Log.i(TAG, "save file: "+ studentData.get(i)[5]);
                                 }
@@ -803,5 +848,24 @@ public class functions
                 } catch (Exception e) {
                         Log.e(TAG,"error occurred while creating xml file");
                 }
+	}
+
+
+	private File makeFile(long lRowID, String[] eventDetails) {
+		// TODO Auto-generated method stub
+		//String fileName ="test.xml";
+		File dirPath = new File(Environment.getExternalStorageDirectory()+"/BabySAM/"+eventDetails[0]+"/");
+		// have the object build the directory structure, if needed.
+		dirPath.mkdirs();
+		
+		String fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+".xml";
+		File newxmlfile = new File(dirPath,fileName);
+		int count = 1; //variable used to change filename
+		while (newxmlfile.exists()){
+			fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+count+".xml";
+			count++;
+			newxmlfile = new File(dirPath,fileName);
+		}
+		return newxmlfile;
 	}
 }

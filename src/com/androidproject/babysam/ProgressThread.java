@@ -1,7 +1,5 @@
 package com.androidproject.babysam;
 
-import java.util.ArrayList;
-
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;

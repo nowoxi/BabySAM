@@ -147,7 +147,7 @@ public class functions
         db.close();
     	return eventDetails;
     }	
-	//TODO change this method to extract the rows
+	//this method to extract the rows
 	public ArrayList<String> personExtract (long extra_EID, int tpType){
 		ArrayList<String> eventData = new ArrayList<String>();
       //create object of DB
@@ -391,10 +391,8 @@ public class functions
 		    	ariesReg(lRowID);
 	
 	    	} catch (ClientProtocolException e) {  
-	    		// TODO Auto-generated catch block  
 	    		Log.i(TAG," client protocol exception error");
 	    	} catch (IOException e) {  
-	    		// TODO Auto-generated catch block 
 	    		Log.i(TAG," IO exception error");
 	    	}  
 		}
@@ -511,7 +509,7 @@ public class functions
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
         	 do {
-        		 Log.i(TAG,"still checking codes..." );
+        		 //Log.i(TAG,"still checking codes..." );
         		 LcodeID = c.getLong(codeIDColumn);
         	     if(code == LcodeID) exist = true ;  
         		
@@ -520,9 +518,9 @@ public class functions
             Toast.makeText(context, "No Officials found", 
             		Toast.LENGTH_SHORT).show();
         }
-        Log.i(TAG,"checking codes a finished ..." );
+        //Log.i(TAG,"checking codes a finished ..." );
         if ( exist != true){
-        	Log.i(TAG,"checking codes b started..." );
+        	//Log.i(TAG,"checking codes b started..." );
 	        c = db.getAllStudents();
 	        Log.i(TAG,"checking codes dead..." );
 	        if (c.moveToFirst()) 
@@ -554,7 +552,7 @@ public class functions
         	/* Loop through all Results */   
         	personType = 2;
         	 do {
-        		 Log.i(TAG,"still checking codes..." );
+        		 //Log.i(TAG,"still checking codes..." );
         		 LcodeID = c.getLong(codeIDColumn);
         	     if(code == LcodeID && personType == pType) exist = true ;  
         		
@@ -563,11 +561,11 @@ public class functions
             Toast.makeText(context, "No Officials found", 
             		Toast.LENGTH_SHORT).show();
         }
-        Log.i(TAG,"checking codes a finished ..." );
+        //Log.i(TAG,"checking codes a finished ..." );
         if ( exist != true){
-        	Log.i(TAG,"checking codes b started..." );
+        	//Log.i(TAG,"checking codes b started..." );
 	        c = db.getAllStudents();
-	        Log.i(TAG,"checking codes dead..." );
+	       // Log.i(TAG,"checking codes dead..." );
 	        if (c.moveToFirst()) {
 	        	/* Loop through all Results */
 	        	personType = 1;
@@ -601,7 +599,7 @@ public class functions
         		 LcodeID = c.getLong(codeIDColumn);
         		 rowID = c.getLong(IDColumn);
         	     if(code == LcodeID && rowID != lRowID) exist = true ; 
-        	     Log.i(TAG,"checking codes..." );
+        	     //Log.i(TAG,"checking codes..." );
         		
              } while (c.moveToNext() && exist != true);
         else
@@ -646,10 +644,10 @@ public class functions
         		 eventID = c.getLong(eIDColumn);
         		 ptype = c.getInt(pTypeColumn);
         	     if(pID == LpID && eventID == leventID && ptype == pType) {
-        	    	 Log.i(TAG,"checking codes...test"+ LpID+eventID+ptype );
+        	    	// Log.i(TAG,"checking codes...test"+ LpID+eventID+ptype );
         	    	 exist = true ; 
         	     }
-        	     Log.i(TAG,"checking codes..." );
+        	     //Log.i(TAG,"checking codes..." );
         		
              } while (c.moveToNext() && exist != true);
         else
@@ -866,7 +864,6 @@ public class functions
 
 
 	private File makeFile(long lRowID, String[] eventDetails) {
-		// TODO Auto-generated method stub
 		//String fileName ="test.xml";
 		File dirPath = new File(Environment.getExternalStorageDirectory()+"/BabySAM/"+eventDetails[0]+"/");
 		// have the object build the directory structure, if needed.

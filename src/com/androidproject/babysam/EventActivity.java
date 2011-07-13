@@ -101,10 +101,9 @@ public class EventActivity extends babysamActivity {
         setupViews();
         stateID=0;
     }
-    
 
 	@Override
-		protected void onDestroy() {
+	protected void onDestroy() {
 			//   alert.dismiss();		
 			super.onDestroy();
 			Log.i(TAG,"destroy oh and row id is "+ RowID );
@@ -138,7 +137,6 @@ public class EventActivity extends babysamActivity {
 	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 	  //iRowID is the row id of the person to be edited or deleted 
 		// get last row id of previous session then add it to the contextmenu +1
-	 // long ilRowID=getLastEventLastPersonRow(RowID)+ info.id + 1 ;
 	  long ilRowID = f.getEventPersonID("bad",info.id,en_stPerson,RowID);
 	  
 	  switch (item.getItemId()) {
@@ -236,6 +234,7 @@ public class EventActivity extends babysamActivity {
     		text[i].setText(leventDetails[i]);
     	}
 	}
+	
 	private Boolean checkperson(){
 		// method used by dialog to check if person or offical have been added to the canceled unidentified session
 		//so it can remove them
@@ -299,7 +298,6 @@ public class EventActivity extends babysamActivity {
 	               // if (en_stPerson == 2) pos = offeventData.size();
 	                if(reScan == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);                
 	                if(reScan == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
-                 
                 }
                 
                 Log.i(TAG,"the stateID after scanning: "+stateID  );
@@ -314,20 +312,36 @@ public class EventActivity extends babysamActivity {
         	if (resultCode == RESULT_OK){
         		long pID = intent.getLongExtra("PersonID", 0);
         		Log.i(TAG,"the new person ID is "+ pID );
-        		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp());
+        		if (pEdit == 1){// this is to check if edit was selected and used to update the personID only if you are editting
+					DBAdapter db = new DBAdapter(this); 
+			        db.open(); 
+					db.updateEventPersonID(pID,iRowID);
+					db.close();
+				} else{
+					if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp());
+				}
         		//Log.i(TAG,"stage 1 "+ pID );
         		String lData = listview_Format(pID,en_stPerson,RowID);
     			//this section is for editing the list view	
         		if (en_stPerson == 1){
-        			//int pos = stdeventData.size()-1;
-    				//stdeventData.remove(pos);
-    				stdeventData.add(lData);
+        			//pedit is used to check if editing of listview and modify as appropariate
+        			if (pEdit == 0 )stdeventData.add(lData);
+    				if (pEdit == 1 ){							
+    					stdeventData.remove((int)stPos);
+    					stdeventData.add((int) stPos, lData);
+    				}
     				std_adapt.notifyDataSetChanged();
+    				//Log.i(TAG, "2nd listview edit "+pEdit+pos);
         		}
         		else if (en_stPerson == 2){
         			//int pos = offeventData.size()-1;
     				//offeventData.remove(pos);
-    				offeventData.add(lData);
+    				//offeventData.add(lData);
+        			if (pEdit == 0 )offeventData.add(lData);
+    				if (pEdit == 1 ){							
+    					offeventData.remove((int) offPos);
+    					offeventData.add((int) offPos, lData);
+    				}
     				off_adapt.notifyDataSetChanged();
         		}
         		
@@ -485,7 +499,6 @@ public class EventActivity extends babysamActivity {
         }
     };
 	
-    
 	// the if would contain an or to join the 3 conditions
 	//this method is used to load the barcode scanner if option enabled
 	public void scanSet(int sett, String scan_format, int scanT, long ilRowID){
@@ -542,10 +555,8 @@ public class EventActivity extends babysamActivity {
 	    	ariesReg(lRowID);
 
     	} catch (ClientProtocolException e) {  
-    		// TODO Auto-generated catch block  
     		Log.i(TAG," client protocol exception error");
     	} catch (IOException e) {  
-    		// TODO Auto-generated catch block 
     		Log.i(TAG," IO exception error");
     	}  
     	
@@ -559,7 +570,6 @@ public class EventActivity extends babysamActivity {
     	db.ariesupdate(lRowID);
     	db.close();
 	}
-
 
 	// this will change from entering values to checking the list if exist and changing present to 1. Also it would
 	//check if in event list
@@ -645,7 +655,7 @@ public class EventActivity extends babysamActivity {
 		alert.show();		
 	}
 	
-	//TODO do not add to list if present set to 0
+	//not necessary add to listview of event if present set to 0
 	private void enterPerson(String lcontents){
 		String lData;
 		int pos = 0 ;//calculating position of item edited 
@@ -667,15 +677,18 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
 			}
 			
-			if (correctTable){//TODO also consider if present set to 1
+			if (correctTable){
 				lData = listview_Format(lcontents,en_stPerson, RowID);
-				//this section is for editing the list view						
-				if (pEdit == 0 )stdeventData.add(lData);
-				if (pEdit == 1 ){							
-					stdeventData.remove(pos);
-					stdeventData.add(pos, lData);
+				//this section is for editing the list view	
+				if( !lData.contains("null")){
+					if (pEdit == 0 )stdeventData.add(lData);
+					if (pEdit == 1 ){							
+						stdeventData.remove(pos);
+						stdeventData.add(pos, lData);
+					}
+					std_adapt.notifyDataSetChanged();
+					Log.i(TAG, "enter person");
 				}
-				std_adapt.notifyDataSetChanged();
 			}
 		} else if (en_stPerson == 2){
 			if (en_ofscan == 1|| pEdit == 1){//update info if scan enable or editing 
@@ -692,17 +705,18 @@ public class EventActivity extends babysamActivity {
 			}
 			if (correctTable){
 				lData = listview_Format(lcontents,en_stPerson, RowID);
-				if (pEdit == 0 )offeventData.add(lData);
-				if (pEdit == 1 ){
-					;//calculating position of item edited 
-					offeventData.remove(pos);
-					offeventData.add(pos, lData);
+				if( !lData.contains("null")){
+					if (pEdit == 0 )offeventData.add(lData);
+					if (pEdit == 1 ){
+						;//calculating position of item edited 
+						offeventData.remove(pos);
+						offeventData.add(pos, lData);
+					}
 				}
 			}
 			off_adapt.notifyDataSetChanged();
 		} 
 	}
-	
 	
 	//formating the string to be used for the list view
 	private String listview_Format(String lcontents, int pType,long lRowID) {
@@ -775,7 +789,6 @@ public class EventActivity extends babysamActivity {
 	    //    Log.i(TAG,lRowID+ " Last Person Row ID : "+ LRowID+"got info from "+ r );	
 		return LRowID;
 	}
-	
 	
 	//TODO this should change as we are not going to be using code any more in event tables
 	//decide if you are leaving this as i
@@ -884,7 +897,7 @@ public class EventActivity extends babysamActivity {
 				Toast.makeText(this, "Adding person to wrong group", Toast.LENGTH_SHORT).show();
 			}
 		}else if(sourceList == 1){
-			//TODO this is used to save none existent students on a list to the students list and
+			// this is used to save none existent students on a list to the students list and
 			// same for officials also
 			if(ptype == 1)f.add_dbpersondata(FirstName, LastName, code);
 			if(ptype == 2)f.add_dbpersondata(FirstName, LastName, code, blank, blank);
@@ -898,7 +911,6 @@ public class EventActivity extends babysamActivity {
 			Class<?> cls= olistActivity.class;
 			if(en_stPerson == 1)cls = slistActivity.class;
 			Intent intent = new Intent(EventActivity.this,cls);	
-			//intent.putExtra("code", code);
 			intent.putExtra("code", lcontents);
 			startActivityForResult(intent,1);
 			//rPos= pos;
@@ -917,7 +929,7 @@ public class EventActivity extends babysamActivity {
 			long epID=f.getEventPersonID(pID, ptype, lRowID);
 			list = 1;
 			listCheck=true;
-			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, present, list);//TODO when updating i might only want it to update a few detais not all
+			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, present, list);// when updating i might only want it to update a few detais not all
 		}else{
 			list = 0;
 			listCheck=false;
@@ -936,6 +948,7 @@ public class EventActivity extends babysamActivity {
 		db.close();
 		
 	}
+	
 	private void processData( XmlResourceParser list) throws XmlPullParserException,IOException {
 		//no need for data to show in list view until studnet present
 		
@@ -986,7 +999,6 @@ public class EventActivity extends babysamActivity {
               		Toast.LENGTH_SHORT).show();
 		}	
 	}
-
 
 	public void event_cancel(long rID){
 		//make a method that would cancel all the current status of events	i.e. deleting from the database

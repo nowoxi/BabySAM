@@ -42,7 +42,7 @@ public class functions
 	
 	//TODO find out who using the getpersoncode... i think its the edit probably then modify to get data from the student list or officials list tables
 	// as required
-	public long getPersonCode(long ilRowID, int pType) {
+	public long getPersonCode(long ilRowID, int pType) {//iRowID is variable for rowid of table 3 or 4 ie person ID
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
@@ -53,6 +53,17 @@ public class functions
 		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
         db.close();
 		return LcodeID;
+	}
+	public long getEventPersonIDValue(long eventID) {//used to get the personid value of aperaticular person used in events when editting
+		DBAdapter db = new DBAdapter(context);
+		//---get person---
+        db.open();
+        Cursor c = db.getPerson(eventID);
+        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID) ;
+        long pID=0;
+		if (c.moveToFirst())pID = c.getLong(pIDColumn);	        
+        db.close();
+		return pID;
 	}
 	
 	public long getPersonID(long code, int pType) { //for event activity
@@ -89,7 +100,7 @@ public class functions
 		return name;
 	}
 	
-	public long getPersonID(int pType, long pos){// used in delete context to find the appropriate row to delete
+	public long getPersonID(int pType, long pos){// used in delete context to find the appropriate row to delete. used in lists
 		long rowID = 0;
 		//pos+=1;
 		DBAdapter db = new DBAdapter(context);
@@ -430,14 +441,17 @@ public class functions
         int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
         int presentColumn = c.getColumnIndex(db.KEY2_PRESENT);
         long LID=0,count=0;
+        c.moveToFirst();
         do {
 	   		int pType = c.getInt(pTypeColumn);
 	   		int present = c.getInt(presentColumn);
 	   		/* Add current Entry to offeventData and stdeventData.*/ 
 	   		if(pType == lpType && count == pos)LID = c.getLong(IDColumn);    
 	   		if(pType == lpType && present == 1 )count++;
+	   		Log.i(TAG,"pEventID: "+c.getLong(IDColumn)+" count:"+count);
         } while (c.moveToNext() && LID == 0); 
         db.close();
+        Log.i(TAG,"c count:"+c.getCount()+" "+count);
 		return LID;
 	}
 	
@@ -461,7 +475,7 @@ public class functions
 		return LID;
 	}
 
-	public void updatePos(int lpType, int pos, long lRowID) {
+	/*public void updatePos(int lpType, int pos, long lRowID) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
@@ -473,7 +487,7 @@ public class functions
 	   		int pType = c.getInt(pTypeColumn);
 	   		long dpos = c.getLong(posColumn);
 	   		long rowID = c.getLong(IDColumn);
-	   		/* Add current Entry to offeventData and stdeventData. */
+	   		/* Add current Entry to offeventData and stdeventData. *\/
 	   		if(pType == lpType && dpos > pos){
 	   			dpos-=1;
 	   			 try{
@@ -484,7 +498,7 @@ public class functions
 	   		}
         } while (c.moveToNext()); 
         db.close();
-	}
+	}*/
 	public boolean codeCHECK(long code){ //to check if code exists if it does then return true.
 		Log.i(TAG,"checking codes..." );
 		DBAdapter db = new DBAdapter(context);

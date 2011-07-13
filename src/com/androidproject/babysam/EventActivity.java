@@ -81,7 +81,7 @@ public class EventActivity extends babysamActivity {
 	   private int en_stscan, en_ofscan, en_evscan, en_stPerson, pEdit, reScan; 
 	   private String format, scformat, contents, content_delimiter,FirstName, LastName;
 	   private String [] ev_contents = new String [5];
-	   private long RowID, pRowID, stateID, iRowID, stPos, offPos, rPos;
+	   private long RowID, pRowID, stateID, iRowID, stPos, offPos;//, rPos;
 	   private functions f;
 	   private ProgressDialog dialog;
 	   private boolean correctTable,listCheck;//used to control if the list view should be updated after checking if added person belongs to correct table
@@ -153,12 +153,6 @@ public class EventActivity extends babysamActivity {
 	  case R.id.event_rescan_item:
 		  rescan("CODABAR",en_stPerson,ilRowID);
 		  return true;
-	  case R.id.event_edit_item:
-		;
-		return true;
-	  case R.id.event_cancel_item:
-		;
-		return true;  
 	  default:
 	    return super.onContextItemSelected(item);
 	  }
@@ -175,7 +169,7 @@ public class EventActivity extends babysamActivity {
 	private void deleteContext(int pType, int pos, long ilRowID) {		
 		//  i am hoping u do this by fetching all persons then adding the Row ID of persons
 		//  that have positions higher than deleted position and reducing by one then update them
-		f.updatePos(pType,pos,RowID);//   you need to update the pos of all persons after the deleted position
+		//f.updatePos(pType,pos,RowID);//   you need to update the pos of all persons after the deleted position
 		if (f.deletePerson(ilRowID,3)){
 			if(pType == 1){
 				stdeventData.remove(pos);
@@ -190,13 +184,15 @@ public class EventActivity extends babysamActivity {
 	private void editContext(long pos, int lpType, long lRowID, long ilRowID) {
 		// get the row id for a person that is of type 2 and event .... and pos....
 		
-		// ilRowID is the row id of the person to be edited 
+		// ilRowID is the row id of the person to be edited in table 2(event)
 		// get last row id of previous session then add it to the contextmenu +1
 		
 		Log.i(TAG,"the row id of selected: "+ilRowID);
 		if (en_stPerson == 2) offPos = pos;
 		if (en_stPerson == 1) stPos = pos;
-		contents = Long.toString(f.getPersonCode(ilRowID,0));		
+		long pID= f.getEventPersonIDValue(ilRowID);
+		contents = Long.toString(f.getPersonCode(pID,0));
+		Log.i(TAG, "contents: "+contents);
 		entryDialog(1,ilRowID);		
 	}
 
@@ -291,18 +287,18 @@ public class EventActivity extends babysamActivity {
                 // Handle successful scan
                 Log.i(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
                 Log.i(TAG,"Format = "+format+" / Contents = " +contents );
-                int pos = 0;
+                //int pos = 0;
                 if (en_stPerson==3){
                 	ev_contents = setevContent(contents, en_stPerson, content_delimiter);
-                	 if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID, pos);
-                     if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents, pos);
+                	 if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);
+                     if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
                 }else{
                     Log.i(TAG, "Array size"+offeventData.size() );
                 
-	                if (en_stPerson == 1) pos = stdeventData.size();
-	                if (en_stPerson == 2) pos = offeventData.size();
-	                if(reScan == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID, pos);                
-	                if(reScan == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents, rPos);
+	                //if (en_stPerson == 1) pos = stdeventData.size();
+	               // if (en_stPerson == 2) pos = offeventData.size();
+	                if(reScan == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);                
+	                if(reScan == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
                  
                 }
                 
@@ -318,19 +314,19 @@ public class EventActivity extends babysamActivity {
         	if (resultCode == RESULT_OK){
         		long pID = intent.getLongExtra("PersonID", 0);
         		Log.i(TAG,"the new person ID is "+ pID );
-        		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp(), rPos);
-        		
+        		if(pID != 0)attdList(pID, RowID, en_stPerson, timeStamp());
+        		//Log.i(TAG,"stage 1 "+ pID );
         		String lData = listview_Format(pID,en_stPerson,RowID);
     			//this section is for editing the list view	
         		if (en_stPerson == 1){
-        			int pos = stdeventData.size()-1;
-    				stdeventData.remove(pos);
+        			//int pos = stdeventData.size()-1;
+    				//stdeventData.remove(pos);
     				stdeventData.add(lData);
     				std_adapt.notifyDataSetChanged();
         		}
         		else if (en_stPerson == 2){
-        			int pos = offeventData.size()-1;
-    				offeventData.remove(pos);
+        			//int pos = offeventData.size()-1;
+    				//offeventData.remove(pos);
     				offeventData.add(lData);
     				off_adapt.notifyDataSetChanged();
         		}
@@ -387,119 +383,30 @@ public class EventActivity extends babysamActivity {
 	        	sendAries(RowID);	
             return true;
         	case R.id.event_file:
-	        	f.saveasFile(RowID);	
+        		if (stateID == 1) f.saveasFile(RowID);
+        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
             return true;
         	case R.id.event_email:
 	        	sendMail();        		
             return true;
-        	case R.id.student_list:
+        	case R.id.event_list:
         		//check if each exists in student list or official
         		//yes - dont add move to next,get rowid
         		//no - add move to next, get rowid
         		//add row id to event table with list set to 1 n present to 0
         		
-	        	importAttendance(0);        		
+	        	importAttendance(1);        		
             return true;
-        	case R.id.official_list:
+        	/*case R.id.official_list:
         		importAttendance(1);        		
-            return true;
+            return true;*/
         }
 		
 		return super.onOptionsItemSelected(item);
 	}
     
-	private void saveasFile(long lRowID) {
-		// TODO Auto-generated method stub
-		ArrayList<String[]> officalData = f.aries_personExtract(lRowID, 2);
-		ArrayList<String[]> studentData = f.aries_personExtract(lRowID, 1);
-		String [] eventDetails = f.eventExtract(lRowID);
-		
-		String fileName = eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+eventDetails[4]+".xml";
-		File newxmlfile = new File(Environment.getExternalStorageDirectory(),fileName);
-		String eventTag = "EventDetails";
-		String studentTag = "Student";
-		String officialTag = "Official";
-		String rootTag = "Event";
-		Log.i(TAG, "save file 1");
-		
-        try{
-                newxmlfile.createNewFile();
-        }catch(IOException e){
-                Log.e("IOException", "exception in createNewFile() method");
-        }
-        
-        //we have to bind the new file with a FileOutputStream
-        FileOutputStream fileos = null;        
-        try{
-                fileos = new FileOutputStream(newxmlfile);
-        }catch(FileNotFoundException e){
-                Log.e("FileNotFoundException", "can't create FileOutputStream");
-        }
-        
-        //we create a XmlSerializer in order to write xml data
-        XmlSerializer serializer = Xml.newSerializer();
-        try {
-                //we set the FileOutputStream as output for the serializer, using UTF-8 encoding
-                        serializer.setOutput(fileos, "UTF-8");
-                        //Write <?xml declaration with encoding (if encoding not null) and standalone flag (if standalone not null)
-                        serializer.startDocument(null, Boolean.valueOf(true));
-                        //set indentation option
-                        serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-                        //start a tag called "root"
-                        serializer.startTag(null, rootTag);
-                        //i indent code just to have a view similar to xml-tree
-                        //building xml section for eventdetails
-                        		serializer.startTag(null, eventTag);
-			                        //set an attribute called "attribute" with a "value" for <eventdetails>
-			                        serializer.attribute(null, "Event Type", eventDetails[0]);
-			                        serializer.attribute(null, "Venue", eventDetails[1]);
-			                        serializer.attribute(null, "Course", eventDetails[2]);
-			                        serializer.attribute(null, "Duration", eventDetails[3]);
-			                        serializer.attribute(null, "Time_Stamp", eventDetails[4]);
-		                        serializer.endTag(null, eventTag);
-		                        
-                                //building xml section for officials
-                                for (int i = 0; i < officalData.size();i++){
-                                	serializer.startTag(null, officialTag);
-                                    	//set an attribute called "attribute" with a "value" for <child2>
-                                    	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
-                                    	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
-                                    	serializer.attribute(null, "Code", officalData.get(i)[0]);
-                                    	serializer.attribute(null, "Present", officalData.get(i)[1]);
-                                    	serializer.attribute(null, "List", officalData.get(i)[2]);
-                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
-                                    serializer.endTag(null, officialTag);
-                                }
-                                
-                                //building xml section for student
-                                for (int i = 0; i < studentData.size();i++){
-                                	serializer.startTag(null, studentTag);
-                                    	//set an attribute called "attribute" with a "value" for <child2>
-                                    	serializer.attribute(null, "First_Name", officalData.get(i)[5]);
-                                    	serializer.attribute(null, "Last_Name", officalData.get(i)[4]);
-                                    	serializer.attribute(null, "Code", officalData.get(i)[0]);
-                                    	serializer.attribute(null, "Present", officalData.get(i)[1]);
-                                    	serializer.attribute(null, "List", officalData.get(i)[2]);
-                                    	serializer.attribute(null, "Time_Stamp", officalData.get(i)[3]);
-                                    serializer.endTag(null, officialTag);
-                                }
-                       
-                        serializer.endTag(null, rootTag);
-                        serializer.endDocument();
-                        //write xml data into the FileOutputStream
-                        serializer.flush();
-                        //finally we close the file stream
-                        fileos.close();
-                       
-                        Toast.makeText(this, "file has been created on SD card", Toast.LENGTH_SHORT).show();
-                } catch (Exception e) {
-                        Log.e("Exception","error occurred while creating xml file");
-                }
-	}
-
-
 	private void importAttendance(int Mode) {
-		// TODO Auto-generated method stub
+		// Mode, used to choose if the source of the XML is from the inbuilt list or from the internet
 		boolean bFoundEvents = false;  
 	    String lcontents;
 	    int sourceList=1;
@@ -513,9 +420,7 @@ public class EventActivity extends babysamActivity {
 	        }
 		} else if( Mode == 1){
 			try {
-
-				URL url = new URL(
-						"http://babysam.ucoz.com/list.xml");
+				URL url = new URL( "http://babysam.ucoz.com/list.xml");
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				Document doc = db.parse(new InputSource(url.openStream()));
@@ -547,7 +452,7 @@ public class EventActivity extends babysamActivity {
 								Long code = new Long (lcontents);
 								//String cdate = timeStamp();
 				        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
-				        		populate_table2(sourceList,en_stPerson,lcontents,RowID,stPos);
+				        		populate_table2(sourceList,en_stPerson,lcontents,RowID);
 					        	Log.i(TAG,"add person to db" );
 				        	} catch (NumberFormatException e){
 				       		 Toast.makeText(this, "Invalid data format", 
@@ -698,7 +603,7 @@ public class EventActivity extends babysamActivity {
 			
 				pRowID = 0;
 				if (en_stPerson == 3){
-					long eventPos=-1;// variable to fill the requirements of the method inserting to db
+					//long eventPos=-1;// variable to fill the requirements of the method inserting to db
 					EditText [] eventresult = { (EditText) dialoglayout.findViewById(R.id.EditText01), (EditText) dialoglayout.findViewById(R.id.EditText02),
 							(EditText) dialoglayout.findViewById(R.id.EditText03), (EditText) dialoglayout.findViewById(R.id.EditText04) };
 					
@@ -707,8 +612,8 @@ public class EventActivity extends babysamActivity {
 					ev_contents[4]= timeStamp();
 					//update data if data was scanned, insert data if other wise
 					Log.i(TAG,"on click ok for event dialog " );
-					if (en_evscan == 1)	upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents,eventPos);
-					 else if (en_evscan == 0) add_dbdata(en_stPerson, ev_contents, contents, RowID,eventPos);
+					if (en_evscan == 1)	upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, contents);
+					 else if (en_evscan == 0) add_dbdata(en_stPerson, ev_contents, contents, RowID);//,eventPos);
 					
 					TextView [] text = {(TextView) findViewById(R.id.textView1),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView02),
 			    	    	(TextView) findViewById(R.id.TextView01)};
@@ -756,10 +661,10 @@ public class EventActivity extends babysamActivity {
 					pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
 					pos =(int) stPos ;//value of person to be edited
 				}
-				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents,pos);
+				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents);
 			} else if (en_ofscan == 0){
-				stPos = stdeventData.size();
-				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, stPos);
+				//stPos = stdeventData.size();
+				add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
 			}
 			
 			if (correctTable){//TODO also consider if present set to 1
@@ -780,10 +685,10 @@ public class EventActivity extends babysamActivity {
 					pRowID = iRowID;  //set the person rowID to the id to be edited
 					pos = (int) offPos ;//value of person to be edited
 				}
-				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents,pos);
+				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents);
 			} else if (en_ofscan == 0){
-				offPos = offeventData.size();
-				add_dbdata(en_stPerson, ev_contents, lcontents, RowID, offPos);
+				//offPos = offeventData.size();
+				add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
 			}
 			if (correctTable){
 				lData = listview_Format(lcontents,en_stPerson, RowID);
@@ -874,7 +779,7 @@ public class EventActivity extends babysamActivity {
 	
 	//TODO this should change as we are not going to be using code any more in event tables
 	//decide if you are leaving this as i
-	private void upd_dbdata(int ptype,long pID, long rID, String [] lev_contents, String lcontents,long pos){
+	private void upd_dbdata(int ptype,long pID, long rID, String [] lev_contents, String lcontents){
     	//---add 2 events and persons---
 		int sourceList = 0;
     	DBAdapter db = new DBAdapter(this); 
@@ -897,10 +802,11 @@ public class EventActivity extends babysamActivity {
         	}
         } else {    
         	try{
-        		Long code = new Long (lcontents);
-        		String cdate = timeStamp();	        	
+        		@SuppressWarnings("unused")
+				Long code = new Long (lcontents);
+        		//String cdate = timeStamp();	        	
 	        	// db.updatePerson(pID,rID,ptype,code,cdate,pos);
-        		populate_table2(sourceList,ptype,lcontents,rID,pos);
+        		populate_table2(sourceList,ptype,lcontents,rID);
         		
 	        	Log.i(TAG,"updated person in db" );
         	} catch (NumberFormatException e){
@@ -911,7 +817,7 @@ public class EventActivity extends babysamActivity {
         db.close();
     }
     
-	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID, long pos){
+	private void add_dbdata(int ptype, String [] lev_contents, String lcontents,long lRowID){
     	//---add 2 events and persons---
 		int sourceList = 0;
     	DBAdapter db = new DBAdapter(this); 
@@ -937,7 +843,7 @@ public class EventActivity extends babysamActivity {
 				Long code = new Long (lcontents);
         		//String cdate = timeStamp();
         		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
-        		populate_table2(sourceList,ptype,lcontents,lRowID,pos);
+        		populate_table2(sourceList,ptype,lcontents,lRowID);
 	        	Log.i(TAG,"add person to db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
@@ -949,7 +855,7 @@ public class EventActivity extends babysamActivity {
         
     }
 	
-	private void populate_table2(int sourceList,int ptype, String lcontents, long lRowID, long pos) {
+	private void populate_table2(int sourceList,int ptype, String lcontents, long lRowID) {
 		Long code = new Long (lcontents);
 		String cdate = timeStamp();
 		long pID = 0;
@@ -960,8 +866,17 @@ public class EventActivity extends babysamActivity {
 		if(f.codeCHECK(code)){
 			if(f.codeCHECK(code,ptype)){//check if code exists in correct table
 				pID = f.getPersonID(code, ptype);
-				if(sourceList == 0)attdList(pID,lRowID, ptype, cdate, pID);
-				if(sourceList == 1)add_attdList(pID, lRowID, ptype, cdate, stPos);
+				if(sourceList == 0){
+					if (pEdit == 1){// this is to check if edit was selected and used to update the personID only if you are editting
+						DBAdapter db = new DBAdapter(this); 
+				        db.open(); 
+						db.updateEventPersonID(pID,iRowID);
+						db.close();
+					} else{
+						attdList(pID,lRowID, ptype, cdate);
+					}
+				}
+				if(sourceList == 1)add_attdList(pID, lRowID, ptype, cdate);
 				correctTable = true;
 			}else {
 				Log.i(TAG,"wrong row "+ ptype );
@@ -986,7 +901,7 @@ public class EventActivity extends babysamActivity {
 			//intent.putExtra("code", code);
 			intent.putExtra("code", lcontents);
 			startActivityForResult(intent,1);
-			rPos= pos;
+			//rPos= pos;
 			//pID = 0; //  create record n return pid please
 		}
 		
@@ -994,30 +909,30 @@ public class EventActivity extends babysamActivity {
 
 		//check if exist in attendance list 
 		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
-	private void attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
-		long present = 1, list = 0;
+	private void attdList(long pID, long lRowID, int ptype, String cdate) {
+		int present = 1, list = 0;
 		DBAdapter db = new DBAdapter(this); 
         db.open(); 
 		if(f.eventCHECK(pID, lRowID, ptype)){
 			long epID=f.getEventPersonID(pID, ptype, lRowID);
 			list = 1;
 			listCheck=true;
-			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, pos, present, list);//TODO when updating i might only want it to update a few detais not all
+			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, present, list);//TODO when updating i might only want it to update a few detais not all
 		}else{
 			list = 0;
 			listCheck=false;
-			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
+			db.insertEventPerson(lRowID, ptype, pID, cdate,present, list);
 		}
 		db.close();
 		
 	}
 	//used to add persons from attendance list
-	private void add_attdList(long pID, long lRowID, int ptype, String cdate, long pos) {
+	private void add_attdList(long pID, long lRowID, int ptype, String cdate) {
 		int list = 1;
 		int present= 0;
 		DBAdapter db = new DBAdapter(this); 
         db.open(); 
-			db.insertEventPerson(lRowID, ptype, pID, cdate, pos, present, list);
+			db.insertEventPerson(lRowID, ptype, pID, cdate, present, list);
 		db.close();
 		
 	}
@@ -1053,7 +968,7 @@ public class EventActivity extends babysamActivity {
 						Long code = new Long (lcontents);
 						//String cdate = timeStamp();
 		        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
-		        		populate_table2(sourceList,en_stPerson,lcontents,RowID,stPos);
+		        		populate_table2(sourceList,en_stPerson,lcontents,RowID);
 			        	Log.i(TAG,"add person to db" );
 		        	} catch (NumberFormatException e){
 		       		 Toast.makeText(this, "Invalid data format", 

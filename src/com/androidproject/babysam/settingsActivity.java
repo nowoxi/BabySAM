@@ -67,6 +67,7 @@ public class settingsActivity extends babysamActivity {
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	//this section will run the barcode scanner as an intent if student barcode scanning is enabled
+    	//Log.i(TAG, R.id.add_data+" options: "+item.getItemId());
 		switch(item.getItemId()) {        	
         	case R.id.set_save:
 	        	settingsActivity.this.finish();
@@ -81,6 +82,7 @@ public class settingsActivity extends babysamActivity {
     	    return true;  
     	    
         	case R.id.add_data:
+        		//Log.i(TAG, "add to db 1");
         		add_dbdata();
     	    return true;  
     	    
@@ -115,26 +117,32 @@ public class settingsActivity extends babysamActivity {
         db.insertPerson(1,1,new Long ("23113001325041"),"12:00",1);
         db.insertPerson(1,1,new Long ("23113001325041"),"12:00",2);
         db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);*/
-        
-      //db.insertEventPerson(eventid, ptype, pID, timestamp, position, present, list)
-        for (int i = 0; i<3;i++)db.insertEventPerson(EventID, 1, (i+1)*EventID, f.timeStamp(), i, 0, 1);
-        db.insertEventPerson(EventID, 2, EventID, f.timeStamp(), 0, 0, 1);
-        Log.i(TAG," "+EventID );
-        //for (int i = 0; i<3;i++)db.insertEventPerson(2, 1, i+1, f.timeStamp(), i, 0, 1);
-        //db.insertEventPerson(2, 2, 1, f.timeStamp(), 0, 0, 1);
-        
         for (int i = 0; i<3;i++)db.insertStudent(u + randomGenerator.nextInt(1000), getRandomfName(), getRandomlName());        
         for (int i = 0; i<1;i++){
         	String name = getRandomlName();
         	db.insertOfficial(u + randomGenerator.nextInt(1000), getRandomfName(), name, name,"pass");        
         }
+      //db.insertEventPerson(eventid, ptype, pID, timestamp, position, present, list)
+        int j = randomGenerator.nextInt(2);
+        int k = randomGenerator.nextInt(2);
+        for (int i = 0; i<3;i++)db.insertEventPerson(EventID, 1, (i+1)*EventID, f.timeStamp(), randomGenerator.nextInt(2), randomGenerator.nextInt(2));
+        Boolean t = db.insertEventPerson(EventID, 2, EventID, f.timeStamp(), 1, 1);
+        Log.i(TAG," "+t+" then: "+j+k );
+        Log.i(TAG," "+EventID );
+        //for (int i = 0; i<3;i++)db.insertEventPerson(2, 1, i+1, f.timeStamp(), i, 0, 1);
+        //db.insertEventPerson(2, 2, 1, f.timeStamp(), 0, 0, 1);
+        
+        
         db.close();
         EventID += 1;
+        //Log.i(TAG, "add to db");
     }
     
     private void delete_db_Tab(){
     	DBAdapter db = new DBAdapter(this); 
         db.open(); 
+        EventID = 1;
+        single_SavePref(NEW_SET[0], EventID);
         db.deleteAllTables();
         db.close();
     }

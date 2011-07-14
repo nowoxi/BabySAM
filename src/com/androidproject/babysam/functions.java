@@ -23,6 +23,8 @@ import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -32,6 +34,7 @@ public class functions
 {
 	private final Context context;
 	public static final String TAG = "BabySAM";
+	String filePath;
 	
 	
 	public functions(Context ctx) 
@@ -354,48 +357,37 @@ public class functions
 	}
 	
 	public void sendAries(long lRowID, int age){// age is used to check if its coming from a new event or from history (if history - 1 if new event - 0)
+		/* This method does the following
+		 * 1. creates xml of session
+		 * 2. uploads the xml and retrieves response
+		 * 3. deletes created xml and informs if any errors
+		 * 4. checks if upload has been done before and will not upload if it has 
+		 */
 		
+		String fileName;
 		int ariesReg=1;
 		if ( age == 1) ariesReg = getEventReg(lRowID);
 		Log.i(TAG, ""+ariesReg);
 		if(age == 0 || ariesReg == 0){
-			// Create a new HttpClient and Post Header  
-		    HttpClient httpclient = new DefaultHttpClient();  
-		    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
-	
-	    	try {  
-	    		// Add your data  
-	    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
-		    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
-		    	nameValuePairs.add(new BasicNameValuePair("eventdata", eventExtract(lRowID).toString()));
-		    	nameValuePairs.add(new BasicNameValuePair("studentdata", aries_personExtract(lRowID,1).toString()));
-		    	nameValuePairs.add(new BasicNameValuePair("officialdata", aries_personExtract(lRowID, 2).toString()));
-		    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
-		    	
-		    	Log.i(TAG, aries_personExtract(lRowID,1).toString());
-		    	// Execute HTTP Post Request  
-		    	HttpResponse response = httpclient.execute(httppost);
-		    	
-		    	InputStream is = response.getEntity().getContent();
-		    	BufferedInputStream bis = new BufferedInputStream(is);
-		    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
-	
-		    	 int current = 0;  
-		    	 while((current = bis.read()) != -1){  
-		    	 	baf.append((byte)current);  
-		    	 }  
-		    	   
-		    	/* Convert the Bytes read to a String. */  
-		    	String text = new String(baf.toByteArray()); 
-		    	Toast.makeText(context,"upload status: "+ text, Toast.LENGTH_SHORT).show();
-		    	ariesReg(lRowID);
-	
-	    	} catch (ClientProtocolException e) {  
-	    		Log.i(TAG," client protocol exception error");
-	    	} catch (IOException e) {  
-	    		Log.i(TAG," IO exception error");
-	    	}  
+			saveasFile(lRowID);
+			fileName = getFilePath();
+			HttpFileUpload upload = new HttpFileUpload(fileName);
+			
+			//Here the file created should be deleted if all is well and a Toast showing success should be displayed
+			// else the file is left and a message displaying the server error message and not sucessful sent.
+			int serverResponse = upload.getServerResponseCode();
+			String serverMessage = upload.getServerResponseMessage();
+			
+			if (serverResponse == 200 && serverMessage.equals("OK")){
+				File file = new File(fileName);
+				if(!file.delete())Toast.makeText(context, "Error deleting saved copy of session. Delete manually from "+fileName, Toast.LENGTH_LONG);
+				Toast.makeText(context, " Server registration completed Successfully ", Toast.LENGTH_SHORT);
+			}else {
+				Toast.makeText(context, "Error uploading Session. A copy of the data has been save to "+fileName, Toast.LENGTH_LONG);
+				Log.e(TAG, serverResponse+" "+serverMessage);
+			}
 		}
+		if (ariesReg == 1)Toast.makeText(context, " Each event can only be registered once per server", Toast.LENGTH_LONG);
 	}
 
 	private int getEventReg(long lRowID) {
@@ -784,7 +776,7 @@ public class functions
 		String studentTag = "Student";
 		String officialTag = "Official";
 		String rootTag = "Event";
-		Log.i(TAG, "save file 1");
+		//Log.i(TAG, "save file 1");
 
         try{
                 newxmlfile.createNewFile();
@@ -835,7 +827,7 @@ public class functions
                                     	serializer.attribute(null, "List", officalData.get(i)[2]);
                                     serializer.endTag(null, officialTag);
                                 }
-                                Log.i(TAG, "save file 2");
+                               // Log.i(TAG, "save file 2");
                                 //building xml section for student
                                 for (int i = 0; i < studentData.size();i++){
                                 	serializer.startTag(null, studentTag);
@@ -847,10 +839,10 @@ public class functions
                                     	serializer.attribute(null, "Last_Name", studentData.get(i)[4]);
                                     	serializer.attribute(null, "First_Name", studentData.get(i)[5]);
                                     serializer.endTag(null, studentTag);
-                                    Log.i(TAG, "save file: "+ studentData.get(i)[5]);
+                                 //  Log.i(TAG, "save file: "+ studentData.get(i)[5]);
                                 }
                         serializer.endTag(null, rootTag);
-                        serializer.endDocument();Log.i(TAG, "save file 3");
+                        serializer.endDocument();//Log.i(TAG, "save file 3");
                         //write xml data into the FileOutputStream
                         serializer.flush();
                         //finally we close the file stream
@@ -868,9 +860,9 @@ public class functions
 		File dirPath = new File(Environment.getExternalStorageDirectory()+"/BabySAM/"+eventDetails[0]+"/");
 		// have the object build the directory structure, if needed.
 		dirPath.mkdirs();
-		
 		String fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+".xml";
 		File newxmlfile = new File(dirPath,fileName);
+		setFilePath(newxmlfile);
 		int count = 1; //variable used to change filename
 		while (newxmlfile.exists()){
 			fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+count+".xml";
@@ -878,5 +870,15 @@ public class functions
 			newxmlfile = new File(dirPath,fileName);
 		}
 		return newxmlfile;
+	}
+
+
+	private void setFilePath(File newxmlfile) {
+		this.filePath = newxmlfile.toString();
+		Log.i(TAG, filePath);
+	}
+	
+	public String getFilePath(){
+		return filePath;
 	}
 }

@@ -54,6 +54,7 @@
     <string name="set_st">Scan Students Barcode</string>
     <string name="set_of">Scan Officials Barcode </string>
     <string name="set_ev">Scan Event QR Code </string>
+    <string name="set_url">Scan Attendance List URL </string>
     <string name="set_db">Use SQLite as DB(Debug option)</string>
     
     <string name="set_option_all">Check All</string>

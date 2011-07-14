@@ -42,6 +42,7 @@ public class settingsActivity extends babysamActivity {
         String[] menuitems = { getResources().getString(R.string.set_st),
         		getResources().getString(R.string.set_of),
         		getResources().getString(R.string.set_ev),
+        		getResources().getString(R.string.set_url),
         		getResources().getString(R.string.set_db)};
         ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, menuitems);
 
@@ -147,7 +148,7 @@ public class settingsActivity extends babysamActivity {
         db.close();
     }
     //to load all prefences to their variables only used in event
-    private void LoadPref(){
+    private void LoadPref(){// this is used to load all the current settings on start of activity
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	    	for (int i = 0; i < count; i++) {
 	            en_scan[i] = eventSettings.getInt(T_SCAN[i], 1);

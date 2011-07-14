@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,7 +79,8 @@ public class EventActivity extends babysamActivity {
 	   // en_stscan - student scan , scformat - scanformat to use , format - format of scanned code
 	   // en_ofscan - Official scan, contents - data in scanned code
 	   // en_evsxan - event scan
-	   private int en_stscan, en_ofscan, en_evscan, en_stPerson, pEdit, reScan; 
+	   // en_urlscan - event attendance list scan
+	   private int en_stscan, en_ofscan, en_evscan, en_urlscan, en_stPerson, pEdit, reScan; 
 	   private String format, scformat, contents, content_delimiter,FirstName, LastName;
 	   private String [] ev_contents = new String [5];
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos;//, rPos;
@@ -258,6 +260,7 @@ public class EventActivity extends babysamActivity {
         en_stscan = eventSettings.getInt(ST_SCAN, 1);
         en_ofscan = eventSettings.getInt(OF_SCAN, 1);
         en_evscan = eventSettings.getInt(EV_SCAN, 1);
+        en_urlscan = eventSettings.getInt(URL_SCAN, 1);
     }
     
     @Override
@@ -291,6 +294,8 @@ public class EventActivity extends babysamActivity {
                 	ev_contents = setevContent(contents, en_stPerson, content_delimiter);
                 	 if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);
                      if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
+                }else if(en_stPerson == 4){//you will not be able to correct the attendance list the best thing is cancel session and restart
+                	entryDialog(0,0);
                 }else{
                     Log.i(TAG, "Array size"+offeventData.size() );
                 
@@ -394,7 +399,8 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_evscan, scformat, scanNew,0);	
             return true;  
         	case R.id.event_aries:
-	        	sendAries(RowID);	
+        		if (stateID == 1) f.sendAries(RowID,0);
+        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
             return true;
         	case R.id.event_file:
         		if (stateID == 1) f.saveasFile(RowID);
@@ -408,8 +414,9 @@ public class EventActivity extends babysamActivity {
         		//yes - dont add move to next,get rowid
         		//no - add move to next, get rowid
         		//add row id to event table with list set to 1 n present to 0
-        		
-	        	importAttendance(1);        		
+			en_stPerson = 4;
+			scformat="QR_CODE";
+			scanSet(en_urlscan, scformat, scanNew,0);
             return true;
         	/*case R.id.official_list:
         		importAttendance(1);        		
@@ -419,7 +426,7 @@ public class EventActivity extends babysamActivity {
 		return super.onOptionsItemSelected(item);
 	}
     
-	private void importAttendance(int Mode) {
+	private void importAttendance(int Mode, URL url) {
 		// Mode, used to choose if the source of the XML is from the inbuilt list or from the internet
 		boolean bFoundEvents = false;  
 	    String lcontents;
@@ -434,7 +441,6 @@ public class EventActivity extends babysamActivity {
 	        }
 		} else if( Mode == 1){
 			try {
-				URL url = new URL( "http://babysam.ucoz.com/list.xml");
 				DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 				DocumentBuilder db = dbf.newDocumentBuilder();
 				Document doc = db.parse(new InputSource(url.openStream()));
@@ -631,7 +637,21 @@ public class EventActivity extends babysamActivity {
 			    		text[i].setText(ev_contents[i]);
 			    		
 					stateID=1;		//variable used to control the correct session to load on rotation
-				}else {
+				}else if ( en_stPerson == 4){//this section is used to add attendance list via url
+					contents = (String) input.getText().toString();
+					String httpheader = "http://";
+					if (!contents.startsWith(httpheader)){//add header if missing.. anyother thing used should correct
+						contents= httpheader.concat(contents);
+					}
+					try {
+						URL url = new URL(contents);
+						importAttendance(1,url);
+					} catch (MalformedURLException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+						Toast.makeText(getApplicationContext(), "Url error", Toast.LENGTH_SHORT);
+					}
+				}else{
 					contents = (String) input.getText().toString();
 					try {
 						@SuppressWarnings("unused")

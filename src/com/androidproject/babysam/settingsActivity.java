@@ -1,15 +1,23 @@
 package com.androidproject.babysam;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Random;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class settingsActivity extends babysamActivity {
@@ -21,6 +29,7 @@ public class settingsActivity extends babysamActivity {
 	   private long EventID;
 	   private String uri;
 	   private functions f;
+	   ArrayAdapter<String> adapt;
 	   
 	   //I need to develop the xml to select settings and a method to save to the share preferences
 	   //improve code here to use more of if and for loops instead of the repeated sequences
@@ -37,19 +46,73 @@ public class settingsActivity extends babysamActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
         f = new functions(this);
- 
+        
         menuList = (ListView) findViewById(R.id.settings_list);
+        
+        
+        uri = "";
+        String ariesMenuItemTemp = getResources().getString(R.string.set_aries)+"\n"+uri;
         String[] menuitems = { getResources().getString(R.string.set_st),
         		getResources().getString(R.string.set_of),
         		getResources().getString(R.string.set_ev),
         		getResources().getString(R.string.set_url),
-        		getResources().getString(R.string.set_db)};
-        ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, menuitems);
-
+        		getResources().getString(R.string.set_db),
+        		ariesMenuItemTemp };
+        
+        adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, menuitems);
+        
         menuList.setAdapter(adapt);
         menuList.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
         menuList.setItemsCanFocus(false);
         LoadPref();
+        //uri = "http://lexican.com.ng/babysam/upload.php";
+        final String ariesMenuItem = getResources().getString(R.string.set_aries)+"\n"+uri;
+        menuitems[5]= ariesMenuItem;
+        adapt.notifyDataSetChanged();
+        
+        menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	    	public void onItemClick(AdapterView<?> parent, View itemClicked, int position, long id) {
+		    	TextView textView = (TextView) itemClicked;
+		    	String strText = textView.getText().toString();
+		    	
+		    	if (strText.equalsIgnoreCase(ariesMenuItem)) {
+		    	// Launch the Events Activity
+		    		//startActivity(new Intent(MenuActivity.this, EventActivity.class));
+		    		Context context = settingsActivity.this;
+		    		final AlertDialog.Builder alert = new AlertDialog.Builder(context);
+		    		final EditText input = new EditText(context);
+		    		alert.setView(input);			
+					input.setText(uri);
+					alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int whichButton) {
+							String uriTemp  = (String) input.getText().toString();
+							try {
+								@SuppressWarnings("unused")
+								URL uriTest = new URL (uriTemp);
+								uri = uriTemp;
+								adapt.notifyDataSetChanged();
+							} catch (MalformedURLException e) {
+								e.printStackTrace();
+								Toast.makeText(getApplicationContext(), "Invalid URL", 
+				                  		Toast.LENGTH_SHORT).show();
+							}
+							
+							Toast.makeText(getApplicationContext(), "URL: " + uri, Toast.LENGTH_SHORT).show();
+						}
+					});
+
+					alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+								public void onClick(DialogInterface dialog, int whichButton) {
+									dialog.cancel();
+								}
+							});
+					alert.show();		//Log.i(TAG, " test 2");
+				}
+		    	
+		    	
+		    	} 
+		    }
+    	);
     }        
     
     @Override
@@ -153,9 +216,9 @@ public class settingsActivity extends babysamActivity {
 	    	for (int i = 0; i < count; i++) {
 	            en_scan[i] = eventSettings.getInt(T_SCAN[i], 1);
 	            this.menuList.setItemChecked(i, true);
-	            if (en_scan[i] == 0) this.menuList.setItemChecked(i, false);		        
+	            if (en_scan[i] == 0) this.menuList.setItemChecked(i, false);	
 	        }
-	    	uri = eventSettings.getString(NEW_SET[1], "http://aries.aston.ac.uk");
+	    	uri = eventSettings.getString(NEW_SET[1], "http://lexican.com.ng/babysam/upload.php");
 	    	EventID = eventSettings.getLong(NEW_SET[0], 1);
     }    
     
@@ -192,6 +255,7 @@ public class settingsActivity extends babysamActivity {
         }
         single_SavePref(NEW_SET[0], EventID);
         single_SavePref(NEW_SET[1], uri);
+        //Log.i(TAG, uri+" test");
        }
     
     private void single_SavePref(String key, int value){

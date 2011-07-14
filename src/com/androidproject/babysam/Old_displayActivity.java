@@ -28,6 +28,7 @@ public class Old_displayActivity extends babysamActivity {
 	private String [] intentExtra = new String [5];
 	private String [] I_intExtra = new String [5];
 	private String [] eventDetails = new String [5];
+	private String upload;
 	
     //defining array here
     private ArrayList<String[]> eventData = new ArrayList<String[]>();
@@ -130,9 +131,12 @@ public class Old_displayActivity extends babysamActivity {
 		LoadPref();		
 		switch(item.getItemId()) { 	
         	case R.id.event_aries:
-	        	f.sendAries(extra_EID,1);	
+	        	//f.sendAries(extra_EID,0,LoadUriPref());
+        		upload = LoadUriPref();
+        		if (DB_mode == 1)showDialog(typeBar);
             return true;
         	case R.id.event_email:
+        		upload = "Mail";
         		if (DB_mode == 1)showDialog(typeBar);
             return true;
         	case R.id.event_file:
@@ -142,6 +146,10 @@ public class Old_displayActivity extends babysamActivity {
 		return super.onOptionsItemSelected(item);
     }
     
+    private String LoadUriPref(){
+    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        return  eventSettings.getString("aries_link"," Enter URL plesae");
+    }
     private void processData( XmlResourceParser event,ArrayList<String[]> eventData, int xeID) throws XmlPullParserException,IOException {
 		int doceventType = -1;
 		boolean bFoundEvents = false;   
@@ -193,7 +201,7 @@ public class Old_displayActivity extends babysamActivity {
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));
-            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails);
+            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails,upload);
             progThread.start();
             return progDialog;        
         default:

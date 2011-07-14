@@ -263,6 +263,11 @@ public class EventActivity extends babysamActivity {
         en_urlscan = eventSettings.getInt(URL_SCAN, 1);
     }
     
+    private String LoadUriPref(){
+    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        return  eventSettings.getString("aries_link"," Enter URL please");
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	    super.onCreateOptionsMenu(menu);
@@ -295,7 +300,7 @@ public class EventActivity extends babysamActivity {
                 	 if(stateID == 0)add_dbdata(en_stPerson, ev_contents, contents, RowID);
                      if(stateID == 1)upd_dbdata(en_stPerson, pRowID, RowID, ev_contents, contents);
                 }else if(en_stPerson == 4){//you will not be able to correct the attendance list the best thing is cancel session and restart
-                	entryDialog(0,0);
+                	//entryDialog(0,0);
                 }else{
                     Log.i(TAG, "Array size"+offeventData.size() );
                 
@@ -399,7 +404,7 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_evscan, scformat, scanNew,0);	
             return true;  
         	case R.id.event_aries:
-        		if (stateID == 1) f.sendAries(RowID,0);
+        		if (stateID == 1) sendAries();
         		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
             return true;
         	case R.id.event_file:
@@ -489,13 +494,25 @@ public class EventActivity extends babysamActivity {
 
 
 	private void sendMail() {
+		String upload = "Mail";
 		Log.i(TAG,"send email" );
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send email middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload);
 		progThread.start();
 		Log.i(TAG,"send email end" );
+	}
+	
+	private void sendAries() {
+		String upload = LoadUriPref();
+		Log.i(TAG,"send email" );
+		dialog = ProgressDialog.show(this, "",
+				getResources().getString(R.string.send_email), true);
+		Log.i(TAG,"send Aries middle" );
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload);
+		progThread.start();
+		Log.i(TAG,"send Aries end" );
 	}
 
 	final Handler handler = new Handler() {
@@ -529,54 +546,6 @@ public class EventActivity extends babysamActivity {
         }
 	}
 	
-	public void sendAries(long lRowID){
-		// Create a new HttpClient and Post Header  
-	    HttpClient httpclient = new DefaultHttpClient();  
-	    HttpPost httppost = new HttpPost("http://www.twilightstunt.com/Xi/postresponse.php");  
-
-    	try {  
-    		// Add your data  
-    		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);  
-	    	nameValuePairs.add(new BasicNameValuePair("mydata", "Mek Mek"));
-	    	nameValuePairs.add(new BasicNameValuePair("eventdata", "f.eventExtract(RowID)"));
-	    	nameValuePairs.add(new BasicNameValuePair("studentdata", "f.aries_personExtract(RowID, 1)"));
-	    	nameValuePairs.add(new BasicNameValuePair("officialdata", "f.aries_personExtract(RowID, 2)"));
-	    	httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));  
-
-	    	// Execute HTTP Post Request  
-	    	HttpResponse response = httpclient.execute(httppost);
-	    	
-	    	InputStream is = response.getEntity().getContent();
-	    	BufferedInputStream bis = new BufferedInputStream(is);
-	    	ByteArrayBuffer baf = new ByteArrayBuffer(20);
-
-	    	 int current = 0;  
-	    	 while((current = bis.read()) != -1){  
-	    	 	baf.append((byte)current);  
-	    	 }  
-	    	   
-	    	/* Convert the Bytes read to a String. */  
-	    	String text = new String(baf.toByteArray()); 
-	    	Toast.makeText(this,"upload status: "+ text, Toast.LENGTH_SHORT).show();
-	    	ariesReg(lRowID);
-
-    	} catch (ClientProtocolException e) {  
-    		Log.i(TAG," client protocol exception error");
-    	} catch (IOException e) {  
-    		Log.i(TAG," IO exception error");
-    	}  
-    	
-		
-	}
-		
-	
-	private void ariesReg(long lRowID) {
-		DBAdapter db = new DBAdapter(this);
-    	db.open();
-    	db.ariesupdate(lRowID);
-    	db.close();
-	}
-
 	// this will change from entering values to checking the list if exist and changing present to 1. Also it would
 	//check if in event list
 	// yes get row id change persent to 1 and list to 1

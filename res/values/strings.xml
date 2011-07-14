@@ -56,6 +56,7 @@
     <string name="set_ev">Scan Event QR Code </string>
     <string name="set_url">Scan Attendance List URL </string>
     <string name="set_db">Use SQLite as DB(Debug option)</string>
+    <string name="set_aries">Mother SAM address</string>
     
     <string name="set_option_all">Check All</string>
     <string name="set_option_cancel">Uncheck All</string>
@@ -68,7 +69,7 @@
     <string name="event_rescan">Re-Scan Person</string>
     <string name="event_edit">Edit</string>
     <string name="event_cancel">Cancel Event</string>
-    <string name="send_email">Please wait a few seconds, sending Email...</string>
+    <string name="send_email">Please wait a few seconds...</string>
     <string name="no_data">No data</string>
     
     <string name="option_load">Load Persons</string>

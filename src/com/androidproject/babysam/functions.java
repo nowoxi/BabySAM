@@ -356,7 +356,8 @@ public class functions
 		return Body;
 	}
 	
-	public void sendAries(long lRowID, int age){// age is used to check if its coming from a new event or from history (if history - 1 if new event - 0)
+	
+	public void sendAries(long lRowID, int age, String Uri){// age is used to check if its coming from a new event or from history (if history - 1 if new event - 0)
 		/* This method does the following
 		 * 1. creates xml of session
 		 * 2. uploads the xml and retrieves response
@@ -367,11 +368,11 @@ public class functions
 		String fileName;
 		int ariesReg=1;
 		if ( age == 1) ariesReg = getEventReg(lRowID);
-		Log.i(TAG, ""+ariesReg);
+		Log.i(TAG, "ariesReg "+ariesReg);
 		if(age == 0 || ariesReg == 0){
 			saveasFile(lRowID);
 			fileName = getFilePath();
-			HttpFileUpload upload = new HttpFileUpload(fileName);
+			HttpFileUpload upload = new HttpFileUpload(fileName, Uri);
 			
 			//Here the file created should be deleted if all is well and a Toast showing success should be displayed
 			// else the file is left and a message displaying the server error message and not sucessful sent.
@@ -387,7 +388,10 @@ public class functions
 				Log.e(TAG, serverResponse+" "+serverMessage);
 			}
 		}
-		if (ariesReg == 1)Toast.makeText(context, " Each event can only be registered once per server", Toast.LENGTH_LONG);
+		if (ariesReg == 1){
+			Toast.makeText(context, "Each event can only be registered once per server", Toast.LENGTH_LONG);
+			Log.i(TAG, "Each event can only be registered once per server");
+		}
 	}
 
 	private int getEventReg(long lRowID) {
@@ -862,13 +866,14 @@ public class functions
 		dirPath.mkdirs();
 		String fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+".xml";
 		File newxmlfile = new File(dirPath,fileName);
-		setFilePath(newxmlfile);
+		
 		int count = 1; //variable used to change filename
 		while (newxmlfile.exists()){
 			fileName = lRowID+"_"+eventDetails[0]+"_"+eventDetails[1]+"_"+eventDetails[2]+"_"+count+".xml";
 			count++;
 			newxmlfile = new File(dirPath,fileName);
 		}
+		setFilePath(newxmlfile);
 		return newxmlfile;
 	}
 

@@ -29,7 +29,7 @@ public class Old_displayActivity extends babysamActivity {
 	private String [] intentExtra = new String [5];
 	private String [] I_intExtra = new String [5];
 	private String [] eventDetails = new String [5];
-	private String upload;
+	private String upload, user;
 	
     //defining array here
     private ArrayList<String[]> eventData = new ArrayList<String[]>();
@@ -142,7 +142,7 @@ public class Old_displayActivity extends babysamActivity {
         		if (DB_mode == 1)showDialog(typeBar);
             return true;
         	case R.id.event_file:
-			String filename=f.saveasFile(extra_EID);
+			String filename=f.saveasFile(extra_EID,user);
 			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();	
             return true;
         }
@@ -195,7 +195,8 @@ public class Old_displayActivity extends babysamActivity {
   //to load all preferences to their variables only used in event
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-	        DB_mode = eventSettings.getInt(DB_MODE, 1);	        
+	        DB_mode = eventSettings.getInt(DB_MODE, 1);
+	        user = eventSettings.getString(USER, "");
     }
     
     protected Dialog onCreateDialog(int id) {
@@ -206,7 +207,7 @@ public class Old_displayActivity extends babysamActivity {
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));
-            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, upload, age);
+            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, upload, age, user);
             progThread.start();
             return progDialog;        
         default:

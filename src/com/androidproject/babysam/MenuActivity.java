@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,7 +37,6 @@ public class MenuActivity extends babysamActivity {
         TextView welcomeView = (TextView) findViewById(R.id.userView);
         functions f = new functions(this);
         welcomeView.setText(f.getWelcomeMessage(eventSettings.getString(USER, "")));
-        Log.i(TAG, eventSettings.getString(USER, ""));
         menuList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	    	public void onItemClick(AdapterView<?> parent, View itemClicked, int position, long id) {
 		    	TextView textView = (TextView) itemClicked;

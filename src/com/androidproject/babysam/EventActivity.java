@@ -63,7 +63,7 @@ public class EventActivity extends babysamActivity {
 	   // en_evsxan - event scan
 	   // en_urlscan - event attendance list scan
 	   private int en_stscan, en_ofscan, en_evscan, en_urlscan, en_stPerson, pEdit, reScan, age; 
-	   private String format, scformat, contents, content_delimiter,FirstName, LastName;
+	   private String format, scformat, contents, content_delimiter,FirstName, LastName, user;
 	   private String [] ev_contents = new String [5];
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos;//, rPos;
 	   private functions f;
@@ -244,6 +244,7 @@ public class EventActivity extends babysamActivity {
         en_ofscan = eventSettings.getInt(OF_SCAN, 1);
         en_evscan = eventSettings.getInt(EV_SCAN, 1);
         en_urlscan = eventSettings.getInt(URL_SCAN, 1);
+        user = eventSettings.getString(USER, "");
     }
     
     private String LoadUriPref(){
@@ -392,7 +393,7 @@ public class EventActivity extends babysamActivity {
             return true;
         	case R.id.event_file:
         		if (stateID == 1) {
-        			String filename=f.saveasFile(RowID);
+        			String filename=f.saveasFile(RowID, user);
         			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();
         		}
         		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
@@ -485,7 +486,7 @@ public class EventActivity extends babysamActivity {
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send email middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age,user);
 		progThread.start();
 		Log.i(TAG,"send email end" );
 	}
@@ -496,7 +497,7 @@ public class EventActivity extends babysamActivity {
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send Aries middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age, user);
 		progThread.start();
 		Log.i(TAG,"send Aries end" );
 	}

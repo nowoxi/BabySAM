@@ -29,23 +29,25 @@ public class LoginActivity extends babysamActivity {
         	
         	String user = uname.getText().toString();
         	
-        	if ( user.equalsIgnoreCase(null)||user.equalsIgnoreCase("")){
+        	if ( user.equalsIgnoreCase(null)||user.equalsIgnoreCase("")||user.length() < 3){
         		Toast.makeText(getApplicationContext(),getResources().getString(R.string.login_message),Toast.LENGTH_LONG).show();
         	}else {
         		functions f = new functions(getApplicationContext());
         		ArrayList<String> unames = f.getAllUsernames();
+        		Boolean check = false;
         		for (int i = 0; i < unames.size();i++){
-	        		if (user.equalsIgnoreCase(unames.get(i))){
-		        		uname.setText("");
-		        		single_SavePref(USER,user);
-	        			startActivity(new Intent(LoginActivity.this, MenuActivity.class));
-		        		LoginActivity.this.finish();
-	        		}else {
-	        			Class<?> cls= olistActivity.class;
-	        			Intent intent = new Intent(LoginActivity.this,cls);	
-	        			intent.putExtra("username", user);
-	        			startActivityForResult(intent,1);
-	        		}
+	        		if (user.equalsIgnoreCase(unames.get(i))) check = true;
+        		}
+        		if (!check){
+        			Class<?> cls= olistActivity.class;
+        			Intent intent = new Intent(LoginActivity.this,cls);	
+        			intent.putExtra("username", user);
+        			startActivityForResult(intent,1);
+        		}else{
+        			uname.setText("");
+	        		single_SavePref(USER,user);
+        			startActivity(new Intent(LoginActivity.this, MenuActivity.class));
+	        		LoginActivity.this.finish();
         		}
         	}
         	

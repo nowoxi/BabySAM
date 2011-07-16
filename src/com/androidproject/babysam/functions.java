@@ -310,14 +310,14 @@ public class functions
     	return eventData;
     }
 	
-	public void sendEmail(long rID, String [] ev_contents ){
+	public void sendEmail(long rID, String [] ev_contents, String Username ){
 		ArrayList<String[]> offeventData = aries_personExtract(rID, 2);
 		ArrayList<String[]> stdeventData = aries_personExtract(rID, 1);
 		Mail m = new Mail("babysam.proj@gmail.com", "babysamproj"); 
 		String Body = mailBody(ev_contents, offeventData, stdeventData);
 		String Subject = mailSubject(ev_contents);
 		Log.i(TAG,"send mail during" );
-        String[] toArr = {"nowoxi@gmail.com", "babysam.proj@gmail.com"}; 
+        String[] toArr = {"nowoxi@gmail.com", "babysam.proj@gmail.com", Username+"@aston.ac.uk"}; 
         m.setTo(toArr); 
         m.setFrom("nowoxi@gmail.com"); 
         m.setSubject(Subject); 
@@ -326,7 +326,7 @@ public class functions
         Log.i(TAG,"start sending" );
         try { 
          // TODO
-        	String savedPath = saveasFile(rID);
+        	String savedPath = saveasFile(rID, Username);
         	m.addAttachment(savedPath); 	
         	Log.i(TAG,"Sending" );
 	          if(m.send()) { 	        	
@@ -369,7 +369,7 @@ public class functions
 	}
 	
 	
-	public void sendAries(long lRowID, int age, String Uri){// age is used to check if more than one copy of an event can be sent to the server 0 - yes and 1 - no 
+	public void sendAries(long lRowID, int age, String Uri, String Username){// age is used to check if more than one copy of an event can be sent to the server 0 - yes and 1 - no 
 		//usually new event or from history (if history - 1 if new event - 0)
 		/* This method does the following
 		 * 1. creates xml of session
@@ -386,7 +386,7 @@ public class functions
 		
 		if(age == 0 || ariesReg == 0){
 			//xml creation
-			fileName = saveasFile(lRowID);
+			fileName = saveasFile(lRowID,Username);
 			String encrypted_fileName = encryptFile(fileName);
 			if(uploadFile(Uri,encrypted_fileName))ariesReg(lRowID);//if able to upload change aries in dB to 1
 		}
@@ -793,7 +793,7 @@ public class functions
 		
 	}
 	
-	public String saveasFile(long lRowID) {
+	public String saveasFile(long lRowID,String username) {
 		ArrayList<String[]> officalData = aries_personExtract(lRowID, 2);
 		ArrayList<String[]> studentData = aries_personExtract(lRowID, 1);
 		String [] eventDetails = eventExtract(lRowID);
@@ -804,6 +804,7 @@ public class functions
 		String studentTag = "Student";
 		String officialTag = "Official";
 		String rootTag = "Event";
+		String userTag = "username";
 		//Log.i(TAG, "save file 1");
 
         try{
@@ -834,6 +835,10 @@ public class functions
                         serializer.startTag(null, rootTag);
                         //i indent code just to have a view similar to xml-tree
                         //building xml section for eventdetails
+	                        serializer.startTag(null, userTag);
+	                        	serializer.text(username);
+	                        serializer.endTag(null, userTag);
+                        
                         		serializer.startTag(null, eventTag);
 			                        //set an attribute called "attribute" with a "value" for <eventdetails>
 			                        serializer.attribute(null, "Event_Type", eventDetails[0]);

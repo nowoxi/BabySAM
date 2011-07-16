@@ -4,8 +4,12 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:text="@string/login"
-    android:gravity="center_vertical|center_horizontal" android:textSize="@dimen/menu_item_top"/>
-    <Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_centerInParent="true" android:layout_centerVertical="true" android:layout_centerHorizontal="true" android:text="@string/auth_but" android:id="@+id/auth_but"></Button>
+    android:gravity="center_vertical|center_horizontal" android:textSize="@dimen/menu_item_top" android:id="@+id/authTView"/>
+    <LinearLayout android:orientation="horizontal" android:layout_height="wrap_content" android:id="@+id/linearLayout1" android:layout_above="@+id/auth_but" android:layout_centerHorizontal="true" android:layout_width="fill_parent" android:layout_centerVertical="true" android:layout_below="@+id/authTView" android:layout_marginTop="@dimen/menu_item_size">
+        <TextView android:layout_height="wrap_content" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:id="@+id/textView1" android:text="@string/uname" android:textColor="@android:color/black"></TextView>
+        <EditText android:layout_height="wrap_content" android:layout_weight="1" android:layout_width="fill_parent" android:layout_marginLeft="@dimen/vspace" android:layout_marginRight="@dimen/menu_item_med2" android:id="@+id/authEText"></EditText>
+        <Button android:text="@string/auth_but" android:id="@+id/auth_but" android:layout_height="wrap_content" android:layout_width="wrap_content"></Button>
+    </LinearLayout>
     
     
     </RelativeLayout>

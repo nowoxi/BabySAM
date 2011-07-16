@@ -34,7 +34,7 @@ public class olistActivity extends babysamActivity {
     private long RowID, stPos, iRowID;
     private int en_stPerson, pEdit, en_ofscan,  reScan, fromIntent;//pEdit is used to reflect if edit or rescan has been set by context menu
     private functions f;
-    private String contents, scformat, format;//, efname, elname;
+    private String contents, scformat, format, ucontents;//, efname, elname;
     private ArrayAdapter<String> adapt;
     //private String [] en_content;// TODO assign value to it from the entry dialog method
     
@@ -76,6 +76,11 @@ public class olistActivity extends babysamActivity {
         	if (intent.hasExtra("code")){
         		contents= intent.getStringExtra("code");
         		fromIntent=1;
+        		entryDialog(0,0);
+        	}else if (intent.hasExtra("username")){
+        		ucontents= intent.getStringExtra("username");
+        		contents="";
+        		fromIntent=2;
         		entryDialog(0,0);
         	}
         }
@@ -203,13 +208,11 @@ public class olistActivity extends babysamActivity {
 			if (ev_contents  != null)
 				for (int i = 0 ; i < eventresult.length; i++)				
 					eventresult[i].setText(ev_contents[i]);
-			}
-		else {
+		} else {
 			eventresult[2].setText(contents);
+			if (fromIntent == 2)eventresult[3].setText(ucontents);
 			//Log.i(TAG,"add contents oh "+ contents + " also" + psEdit);
 		}
-		
-		
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
@@ -248,6 +251,16 @@ public class olistActivity extends babysamActivity {
 					}
 					//slistActivity.this.
 					finish();
+				}else if (fromIntent==2){
+					Intent intent = new Intent();
+					if(pass){
+						intent.putExtra("username", ev_contents[3]);
+						setResult(RESULT_OK, intent);
+					}else{
+						setResult(RESULT_CANCELED, intent);
+					}
+					//slistActivity.this.
+					finish();
 				}
 				Toast.makeText(getApplicationContext(), "content: " + ev_contents[2], Toast.LENGTH_SHORT).show();
 			}
@@ -256,7 +269,7 @@ public class olistActivity extends babysamActivity {
 		alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int whichButton) {
 						dialog.cancel();
-						if (fromIntent==1){
+						if (fromIntent==1||fromIntent==2){
 							finish();
 						}
 					}

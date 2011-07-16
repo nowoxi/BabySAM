@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout android:id="@+id/relativeLayout2" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:background="@android:color/white">
-	<TextView  android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/menu" android:gravity="center_vertical|center_horizontal" android:id="@+id/menu_text" android:textSize="@dimen/menu_item_size"/>
-	<ListView android:layout_height="wrap_content" android:layout_width="fill_parent" android:layout_centerHorizontal="true" android:id="@+id/menu_list" android:layout_below="@+id/menu_text" android:scrollbars="vertical"></ListView>
+    <TextView android:text="@string/menu" android:layout_height="wrap_content" android:layout_width="fill_parent" android:id="@+id/menu_text" android:gravity="center_vertical|center_horizontal" android:textSize="@dimen/menu_item_size"></TextView>
+    <RelativeLayout android:orientation="vertical" android:id="@+id/RLayout1" android:layout_centerInParent="true" android:layout_height="fill_parent" android:layout_above="@+id/imageView1" android:layout_below="@+id/menu_text" android:layout_width="fill_parent">
+        <TextView android:layout_height="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_gravity="center_horizontal" android:id="@+id/userView" android:layout_alignTop="@+id/RLayout1" android:gravity="center_vertical" android:layout_width="fill_parent" android:layout_centerHorizontal="true" android:textColor="@android:color/black"></TextView>
+        <ListView android:scrollbars="vertical" android:id="@+id/menu_list" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_below="@+id/userView"></ListView>
+    </RelativeLayout>
 	<ImageView android:layout_height="wrap_content" android:id="@+id/imageView1" android:layout_width="wrap_content" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true" android:scaleType="fitEnd" android:src="@drawable/babysam_icon"></ImageView>
 </RelativeLayout>

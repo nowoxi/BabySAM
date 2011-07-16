@@ -25,6 +25,7 @@
     <string name="menu_item_slist">Students List</string>
     <string name="menu_item_olist">Officials List</string>
     <string name="menu_item_help">Help</string>
+    <string name="menu_item_logout">Logout</string>
     
     <string name="option_help">Help</string>
     <string name="option_event_addse">Add Session</string>
@@ -85,5 +86,6 @@
     <string name="uname">Username</string>
     <string name="pass">Password</string>
     <string name="Code">Code</string>
+    <string name="login_message">Please Enter Username</string>
     
 </resources>

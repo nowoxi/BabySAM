@@ -107,6 +107,28 @@ public class functions
 		return rowID;
 	}
 	
+	public String getWelcomeMessage(String uname){// used in delete context to find the appropriate row to delete. used in lists
+		String username = null, welcome = "Somethings Wrong";
+		if (uname != null){
+				DBAdapter db = new DBAdapter(context);
+				db.open();
+				Cursor c= db.getAllOfficials();
+				int unameColumn = c.getColumnIndex(DBAdapter.KEY4_USERNAME);
+				int fnameColumn = c.getColumnIndex(DBAdapter.KEY_FIRSTNAME);
+				int lnameColumn = c.getColumnIndex(DBAdapter.KEY_LASTNAME);
+				if (c.moveToFirst()){
+					do{
+						username = c.getString(unameColumn);
+						if (uname.equalsIgnoreCase(username)) welcome = "Welcome, "+ c.getString(fnameColumn) +" "+  c.getString(lnameColumn) ;
+					}while (c.moveToNext() && uname != username);
+				} else{
+					Toast.makeText(context, "No Person found at position", Toast.LENGTH_SHORT).show();
+				}
+				db.close();
+		}
+		return welcome;
+	}
+	
 	public String [] eventExtract (long extra_EID){
 		String [] eventDetails = new String [5];
       //create object of DB
@@ -947,4 +969,21 @@ public class functions
 	public String getFilePath(){
 		return filePath;
 	}
+
+
+	public ArrayList<String> getAllUsernames() {
+		ArrayList<String> usernames = new ArrayList <String>();
+		DBAdapter db = new DBAdapter (context);
+		db.open();
+		Cursor c = db.getAllOfficials();
+		int unameColumn = c.getColumnIndex(DBAdapter.KEY4_USERNAME) ;
+		if (c.moveToFirst()){
+			do{
+				usernames.add(c.getString(unameColumn));	        
+			}while (c.moveToNext());
+		}
+        db.close();
+		return usernames;
+	}
+	
 }

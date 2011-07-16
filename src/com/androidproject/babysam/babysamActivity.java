@@ -10,6 +10,7 @@ public class babysamActivity extends Activity {
 	public static final String EV_SCAN = "Event_Scan";
 	public static final String URL_SCAN = "URL_Scan";
 	public static final String DB_MODE = "DATA_mode";
+	public static final String USER = "Current_User";
 	public static final String EVENTID = "EventID";
 	public static final String URI = "aries_link";
 	public static final String [] T_SCAN = { ST_SCAN, OF_SCAN, EV_SCAN, URL_SCAN, DB_MODE};

@@ -12,19 +12,18 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class olistActivity extends babysamActivity {
     /** Called when the activity is first created. */
@@ -91,9 +90,9 @@ public class olistActivity extends babysamActivity {
         db.open();
         Cursor c = db.getAllOfficials();
         /* Get the indices of the Columns we will need */
-        int firstColumn = c.getColumnIndex(db.KEY_FIRSTNAME);         
-        int lastColumn = c.getColumnIndex(db.KEY_LASTNAME);
-        int codeColumn = c.getColumnIndex(db.KEY_CODE);
+        int firstColumn = c.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
+        int lastColumn = c.getColumnIndex(DBAdapter.KEY_LASTNAME);
+        int codeColumn = c.getColumnIndex(DBAdapter.KEY_CODE);
         
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
@@ -311,7 +310,7 @@ public class olistActivity extends babysamActivity {
 		//Cursor c = db.getAllStudents();
 		//if (en_stPerson == 2) 
 		Cursor c = db.getAllOfficials();
-        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int rowIDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
         long LRowID=0;
 		if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        
         db.close();

@@ -391,7 +391,10 @@ public class EventActivity extends babysamActivity {
         		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
             return true;
         	case R.id.event_file:
-        		if (stateID == 1) f.saveasFile(RowID);
+        		if (stateID == 1) {
+        			String filename=f.saveasFile(RowID);
+        			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();
+        		}
         		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
             return true;
         	case R.id.event_email:

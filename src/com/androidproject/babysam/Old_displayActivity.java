@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Old_displayActivity extends babysamActivity {
     /** Called when the activity is first created. */
@@ -54,7 +55,7 @@ public class Old_displayActivity extends babysamActivity {
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
 	    f = new functions(this);
-	    age = 1;
+	    age = 0;
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
 	    //get the event id from the intent that was passed
@@ -141,7 +142,8 @@ public class Old_displayActivity extends babysamActivity {
         		if (DB_mode == 1)showDialog(typeBar);
             return true;
         	case R.id.event_file:
-	        	f.saveasFile(extra_EID);	
+			String filename=f.saveasFile(extra_EID);
+			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();	
             return true;
         }
 		return super.onOptionsItemSelected(item);

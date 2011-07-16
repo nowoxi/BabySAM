@@ -8,9 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
 import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
@@ -306,10 +303,13 @@ public class functions
        
         Log.i(TAG,"start sending" );
         try { 
-         // TODO m.addAttachment("/sdcard/filelocation"); 	
+         // TODO
+        	String savedPath = saveasFile(rID);
+        	m.addAttachment(savedPath); 	
         	Log.i(TAG,"Sending" );
 	          if(m.send()) { 	        	
 	              Toast.makeText( context, "Email was sent successfully.", Toast.LENGTH_SHORT).show(); 
+	              deleteTempXML(savedPath);
 	          } else { 
 	              Toast.makeText( context, "Email was not sent.", Toast.LENGTH_SHORT).show(); 
 	          } 
@@ -364,8 +364,7 @@ public class functions
 		
 		if(age == 0 || ariesReg == 0){
 			//xml creation
-			saveasFile(lRowID);
-			fileName = getFilePath();
+			fileName = saveasFile(lRowID);
 			String encrypted_fileName = encryptFile(fileName);
 			if(uploadFile(Uri,encrypted_fileName))ariesReg(lRowID);//if able to upload change aries in dB to 1
 		}
@@ -708,7 +707,7 @@ public class functions
 	
 	public void upd_dbpersondata(int ptype, long pID,long code){//method used when updating a record with only code available--can happen with scans only
 			//String blank = "";		
-			DBAdapter db = new DBAdapter(context); 
+			//DBAdapter db = new DBAdapter(context); 
 			if (ptype == 1)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code);
 			if (ptype == 2)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code,
 						getPersonName(pID,ptype,DBAdapter.KEY4_USERNAME),getPersonName(pID,ptype,DBAdapter.KEY4_PASS));
@@ -772,7 +771,7 @@ public class functions
 		
 	}
 	
-	public void saveasFile(long lRowID) {
+	public String saveasFile(long lRowID) {
 		ArrayList<String[]> officalData = aries_personExtract(lRowID, 2);
 		ArrayList<String[]> studentData = aries_personExtract(lRowID, 1);
 		String [] eventDetails = eventExtract(lRowID);
@@ -859,6 +858,7 @@ public class functions
                 } catch (Exception e) {
                         Log.e(TAG,"error occurred while creating xml file");
                 }
+		return getFilePath();
 	}
 
 
@@ -887,35 +887,46 @@ public class functions
 		try {
 		    // Generate a temporary key. In practice, you would save this key.
 		    // See also Encrypting with DES Using a Pass Phrase.
-		    SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+		    //SecretKey key = KeyGenerator.getInstance("DES").generateKey();
+			String passPhrase = "babySAM";
 
 		    // Create encrypter/decrypter class
-		    DesEncrypter encrypter = new DesEncrypter(key);
+		    DesEncrypter encrypter = new DesEncrypter(passPhrase);
 
 		    // Encrypt
 		    encrypter.encrypt(new FileInputStream(savedPath),
 		        new FileOutputStream(ciphertext));
 
-		    // Decrypt
+		   /* // Decrypt
 		    encrypter.decrypt(new FileInputStream(ciphertext),
-		        new FileOutputStream(pathNname[0]+"cleartext2"));
-		    File file = new File(savedPath);
-		    if(!file.delete())Toast.makeText(context, "Error deleting saved Encrypted copy of session. Delete manually from "+savedPath, Toast.LENGTH_LONG);
-			Toast.makeText(context, " Server registration completed Successfully ", Toast.LENGTH_SHORT);
+		        new FileOutputStream(pathNname[0]+"cleartext2"));*/
+		    
+		    deleteTempXML(savedPath);
+			Toast.makeText(context, " Server registration completed Successfully ", Toast.LENGTH_SHORT).show();
 			
 		} catch (Exception e) {
 		}
 		return ciphertext;
 	}
 	
+	private void deleteTempXML(String savedPath) {
+		File file = new File(savedPath);
+	    if(!file.delete())Toast.makeText(context, "Error deleting saved Encrypted copy of session. Delete manually from "+savedPath, Toast.LENGTH_LONG).show();		
+	}
+
+
 	private String getCryptoFileName(String [] pathNname){
 		return pathNname[0]+"cryp-"+pathNname[1];
 	}
 	
-	private String getCryptoFileName(String savedPath){
+	/*
+	 * 
+	 * encrypted file send to send file already
+	 * 
+	 * private String getCryptoFileName(String savedPath){
 		String [] pathNname = getPATHnNAME(savedPath);
 		return pathNname[0]+"cryp-"+pathNname[1];
-	}
+	}*/
 
 	private String [] getPATHnNAME(String savePath){
 		//method will be used to split the saved Path into path and filename

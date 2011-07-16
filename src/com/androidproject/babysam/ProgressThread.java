@@ -8,30 +8,35 @@ import android.util.Log;
     public class ProgressThread extends Thread {	
     	
     	// Class constants defining state of the thread
-    	Handler handler;
-        functions f;
+    	private Handler handler;
+    	private functions f;
 		private long extra_EID;
 		private String[] eventDetails;
 		private String upload;
+		private int age;
+		Context context;
 		
         // Constructor with an argument that specifies Handler on main thread
         // to which messages will be sent by this thread.
         
-        ProgressThread(Handler h, Context ctx,long e,String[] s, String u ) {//u is used to bring the url for aries
+        ProgressThread(Handler h, Context ctx,long e,String[] s, String u,int a ) {//u is used to bring the url for aries
             handler = h;
             f= new functions(ctx);
             extra_EID = e;
             eventDetails = s;
             upload = u;
+            context = ctx;
+            age= a;
+            Log.i("BabySAM","send emailrun @@" );
         }
         
         @Override
         public void run() {
-        	Looper.prepare();
-        	Log.i("BabySAM","send emailrun " );
+            Looper.prepare();
             if(upload.equalsIgnoreCase("Mail"))f.sendEmail(extra_EID, eventDetails);
-            if(!upload.equalsIgnoreCase("Mail"))f.sendAries(extra_EID,0,upload);;
-            Log.i("BabySAM","send emailrun 2" );
+            if(!upload.equalsIgnoreCase("Mail"))f.sendAries(extra_EID,age,upload);;
+                    
             handler.sendEmptyMessage(0);
+            Looper.loop();
         }
     }

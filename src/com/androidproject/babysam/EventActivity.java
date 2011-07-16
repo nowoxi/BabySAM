@@ -1,36 +1,20 @@
 package com.androidproject.babysam;
 
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.ByteArrayBuffer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlSerializer;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -41,11 +25,9 @@ import android.content.res.Configuration;
 import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.util.Xml;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -80,7 +62,7 @@ public class EventActivity extends babysamActivity {
 	   // en_ofscan - Official scan, contents - data in scanned code
 	   // en_evsxan - event scan
 	   // en_urlscan - event attendance list scan
-	   private int en_stscan, en_ofscan, en_evscan, en_urlscan, en_stPerson, pEdit, reScan; 
+	   private int en_stscan, en_ofscan, en_evscan, en_urlscan, en_stPerson, pEdit, reScan, age; 
 	   private String format, scformat, contents, content_delimiter,FirstName, LastName;
 	   private String [] ev_contents = new String [5];
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos;//, rPos;
@@ -199,6 +181,7 @@ public class EventActivity extends babysamActivity {
 	private void setupViews() {		
 		setContentView(R.layout.event);
         f = new functions(this);
+        age=1;
         LoadPref(); 
         getNextRow();        
         
@@ -499,18 +482,18 @@ public class EventActivity extends babysamActivity {
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send email middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age);
 		progThread.start();
 		Log.i(TAG,"send email end" );
 	}
 	
 	private void sendAries() {
-		String upload = LoadUriPref();
+		String upload = LoadUriPref();// this is the uri to be used for sending
 		Log.i(TAG,"send email" );
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
 		Log.i(TAG,"send Aries middle" );
-		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload);
+		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age);
 		progThread.start();
 		Log.i(TAG,"send Aries end" );
 	}
@@ -616,7 +599,6 @@ public class EventActivity extends babysamActivity {
 						URL url = new URL(contents);
 						importAttendance(1,url);
 					} catch (MalformedURLException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 						Toast.makeText(getApplicationContext(), "Url error", Toast.LENGTH_SHORT);
 					}
@@ -732,7 +714,7 @@ public class EventActivity extends babysamActivity {
 	      //---get all events---
 	        db.open();
 	        Cursor c = db.getAllEvents();
-	        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+	        int rowIDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
 	        long LRowID=0;
 			if (c.moveToLast())LRowID = c.getLong(rowIDColumn);	        
 	        db.close();
@@ -759,7 +741,7 @@ public class EventActivity extends babysamActivity {
 		        	c = db.getAllEventPersons(r);
 		        }
 	        }
-	        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+	        int rowIDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
 	        long LRowID=0;
 			if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        
 	        db.close();
@@ -771,7 +753,7 @@ public class EventActivity extends babysamActivity {
 		DBAdapter db = new DBAdapter(this);
 		db.open();
 		Cursor c = db.getAllEventPersons(lRowID);        	
-        int rowIDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int rowIDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
         long LRowID=0;
 		if (c.moveToLast()) LRowID = c.getLong(rowIDColumn);//	Log.i(TAG,"test " );        
         db.close();

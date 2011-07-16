@@ -1,30 +1,20 @@
 package com.androidproject.babysam;
 
 
-import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.ByteArrayBuffer;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+
 import org.xmlpull.v1.XmlSerializer;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.util.Log;
 import android.util.Xml;
@@ -51,7 +41,7 @@ public class functions
         db.open();
         Cursor c = db.getStudent(ilRowID);
         if(pType == 2)c = db.getOfficial(ilRowID);
-        int codeIDColumn = c.getColumnIndex(db.KEY_CODE) ;
+        int codeIDColumn = c.getColumnIndex(DBAdapter.KEY_CODE) ;
         long LcodeID=0;
 		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
         db.close();
@@ -62,7 +52,7 @@ public class functions
 		//---get person---
         db.open();
         Cursor c = db.getPerson(eventID);
-        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID) ;
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID) ;
         long pID=0;
 		if (c.moveToFirst())pID = c.getLong(pIDColumn);	        
         db.close();
@@ -75,8 +65,8 @@ public class functions
         db.open();
         Cursor c = db.getAllStudents();
         if(pType == 2)c = db.getAllOfficials();
-        int codeColumn = c.getColumnIndex(db.KEY_CODE) ;
-        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int codeColumn = c.getColumnIndex(DBAdapter.KEY_CODE) ;
+        int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
         long LcodeID=0;
         long lRowID=0;
         if (c.moveToFirst()){
@@ -111,7 +101,7 @@ public class functions
 		Cursor c= null;
 		if (pType == 1)c = db.getAllStudents();
 		if (pType == 2)c = db.getAllOfficials();
-		int IDcolumn = c.getColumnIndex(db.KEY_ROWID);
+		int IDcolumn = c.getColumnIndex(DBAdapter.KEY_ROWID);
 		if (c.moveToPosition((int) pos)){
 			rowID = c.getLong(IDcolumn);
 		} else
@@ -129,11 +119,11 @@ public class functions
         db.open();
         Cursor c = db.getEvent(extra_EID);
         /* Get the indices of the Columns we will need */        
-        int eventTypeColumn = c.getColumnIndex(db.KEY1_EVENTTYPE);
-        int venueColumn = c.getColumnIndex(db.KEY1_VENUE);
-        int courseColumn = c.getColumnIndex(db.KEY1_COURSE);
-        int durColumn = c.getColumnIndex(db.KEY1_DURATION);
-        int timeColumn = c.getColumnIndex(db.KEY_TIMESTAMP);
+        int eventTypeColumn = c.getColumnIndex(DBAdapter.KEY1_EVENTTYPE);
+        int venueColumn = c.getColumnIndex(DBAdapter.KEY1_VENUE);
+        int courseColumn = c.getColumnIndex(DBAdapter.KEY1_COURSE);
+        int durColumn = c.getColumnIndex(DBAdapter.KEY1_DURATION);
+        int timeColumn = c.getColumnIndex(DBAdapter.KEY_TIMESTAMP);
         
         if (c.moveToFirst()) {
         	/* Loop through all Results */  
@@ -164,13 +154,13 @@ public class functions
         long pRowID;
         String SPresent = "", SList = "";
       /* Get the indices of the Columns we will need */        
-        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int preColumn = c.getColumnIndex(db.KEY2_PRESENT);
-        int listColumn = c.getColumnIndex(db.KEY2_LIST);
-        int firstColumn = d.getColumnIndex(db.KEY_FIRSTNAME);         
-        int lastColumn = d.getColumnIndex(db.KEY_LASTNAME);
-        int codeColumn = d.getColumnIndex(db.KEY_CODE);
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int preColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(DBAdapter.KEY2_LIST);
+        int firstColumn = d.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
+        int lastColumn = d.getColumnIndex(DBAdapter.KEY_LASTNAME);
+        int codeColumn = d.getColumnIndex(DBAdapter.KEY_CODE);
         Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
@@ -216,14 +206,14 @@ public class functions
         int pType;
         long pRowID;
       /* Get the indices of the Columns we will need */        
-        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int firstColumn = d.getColumnIndex(db.KEY_FIRSTNAME);         
-        int lastColumn = d.getColumnIndex(db.KEY_LASTNAME);
-        int codeColumn = d.getColumnIndex(db.KEY_CODE);
-        int presentColumn = c.getColumnIndex(db.KEY2_PRESENT);
-        int listColumn = c.getColumnIndex(db.KEY2_LIST);
-        int timestampColumn = c.getColumnIndex(db.KEY_TIMESTAMP);
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int firstColumn = d.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
+        int lastColumn = d.getColumnIndex(DBAdapter.KEY_LASTNAME);
+        int codeColumn = d.getColumnIndex(DBAdapter.KEY_CODE);
+        int presentColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(DBAdapter.KEY2_LIST);
+        int timestampColumn = c.getColumnIndex(DBAdapter.KEY_TIMESTAMP);
         
         Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
         //String [] test;
@@ -272,14 +262,14 @@ public class functions
         if(tpType == 2)c = db.getOfficial(pRowID);
         
       /* Get the indices of the Columns we will need */        
-        int firstColumn = c.getColumnIndex(db.KEY_FIRSTNAME);         
-        int lastColumn = c.getColumnIndex(db.KEY_LASTNAME);
-        int codeColumn = c.getColumnIndex(db.KEY_CODE);
+        int firstColumn = c.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
+        int lastColumn = c.getColumnIndex(DBAdapter.KEY_LASTNAME);
+        int codeColumn = c.getColumnIndex(DBAdapter.KEY_CODE);
         int unameColumn = 0;
         int passColumn = 0;
         if(tpType == 2){
-	        unameColumn = c.getColumnIndex(db.KEY4_USERNAME);
-	        passColumn = c.getColumnIndex(db.KEY4_PASS);
+	        unameColumn = c.getColumnIndex(DBAdapter.KEY4_USERNAME);
+	        passColumn = c.getColumnIndex(DBAdapter.KEY4_PASS);
         }
         //Log.i(TAG, " the value for eventID - "+ extra_EID);
         if (c.moveToFirst()) 
@@ -357,7 +347,8 @@ public class functions
 	}
 	
 	
-	public void sendAries(long lRowID, int age, String Uri){// age is used to check if its coming from a new event or from history (if history - 1 if new event - 0)
+	public void sendAries(long lRowID, int age, String Uri){// age is used to check if more than one copy of an event can be sent to the server 0 - yes and 1 - no 
+		//usually new event or from history (if history - 1 if new event - 0)
 		/* This method does the following
 		 * 1. creates xml of session
 		 * 2. uploads the xml and retrieves response
@@ -366,40 +357,52 @@ public class functions
 		 */
 		
 		String fileName;
+		//registration check
 		int ariesReg=1;
 		if ( age == 1) ariesReg = getEventReg(lRowID);
 		Log.i(TAG, "ariesReg "+ariesReg);
+		
 		if(age == 0 || ariesReg == 0){
+			//xml creation
 			saveasFile(lRowID);
 			fileName = getFilePath();
-			HttpFileUpload upload = new HttpFileUpload(fileName, Uri);
-			
-			//Here the file created should be deleted if all is well and a Toast showing success should be displayed
-			// else the file is left and a message displaying the server error message and not sucessful sent.
-			int serverResponse = upload.getServerResponseCode();
-			String serverMessage = upload.getServerResponseMessage();
-			
-			if (serverResponse == 200 && serverMessage.equals("OK")){
-				File file = new File(fileName);
-				if(!file.delete())Toast.makeText(context, "Error deleting saved copy of session. Delete manually from "+fileName, Toast.LENGTH_LONG);
-				Toast.makeText(context, " Server registration completed Successfully ", Toast.LENGTH_SHORT);
-			}else {
-				Toast.makeText(context, "Error uploading Session. A copy of the data has been save to "+fileName, Toast.LENGTH_LONG);
-				Log.e(TAG, serverResponse+" "+serverMessage);
-			}
+			String encrypted_fileName = encryptFile(fileName);
+			if(uploadFile(Uri,encrypted_fileName))ariesReg(lRowID);//if able to upload change aries in dB to 1
 		}
 		if (ariesReg == 1){
-			Toast.makeText(context, "Each event can only be registered once per server", Toast.LENGTH_LONG);
+			Toast.makeText(context, "Each event can only be registered once per server", Toast.LENGTH_LONG).show();
 			Log.i(TAG, "Each event can only be registered once per server");
 		}
 	}
+
+	private Boolean uploadFile(String Uri,String fileName) {
+		HttpFileUpload upload = new HttpFileUpload(fileName, Uri);
+		Boolean status = false;
+		//Here the file created should be deleted if all is well and a Toast showing success should be displayed
+		// else the file is left and a message displaying the server error message and not sucessful sent.
+		int serverResponse = upload.getServerResponseCode();
+		String serverMessage = upload.getServerResponseMessage();
+		
+		if (serverResponse == 200 && serverMessage.equals("OK")){
+			File file = new File(fileName);
+			if(!file.delete())Toast.makeText(context, "Error deleting saved Dectypted copy of session. Delete manually from "+fileName, Toast.LENGTH_LONG).show();
+			file = new File(fileName);
+			status = true;
+			Toast.makeText(context, "Session uploaded to Server", Toast.LENGTH_SHORT).show();
+		}else {
+			Toast.makeText(context, "Error uploading Session. A copy of the data has been save to "+fileName, Toast.LENGTH_LONG).show();
+			Log.e(TAG, serverResponse+" "+serverMessage);
+		}
+		return status;
+	}
+
 
 	private int getEventReg(long lRowID) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
         Cursor c = db.getEvent(lRowID);
-        int ariesregIDColumn = c.getColumnIndex(db.KEY1_ARIES) ;
+        int ariesregIDColumn = c.getColumnIndex(DBAdapter.KEY1_ARIES) ;
         int ariesReg=0;
 		if (c.moveToFirst())ariesReg = c.getInt(ariesregIDColumn);	        
         db.close();
@@ -431,9 +434,9 @@ public class functions
 		//---get person---
         db.open();
         Cursor c = db.getAllEventPersons(lRowID);
-        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int presentColumn = c.getColumnIndex(db.KEY2_PRESENT);
+        int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int presentColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
         long LID=0,count=0;
         c.moveToFirst();
         do {
@@ -455,9 +458,9 @@ public class functions
 		//---get person---
         db.open();
         Cursor c = db.getAllEventPersons(lRowID);
-        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);
+        int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);
         long LID=0;
         do {
 	   		int pType = c.getInt(pTypeColumn);
@@ -500,7 +503,7 @@ public class functions
 		//boolean stdexist = false;
         db.open();
         Cursor c = db.getAllOfficials();
-        int codeIDColumn = c.getColumnIndex(db.KEY_CODE) ;
+        int codeIDColumn = c.getColumnIndex(DBAdapter.KEY_CODE) ;
         long LcodeID=0;
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
@@ -542,7 +545,7 @@ public class functions
 		//boolean stdexist = false;
         db.open();
         Cursor c = db.getAllOfficials();
-        int codeIDColumn = c.getColumnIndex(db.KEY_CODE) ;
+        int codeIDColumn = c.getColumnIndex(DBAdapter.KEY_CODE) ;
         long LcodeID=0;
         if (c.moveToFirst()) {
         	/* Loop through all Results */   
@@ -585,8 +588,8 @@ public class functions
 		//boolean stdexist = false;
         db.open();
         Cursor c = db.getAllOfficials();
-        int codeIDColumn = c.getColumnIndex(db.KEY_CODE);
-        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
+        int codeIDColumn = c.getColumnIndex(DBAdapter.KEY_CODE);
+        int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
         
         long LcodeID=0,rowID=0;
         if (c.moveToFirst()) 
@@ -627,9 +630,9 @@ public class functions
 		//boolean stdexist = false;
         db.open();
         Cursor c = db.getAllEventPersons(leventID);
-        int pIDColumn = c.getColumnIndex(db.KEY2_PERSONID);
-        int eIDColumn = c.getColumnIndex(db.KEY2_EVENTID) ;
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);
+        int eIDColumn = c.getColumnIndex(DBAdapter.KEY2_EVENTID) ;
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
         
         long LpID=0,eventID=0;
         int ptype = 0;
@@ -706,9 +709,9 @@ public class functions
 	public void upd_dbpersondata(int ptype, long pID,long code){//method used when updating a record with only code available--can happen with scans only
 			//String blank = "";		
 			DBAdapter db = new DBAdapter(context); 
-			if (ptype == 1)upd_dbpersondata(pID,getPersonName(pID,ptype,db.KEY_FIRSTNAME),getPersonName(pID,ptype,db.KEY_LASTNAME),code);
-			if (ptype == 2)upd_dbpersondata(pID,getPersonName(pID,ptype,db.KEY_FIRSTNAME),getPersonName(pID,ptype,db.KEY_LASTNAME),code,
-						getPersonName(pID,ptype,db.KEY4_USERNAME),getPersonName(pID,ptype,db.KEY4_PASS));
+			if (ptype == 1)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code);
+			if (ptype == 2)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code,
+						getPersonName(pID,ptype,DBAdapter.KEY4_USERNAME),getPersonName(pID,ptype,DBAdapter.KEY4_PASS));
 	}
 	
 	public void upd_dbpersondata(long pID, String fname, String lname,long code){
@@ -876,7 +879,54 @@ public class functions
 		setFilePath(newxmlfile);
 		return newxmlfile;
 	}
+	
+	public String encryptFile(String savedPath){
+		//break the filename path 
+		String [] pathNname = getPATHnNAME(savedPath);
+		String ciphertext = getCryptoFileName(pathNname);
+		try {
+		    // Generate a temporary key. In practice, you would save this key.
+		    // See also Encrypting with DES Using a Pass Phrase.
+		    SecretKey key = KeyGenerator.getInstance("DES").generateKey();
 
+		    // Create encrypter/decrypter class
+		    DesEncrypter encrypter = new DesEncrypter(key);
+
+		    // Encrypt
+		    encrypter.encrypt(new FileInputStream(savedPath),
+		        new FileOutputStream(ciphertext));
+
+		    // Decrypt
+		    encrypter.decrypt(new FileInputStream(ciphertext),
+		        new FileOutputStream(pathNname[0]+"cleartext2"));
+		    File file = new File(savedPath);
+		    if(!file.delete())Toast.makeText(context, "Error deleting saved Encrypted copy of session. Delete manually from "+savedPath, Toast.LENGTH_LONG);
+			Toast.makeText(context, " Server registration completed Successfully ", Toast.LENGTH_SHORT);
+			
+		} catch (Exception e) {
+		}
+		return ciphertext;
+	}
+	
+	private String getCryptoFileName(String [] pathNname){
+		return pathNname[0]+"cryp-"+pathNname[1];
+	}
+	
+	private String getCryptoFileName(String savedPath){
+		String [] pathNname = getPATHnNAME(savedPath);
+		return pathNname[0]+"cryp-"+pathNname[1];
+	}
+
+	private String [] getPATHnNAME(String savePath){
+		//method will be used to split the saved Path into path and filename
+		String [] splitPath = savePath.split("\\/");
+		String path = "";//, name = null;
+		//String [] pathnName = new String [2];
+		int count = splitPath.length-1;
+		for (int i = 0; i < count;i++)path+=splitPath[i]+"/";
+		Log.i(TAG, path+"  "+count+"  "+splitPath[count]);
+		return new String []{path,splitPath[count]};
+	}
 
 	private void setFilePath(File newxmlfile) {
 		this.filePath = newxmlfile.toString();

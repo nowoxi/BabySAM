@@ -34,11 +34,11 @@ public class Old_displayActivity extends babysamActivity {
     private ArrayList<String[]> eventData = new ArrayList<String[]>();
     private ArrayList<String> offeventData = new ArrayList<String>();
     private ArrayList<String> stdeventData = new ArrayList<String>();
-    private int DB_mode;
+    private int DB_mode,age;
     private Long extra_EID;
     private functions f;
     
-    private ProgressDialog progDialog;    
+    private ProgressDialog progDialog; 
     private int typeBar;                        // Determines type progress bar: 0 = spinner, 1 = horizontal
 	
 	
@@ -53,7 +53,8 @@ public class Old_displayActivity extends babysamActivity {
 	    //Retrieve listview
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
-	    f = new functions(this);	   
+	    f = new functions(this);
+	    age = 1;
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
 	    //get the event id from the intent that was passed
@@ -196,12 +197,14 @@ public class Old_displayActivity extends babysamActivity {
     }
     
     protected Dialog onCreateDialog(int id) {
+    	Log.i(TAG," diaolg start" );
         switch(id) {
         case 0:                      // Spinner
+        	Log.i(TAG," diaolg start" );
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));
-            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails,upload);
+            ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), extra_EID, eventDetails, upload, age);
             progThread.start();
             return progDialog;        
         default:
@@ -209,9 +212,11 @@ public class Old_displayActivity extends babysamActivity {
         }
     }
     
-    final Handler handler = new Handler() {
+	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-        	dismissDialog(typeBar);
+        	//dismissDialog(typeBar);
+        	removeDialog(typeBar);
         }
     };
+    
 }

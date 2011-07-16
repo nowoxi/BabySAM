@@ -86,6 +86,17 @@ public class settingsActivity extends babysamActivity {
 					alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							String uriTemp  = (String) input.getText().toString();
+							String httpheader = "http://",httptail = "upload.php";
+							if (!uriTemp.startsWith(httpheader)){//add header if missing.. any other thing used should be self correctedcorrect
+								uriTemp= httpheader.concat(uriTemp);
+							}
+							if (!uriTemp.endsWith(httptail)){//add upload.php if missing.. any other thing used should correct
+								if (uriTemp.endsWith("/")){
+									uriTemp= uriTemp.concat(httptail);
+								}else {
+									uriTemp=uriTemp+"/"+httptail;
+								}
+							}
 							try {
 								@SuppressWarnings("unused")
 								URL uriTest = new URL (uriTemp);

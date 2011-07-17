@@ -15,6 +15,8 @@ import android.widget.Toast;
 
 public class LoginActivity extends babysamActivity {
     /** Called when the activity is first created. */
+	private EditText uname;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,37 +26,11 @@ public class LoginActivity extends babysamActivity {
         authbut.setOnClickListener(new View.OnClickListener() {
         public void onClick(View v) {
         // Handle date picking dialog
-        	
-        	EditText uname = (EditText)findViewById(R.id.authEText);
-        	
+        	uname = (EditText)findViewById(R.id.authEText);
         	String user = uname.getText().toString();
-        	
-        	if ( user.equalsIgnoreCase(null)||user.equalsIgnoreCase("")||user.length() < 3){
-        		Toast.makeText(getApplicationContext(),getResources().getString(R.string.login_message),Toast.LENGTH_LONG).show();
-        	}else {
-        		functions f = new functions(getApplicationContext());
-        		ArrayList<String> unames = f.getAllUsernames();
-        		Boolean check = false;
-        		for (int i = 0; i < unames.size();i++){
-	        		if (user.equalsIgnoreCase(unames.get(i))) check = true;
-        		}
-        		if (!check){
-        			Class<?> cls= olistActivity.class;
-        			Intent intent = new Intent(LoginActivity.this,cls);	
-        			intent.putExtra("username", user);
-        			startActivityForResult(intent,1);
-        		}else{
-        			uname.setText("");
-	        		single_SavePref(USER,user);
-        			startActivity(new Intent(LoginActivity.this, MenuActivity.class));
-	        		LoginActivity.this.finish();
-        		}
-        	}
-        	
+        	checkUsername(user);
         }
         });
-        
-        
     }
     
     @Override
@@ -69,11 +45,36 @@ public class LoginActivity extends babysamActivity {
 			 } else if (resultCode == RESULT_CANCELED) {
 	                // Handle cancel
 				 Toast.makeText(getApplicationContext(),getResources().getString(R.string.login_message),Toast.LENGTH_LONG).show();
-	            	Log.i(TAG,"It failed oh" );
+	            	Log.i(TAG,getResources().getString(R.string.login_message) );
 	         }
 		}
 	}
 
+    private void checkUsername(String user) {
+		if ( user.equalsIgnoreCase(null)||user.equalsIgnoreCase("")||user.length() < 3){
+    		Toast.makeText(getApplicationContext(),getResources().getString(R.string.login_message),Toast.LENGTH_LONG).show();
+    	}else {
+    		functions f = new functions(getApplicationContext());
+    		ArrayList<String> unames = f.getAllUsernames();
+    		Boolean check = false;
+    		int i = 0;
+    		while (i < unames.size() && !check){
+        		if (user.equalsIgnoreCase(unames.get(i))) check = true;
+        		i++; 
+    		}
+    		if (!check){
+    			Class<?> cls= olistActivity.class;
+    			Intent intent = new Intent(LoginActivity.this,cls);	
+    			intent.putExtra("username", user);
+    			startActivityForResult(intent,1);
+    		}else{
+    			uname.setText("");
+        		single_SavePref(USER,user);
+    			startActivity(new Intent(LoginActivity.this, MenuActivity.class));
+        		LoginActivity.this.finish();
+    		}
+    	}
+	}
 	private void single_SavePref(String key, String value){
 		eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = eventSettings.edit();

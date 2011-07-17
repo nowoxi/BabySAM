@@ -197,6 +197,7 @@ public final class R {
         public static final int option_list_s=0x7f090041;
         public static final int option_load=0x7f090040;
         public static final int pass=0x7f090049;
+        public static final int scanfail=0x7f09004c;
         public static final int send_email=0x7f09003e;
         public static final int ses_clear=0x7f090029;
         public static final int ses_course=0x7f09002c;
@@ -221,6 +222,7 @@ public final class R {
         public static final int splash=0x7f090001;
         public static final int student=0x7f090044;
         public static final int uname=0x7f090048;
+        public static final int unnecessary_func=0x7f09004d;
         public static final int version=0x7f09000d;
         public static final int zxing_but=0x7f09000f;
     }

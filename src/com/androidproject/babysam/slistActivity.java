@@ -36,7 +36,6 @@ public class slistActivity extends babysamActivity {
     private functions f;
     private String contents, scformat, format;//,  blank,efname, elname;
     private ArrayAdapter<String> adapt;
-    //private String [] en_content;// TODO assign value to it from the entry dialog method
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +50,6 @@ public class slistActivity extends babysamActivity {
 	}
     
     private void setupViews() {
-		// TODO Auto-generated method stub
     	setContentView(R.layout.slist);
         
         LoadPref();
@@ -126,7 +124,7 @@ public class slistActivity extends babysamActivity {
 	        	scanSet(en_stscan, scformat, scanNew,0);	
             return true;
         	case R.id.list_multiple:
-        		;
+        		Toast.makeText(this, getResources().getString(R.string.unnecessary_func), Toast.LENGTH_SHORT).show();
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -141,8 +139,7 @@ public class slistActivity extends babysamActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 	  AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-	  Log.i(TAG,"Context menu" );
-	  //long ilRowID = 0;//f.getPersonID(info.id,en_stPerson,RowID);
+	  Log.i(TAG,"Context menu "+info.id );
 	  RowID = f.getPersonID(en_stPerson, info.id);
 	  switch (item.getItemId()) {
 	  case R.id.event_delete_item:
@@ -152,7 +149,8 @@ public class slistActivity extends babysamActivity {
 	  case R.id.event_rescan_item:
 		  rescan("CODABAR",en_stPerson,info.id);
 		  return true;
-	  case R.id.event_edit_item2:		  
+	  case R.id.event_edit_item2:
+		  stPos = info.id;
 		  entryDialog(1,RowID);
 		return true;
 	  default:
@@ -162,14 +160,13 @@ public class slistActivity extends babysamActivity {
 
 	private void rescan(String sformat, int pType, long id) {
 		//  handle context menu rescan
-		//int en=0;
 		stPos = id; //position of row to be edited
 		scanSet(en_stscan,sformat,1, RowID);//3rd value set to 1 because it is a rescan
+		//RowID has been set from the oncontextitem selected method
 	}
 
 	private void deleteContext(int pType, long id) {
 		//  delete context menu
-		//RowID = f.getPersonID(pType, id);
 		Log.i(TAG,"RowID "+ RowID );
 		if (RowID != 0){
 			if (f.deletePerson(RowID,pType)){
@@ -180,16 +177,12 @@ public class slistActivity extends babysamActivity {
 	}
 	
 	public void entryDialog (int psEdit, long psRowID){
-		// TODO get content for ev_contents as it is done in 
+		// TODO get content for ev_contents as it is done in - am not suer what this means any more 
 		
 		pEdit=psEdit;
 		iRowID=psRowID;  //setting the row id of person
 		
 		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		//final EditText input = new EditText(this);
-		//final EditText [] input = { new EditText(this), new EditText(this)};
-		//the value for en_stperson might be lost when calling intent please check  
-		//Log.i(TAG,"fail 1 " );
 	    LayoutInflater inflater = getLayoutInflater();
 		final View dialoglayout = inflater.inflate(R.layout.stddialog, (ViewGroup) findViewById(R.id.slayout_root));
 	
@@ -206,17 +199,13 @@ public class slistActivity extends babysamActivity {
 			}
 		else {
 			eventresult[2].setText(contents);
-			//Log.i(TAG,"add contents oh "+ contents + " also" + psEdit);
 		}
-		
-		
 		
 		alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int whichButton) {
 				 //HERE YOU UPDATE THE DATABASE with  dialog if scanning is set AND NOT INSERT.				
 				//you insert values from dialog if scanning is not set
 			
-				//pRowID = 0;	
 				EditText [] eventresult = { (EditText) dialoglayout.findViewById(R.id.EditText01), (EditText) dialoglayout.findViewById(R.id.EditText02),
 						(EditText) dialoglayout.findViewById(R.id.EditText03) };
 				
@@ -266,9 +255,8 @@ public class slistActivity extends babysamActivity {
 	}
 	
 	private void enterPerson(String [] len_content) {
-		
 		int pos = 0 ;//calculating position of item edited
-		
+		boolean exist = true;
 		String fname=len_content[0];
 		String lname=len_content[1];
 		Long code = new Long(len_content[2]);
@@ -276,26 +264,26 @@ public class slistActivity extends babysamActivity {
 		long pRowID;
 		if (en_stscan == 1 || pEdit == 1){ //if en_stscan is enabled scan would have added thats why we are updating only
 			//the value of pRowID must be the id of the record added by the scan intent 
-			Log.i(TAG,"fail" );
 			pRowID = getLastPersonRow(RowID);
-			pos = stdData.size();
-			Log.i(TAG,"rescanning or editing student" );
+			Log.i(TAG,"rescanning or editing student " );
 			if (pEdit==1){
 				pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
 				pos =(int) stPos ;//value of person to be edited on listview
 			}
-			
-			if (en_stPerson == 1)f.upd_dbpersondata(pRowID, fname, lname, code);
+			exist = false;//for update is should be allowed to edit list view always
+			 f.upd_dbpersondata(pRowID, fname, lname, code);
 		} else if (en_stscan == 0){
-			if (en_stPerson == 1)f.add_dbpersondata( fname, lname, code);
+			exist = f.add_dbpersondata( fname, lname, code);
 		}
 		
 		//this section is for editing the list view	
-		String lcontents = fname+" "+lname+" "+code;//TODO set value 
-		if (pEdit == 0 )stdData.add(lcontents);
-		if (pEdit == 1 ){							
-			stdData.remove(pos);
-			stdData.add(pos, lcontents);
+		if (!exist){
+			String lcontents = fname+" "+lname+" "+code; 
+			if (pEdit == 0 )stdData.add(lcontents);
+			if (pEdit == 1 ){							
+				stdData.remove(pos);
+				stdData.add(pos, lcontents);
+			}
 		}
 		adapt.notifyDataSetChanged();
 	}
@@ -325,9 +313,7 @@ public class slistActivity extends babysamActivity {
 			intent.putExtra("SCAN_HEIGHT", 240 );
 			startActivityForResult(intent, 0);
     	} else {               	
-    		//contents = "";
     		if (scanT == 1){ //to edit the list view correctly on rescan
-    			//contents = Long.toString(f.getPersonCode(ilRowID,en_stPerson));
     			entryDialog(1,ilRowID);//method to create the dialog box straight
     		} else{
     			Log.i(TAG,"2 no scan" );
@@ -340,11 +326,7 @@ public class slistActivity extends babysamActivity {
     	//super.onActivityResult(requestCode, resultCode, intent);
 		// it will not come here if the scan option isn't enabled
 		
-		//stateId will always be 1 as long as event details have been entered
-		//persons dont need to be edited with 
-		
-		
-    	Log.i(TAG,"to check that onactivity result happens" );
+    	//Log.i(TAG,"to check that onactivity result happens" );
     	
         if (requestCode == 0) {
             if (resultCode == RESULT_OK) {
@@ -353,18 +335,14 @@ public class slistActivity extends babysamActivity {
                 // Handle successful scan
                 Log.i(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
                 Log.i(TAG,"Format = "+format+" / Contents = " +contents );
-                //int pos = 0;
-                
-                Log.i(TAG, "Array size "+stdData.size() );
                 
                 try {            
 	                Long lcontents = new Long (contents);
 	                Log.i(TAG,"contents " + lcontents + " after convertion. also rescan is "+ reScan );
 	                if(reScan == 0)f.add_dbpersondata(en_stPerson, lcontents); // using blank as method is expected to be used for both officials and students               
-	                if(reScan == 1)f.upd_dbpersondata(en_stPerson, RowID, lcontents);//TODO set rowid from rescan or scanset
+	                if(reScan == 1)f.upd_dbpersondata(en_stPerson, RowID, lcontents);// set rowid from rescan or scanset
 	                 
-	                
-	                Log.i(TAG," after scanning: "  );
+	                //Log.i(TAG," after scanning: "  );
 	            }catch (NumberFormatException e){
 	       		 Toast.makeText(getApplicationContext(), "Invalid data format", 
 	                 		Toast.LENGTH_SHORT).show();
@@ -375,7 +353,8 @@ public class slistActivity extends babysamActivity {
                 
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
-            	Log.i(TAG,"It failed oh" );
+            	Toast.makeText(this, getResources().getString(R.string.scanfail), Toast.LENGTH_SHORT).show();
+            	Log.i(TAG,getResources().getString(R.string.scanfail) );
             }
         }    	
 	}
@@ -385,7 +364,5 @@ public class slistActivity extends babysamActivity {
     private void LoadPref(){
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
 	        en_stscan = eventSettings.getInt(ST_SCAN, 1);
-	        //en_ofscan = eventSettings.getInt(OF_SCAN, 1);
-	        //en_evscan = eventSettings.getInt(EV_SCAN, 1);
     }
 }

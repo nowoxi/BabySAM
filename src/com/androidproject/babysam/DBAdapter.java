@@ -386,7 +386,20 @@ public class DBAdapter
         return db.update(DATABASE_TABLE1, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
   //---insert a person for event into the database---
-    public boolean updateEventPerson(long rowId, long eventid, int ptype, long pID, String timestamp,  int present, int list) //long position,
+    public boolean updateEventPerson(long rowId, String timestamp, long present)//, int list) //long position,
+    {Log.i("BabaySAM","update: "+present);
+        ContentValues args = new ContentValues();
+        //args.put(KEY2_EVENTID, eventid);
+        //args.put(KEY2_PERSONTYPE, ptype);
+       // args.put(KEY2_PERSONID, pID);
+        args.put(KEY_TIMESTAMP, timestamp);
+        //args.put(KEY2_POSITION, position);
+        args.put(KEY2_PRESENT, present);
+        //args.put(KEY2_LIST, list);
+        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null)>0;
+    }
+    //---updates a person in an event---
+    public boolean updatePerson(long rowId,long eventid, int ptype, long pID, String timestamp, long present, long list) 
     {
         ContentValues args = new ContentValues();
         args.put(KEY2_EVENTID, eventid);
@@ -396,21 +409,8 @@ public class DBAdapter
         //args.put(KEY2_POSITION, position);
         args.put(KEY2_PRESENT, present);
         args.put(KEY2_LIST, list);
-        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null)>0;
-    }
-    //---updates a person in an event---
-    /*public boolean updatePerson_redundant(long rowId,long eventid, int ptype, long pID, String timestamp, long position, long present, long list) 
-    {
-        ContentValues args = new ContentValues();
-        args.put(KEY2_EVENTID, eventid);
-        args.put(KEY2_PERSONTYPE, ptype);
-        args.put(KEY2_PERSONID, pID);
-        args.put(KEY_TIMESTAMP, timestamp);
-        args.put(KEY2_POSITION, position);
-        args.put(KEY2_PRESENT, present);
-        args.put(KEY2_LIST, list);
         return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null) > 0;
-    }*/
+    }
     
   //---updates a Student ---
     public boolean updateStudent(long rowId,long code, String lname, String fname) 

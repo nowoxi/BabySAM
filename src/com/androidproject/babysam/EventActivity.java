@@ -68,7 +68,7 @@ public class EventActivity extends babysamActivity {
 	   private long RowID, pRowID, stateID, iRowID, stPos, offPos;//, rPos;
 	   private functions f;
 	   private ProgressDialog dialog;
-	   private boolean correctTable,listCheck;//used to control if the list view should be updated after checking if added person belongs to correct table
+	   private boolean correctTable,listCheck,EditPass;//used to control if the list view should be updated after checking if added person belongs to correct table
 	   
 	   
 	   private final ArrayList<String> offeventData = new ArrayList<String>();
@@ -388,18 +388,19 @@ public class EventActivity extends babysamActivity {
 	        	scanSet(en_evscan, scformat, scanNew,0);	
             return true;  
         	case R.id.event_aries:
-        		if (stateID == 1) sendAries();
-        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
+        		if (stateID == 1) send(LoadUriPref());
+        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT).show();
             return true;
         	case R.id.event_file:
         		if (stateID == 1) {
         			String filename=f.saveasFile(RowID, user);
-        			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();
+        			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_LONG).show();
         		}
-        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT);
+        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT).show();
             return true;
         	case R.id.event_email:
-	        	sendMail();        		
+        		if (stateID == 1) send("Mail");
+        		else Toast.makeText(this, "Add session details", Toast.LENGTH_SHORT).show();
             return true;
         	case R.id.event_list:
         		//check if each exists in student list or official
@@ -465,7 +466,7 @@ public class EventActivity extends babysamActivity {
 								//String cdate = timeStamp();
 				        		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
 				        		populate_table2(sourceList,en_stPerson,lcontents,RowID);
-					        	Log.i(TAG,"add person to db" );
+					        	Log.i(TAG,"import person to event db" );
 				        	} catch (NumberFormatException e){
 				       		 Toast.makeText(this, "Invalid data format", 
 				              		Toast.LENGTH_SHORT).show();
@@ -480,31 +481,26 @@ public class EventActivity extends babysamActivity {
 	}
 
 
-	private void sendMail() {
+	/*private void sendMail() {
 		String upload = "Mail";
-		Log.i(TAG,"send email" );
+		//Log.i(TAG,"send email" );
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
-		Log.i(TAG,"send email middle" );
 		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age,user);
 		progThread.start();
-		Log.i(TAG,"send email end" );
-	}
+	}*/
 	
-	private void sendAries() {
-		String upload = LoadUriPref();// this is the uri to be used for sending
-		Log.i(TAG,"send email" );
+	private void send(String upload) {
+		// = LoadUriPref();// this is the uri to be used for sending
 		dialog = ProgressDialog.show(this, "",
 				getResources().getString(R.string.send_email), true);
-		Log.i(TAG,"send Aries middle" );
 		ProgressThread progThread = new ProgressThread(handler, getApplicationContext(), RowID, ev_contents,upload, age, user);
 		progThread.start();
-		Log.i(TAG,"send Aries end" );
 	}
 
 	final Handler handler = new Handler() {
         public void handleMessage(Message msg) {
-        	Log.i(TAG,"send email handler" );
+        	//Log.i(TAG,"send email handler" );
         	dialog.dismiss();
         }
     };
@@ -642,10 +638,7 @@ public class EventActivity extends babysamActivity {
 				pRowID = getLastPersonRow(RowID);
 				pos = stdeventData.size();
 				Log.i(TAG,"rescanning or editing student" );
-				if (pEdit==1){
-					pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
-					pos =(int) stPos ;//value of person to be edited
-				}
+				if (pEdit==1) pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
 				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents);
 			} else if (en_ofscan == 0){
 				//stPos = stdeventData.size();
@@ -657,8 +650,13 @@ public class EventActivity extends babysamActivity {
 				//this section is for editing the list view	
 				if( !lData.contains("null")){
 					if (pEdit == 0 )stdeventData.add(lData);
-					if (pEdit == 1 ){							
-						stdeventData.remove(pos);
+					if (pEdit == 1 && EditPass){	
+						pos =(int) stPos ;//value of person to be edited
+						if(pos < stdeventData.size()){
+							stdeventData.remove(pos);
+						}else{
+							pos = 0;
+						}
 						stdeventData.add(pos, lData);
 					}
 					std_adapt.notifyDataSetChanged();
@@ -669,10 +667,7 @@ public class EventActivity extends babysamActivity {
 			if (en_ofscan == 1|| pEdit == 1){//update info if scan enable or editing 
 				pRowID = getLastPersonRow(RowID);
 				pos = offeventData.size();
-				if (pEdit==1){
-					pRowID = iRowID;  //set the person rowID to the id to be edited
-					pos = (int) offPos ;//value of person to be edited
-				}
+				if (pEdit==1) pRowID = iRowID;  //set the person rowID to the id to be edited
 				upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents);
 			} else if (en_ofscan == 0){
 				//offPos = offeventData.size();
@@ -682,8 +677,8 @@ public class EventActivity extends babysamActivity {
 				lData = listview_Format(lcontents,en_stPerson, RowID);
 				if( !lData.contains("null")){
 					if (pEdit == 0 )offeventData.add(lData);
-					if (pEdit == 1 ){
-						;//calculating position of item edited 
+					if (pEdit == 1 && EditPass ){
+						pos = (int) offPos ;//value of person to be edited
 						offeventData.remove(pos);
 						offeventData.add(pos, lData);
 					}
@@ -832,7 +827,7 @@ public class EventActivity extends babysamActivity {
         		//String cdate = timeStamp();
         		//  db.insertPerson(lRowID,ptype,code,cdate,pos, code, code);
         		populate_table2(sourceList,ptype,lcontents,lRowID);
-	        	Log.i(TAG,"add person to db" );
+	        	Log.i(TAG,"add person to event db" );
         	} catch (NumberFormatException e){
        		 Toast.makeText(this, "Invalid data format", 
               		Toast.LENGTH_SHORT).show();
@@ -844,6 +839,7 @@ public class EventActivity extends babysamActivity {
     }
 	
 	private void populate_table2(int sourceList,int ptype, String lcontents, long lRowID) {
+		Log.i(TAG, "method - popularte teable2");
 		Long code = new Long (lcontents);
 		String cdate = timeStamp();
 		long pID = 0;
@@ -856,15 +852,24 @@ public class EventActivity extends babysamActivity {
 				pID = f.getPersonID(code, ptype);
 				if(sourceList == 0){
 					if (pEdit == 1){// this is to check if edit was selected and used to update the personID only if you are editting
-						DBAdapter db = new DBAdapter(this); 
-				        db.open(); 
-						db.updateEventPersonID(pID,iRowID);
-						db.close();
+						Log.i(TAG, "method - populate table 2 -- edit section");
+						long [] cPos = f.eventCHECK(pID,lRowID,ptype);
+						//long pos = stPos;
+						//if (ptype == 2)pos = offPos;
+						if ( cPos[0] == 0){//check if already in list if its not add
+							DBAdapter db = new DBAdapter(this); 
+					        db.open(); 
+							db.updateEventPersonID(pID,iRowID);
+							db.close();
+							EditPass=true;
+						}else{
+							EditPass=false;
+							Toast.makeText(this, "Person already on List", Toast.LENGTH_SHORT).show();
+						}
 					} else{
 						attdList(pID,lRowID, ptype, cdate);
 					}
-				}
-				if(sourceList == 1)add_attdList(pID, lRowID, ptype, cdate);
+				}else if(sourceList == 1)add_attdList(pID, lRowID, ptype, cdate);
 				correctTable = true;
 			}else {
 				Log.i(TAG,"wrong row "+ ptype );
@@ -895,20 +900,33 @@ public class EventActivity extends babysamActivity {
 	}
 
 		//check if exist in attendance list 
-		//if so change present to 1 and list to 1 ---else add to list and change present to 1 list to 0
+		//if so change present to 1  ---else add to list and set present to 1 list to 0
 	private void attdList(long pID, long lRowID, int ptype, String cdate) {
-		int present = 1, list = 0;
+		Log.i(TAG, "method - attdLIst");
+		int present = 1;
+		int list = 0;
 		DBAdapter db = new DBAdapter(this); 
         db.open(); 
-		if(f.eventCHECK(pID, lRowID, ptype)){
+        long [] pos = f.eventCHECK(pID, lRowID, ptype);
+		if(pos[0] > 0 ){
 			long epID=f.getEventPersonID(pID, ptype, lRowID);
-			list = 1;
-			listCheck=true;
-			db.updateEventPerson(epID, lRowID, ptype, pID, cdate, present, list);// when updating i might only want it to update a few detais not all
+			//list = 1; 
+			/* The list value should only be changed to one by a list. It should also only be set on insertion.
+			 * This is so that a person not on the list scanned twice will not be added to the list
+			 */
+			listCheck=pos[2]== 1?true:false;
+			if(pos[1] == 1){
+				pEdit =1;EditPass=true;
+				if (ptype == 1)stPos = pos[3]-1;
+				else if (ptype == 2)offPos = pos[3]-1;
+			}Log.i(TAG, "method - attdLIst -- update");
+			db.updateEventPerson(epID, cdate, 1);//, list);// when updating i might only want it to update a few detais not all
+			pos = f.eventCHECK(pID, lRowID, ptype);
 		}else{
 			list = 0;
 			listCheck=false;
 			db.insertEventPerson(lRowID, ptype, pID, cdate,present, list);
+			Log.i(TAG, "method - attdLIst-- insert");
 		}
 		db.close();
 		
@@ -916,7 +934,7 @@ public class EventActivity extends babysamActivity {
 	//used to add persons from attendance list
 	private void add_attdList(long pID, long lRowID, int ptype, String cdate) {
 		int list = 1;
-		int present= 0;
+		int present = 0;
 		DBAdapter db = new DBAdapter(this); 
         db.open(); 
 			db.insertEventPerson(lRowID, ptype, pID, cdate, present, list);

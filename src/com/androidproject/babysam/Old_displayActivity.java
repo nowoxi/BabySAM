@@ -143,7 +143,7 @@ public class Old_displayActivity extends babysamActivity {
             return true;
         	case R.id.event_file:
 			String filename=f.saveasFile(extra_EID,user);
-			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_SHORT).show();	
+			if(!filename.equalsIgnoreCase(null))Toast.makeText(this, "File created in "+filename, Toast.LENGTH_LONG).show();	
             return true;
         }
 		return super.onOptionsItemSelected(item);
@@ -153,6 +153,8 @@ public class Old_displayActivity extends babysamActivity {
     	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         return  eventSettings.getString("aries_link"," Enter URL plesae");
     }
+    
+    //Method for debuggin purposes only
     private void processData( XmlResourceParser event,ArrayList<String[]> eventData, int xeID) throws XmlPullParserException,IOException {
 		int doceventType = -1;
 		boolean bFoundEvents = false;   

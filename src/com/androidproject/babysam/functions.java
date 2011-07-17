@@ -171,7 +171,7 @@ public class functions
         Cursor d = db.getAllStudents();
         int pType,present, list;
         long pRowID;
-        String SPresent = "", SList = "";
+        
       /* Get the indices of the Columns we will need */        
         int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
         int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
@@ -184,6 +184,7 @@ public class functions
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
         	 do {
+        		 String SPresent = "", SList = "";
         		 pType = c.getInt(pTypeColumn);
         		 pRowID = c.getLong(pIDColumn);
         		 present = c.getInt(preColumn);
@@ -350,8 +351,9 @@ public class functions
 		String Body = "Event: "+ev_contents[0] + "\n Venue: "+ev_contents[1]+"\n"
 		+" Course: "+ev_contents[2]+"\n Duration: "+ev_contents[3]+"\n \nOfficials\n";
 		
-		String SPresent="",SList="";
+		
 		for (int i=0;i<offeventData.size();i++) {
+			String SPresent="",SList="";
 			String [] Data = offeventData.get(i);
 			if (Integer.parseInt(Data[1]) == 0)SPresent = "AB";
 			if (Integer.parseInt(Data[2]) == 0)SList = "**";
@@ -360,6 +362,7 @@ public class functions
 		}
 		Body = Body+"\n \nStudents\n";
 		for (int i=0;i<stdeventData.size();i++) {
+			String SPresent="",SList="";
 			String [] Data = stdeventData.get(i);
 			if (Integer.parseInt(Data[1]) == 0)SPresent = "AB";
 			if (Integer.parseInt(Data[2]) == 0)SList = "**";
@@ -645,47 +648,60 @@ public class functions
 	}
 	
 	
-	public boolean eventCHECK(long pID, long leventID, int pType){ //to check if code exists in attendance list if it does then return true.
+	public long [] eventCHECK(long pID, long leventID, int pType){ //to check if code exists in attendance list if it does then return true.
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;
+		long [] pos = {0,0,0,0};// 0 - count, 1 - present, 2 - list
 		//boolean stdexist = false;
         db.open();
         Cursor c = db.getAllEventPersons(leventID);
         int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);
-        int eIDColumn = c.getColumnIndex(DBAdapter.KEY2_EVENTID) ;
+        //int eIDColumn = c.getColumnIndex(DBAdapter.KEY2_EVENTID) ;
         int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int presentColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(DBAdapter.KEY2_LIST);
         
-        long LpID=0,eventID=0;
+        long LpID=0,count =0, present=0;
         int ptype = 0;
         if (c.moveToFirst()) 
         	/* Loop through all Results */             	
         	 do {
         		 LpID = c.getLong(pIDColumn);
-        		 eventID = c.getLong(eIDColumn);
+        		 //eventID = c.getLong(eIDColumn);
         		 ptype = c.getInt(pTypeColumn);
-        	     if(pID == LpID && eventID == leventID && ptype == pType) {
-        	    	// Log.i(TAG,"checking codes...test"+ LpID+eventID+ptype );
-        	    	 exist = true ; 
-        	     }
+        		 if (ptype == pType){
+        			 count++;
+        			 present =c.getLong(presentColumn);
+        			 if (present == 1)pos[3]++;
+        			 if(pID == LpID){
+	        	    	 //exist = true;
+	        	    	 pos[0] = count;
+	        	    	 pos[1] = present;
+	        	    	 pos[2] = c.getLong(listColumn);
+        			 }
+        		 }
         	     //Log.i(TAG,"checking codes..." );
-        		
-             } while (c.moveToNext() && exist != true);
+             } while (c.moveToNext() && pos[0] == 0);//exist != true);
         else
             Toast.makeText(context, "No Persons found for events", Toast.LENGTH_SHORT).show();
-        
         db.close();
-        Log.i(TAG,"checking codes..."+exist );
-		return exist;		
+        //if (exist)pos[0] = count;
+        Log.i(TAG,"checking codes..."+exist+pos[0]+pos[1]+pos[2] );
+		return pos;		
 	}
 	
 	
-	public void add_dbpersondata(int ptype, long code){//method used when creating a record with only code available
+	public boolean add_dbpersondata(int ptype, long code){//method used when creating a record with only code available
 		Log.i(TAG,"add person method codes..." );
+		boolean exist = true;
 			String blank = "";		
-			if (ptype == 1)add_dbpersondata(blank,blank,code);
-			if (ptype == 2)add_dbpersondata(blank,blank,code,blank,blank);
+			if (ptype == 1)exist = add_dbpersondata(blank,blank,code);
+			if (ptype == 2)exist = add_dbpersondata(blank,blank,code,blank,blank);
+			return exist;
 	}
-	public void add_dbpersondata(String fname, String lname,long code){
+	
+	public boolean add_dbpersondata(String fname, String lname,long code){
+		boolean exist = true;
 		if(!codeCHECK(code)){
 			DBAdapter db = new DBAdapter(context); 
 	        db.open();       
@@ -697,15 +713,16 @@ public class functions
 	        		 Toast.makeText(context, context.getResources().getString( R.string.invalid_data), Toast.LENGTH_SHORT).show();
 	        	}
 	        db.close();
+	        exist = false;
 		}else{
             Toast.makeText(context, "Record exists", 
             		Toast.LENGTH_SHORT).show();
             }
-		
+		return exist;
 	}
 	
 	//public void add_dbpersondata(int ptype, String fname, String lname,long code,String uname, String pass){
-	public void add_dbpersondata( String fname, String lname,long code,String uname, String pass){
+	public boolean add_dbpersondata( String fname, String lname,long code,String uname, String pass){
 		if(!codeCHECK(code)){
 	    	//---add 2 events and persons---
 	    	DBAdapter db = new DBAdapter(context); 
@@ -721,21 +738,25 @@ public class functions
 	        	
 	       // }
 	        db.close();
+	        return false;
         }else{
             Toast.makeText(context, "Record exists", Toast.LENGTH_SHORT).show();
+            return true;
             }
     }
 	
 	
-	public void upd_dbpersondata(int ptype, long pID,long code){//method used when updating a record with only code available--can happen with scans only
+	public boolean upd_dbpersondata(int ptype, long pID,long code){//method used when updating a record with only code available--can happen with scans only
 			//String blank = "";		
 			//DBAdapter db = new DBAdapter(context); 
-			if (ptype == 1)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code);
-			if (ptype == 2)upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code,
+		boolean exist = true;
+			if (ptype == 1)exist = upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code);
+			if (ptype == 2)exist = upd_dbpersondata(pID,getPersonName(pID,ptype,DBAdapter.KEY_FIRSTNAME),getPersonName(pID,ptype,DBAdapter.KEY_LASTNAME),code,
 						getPersonName(pID,ptype,DBAdapter.KEY4_USERNAME),getPersonName(pID,ptype,DBAdapter.KEY4_PASS));
+			return exist;
 	}
 	
-	public void upd_dbpersondata(long pID, String fname, String lname,long code){
+	public boolean upd_dbpersondata(long pID, String fname, String lname,long code){
 		if(!codeCHECK(code,pID)){
 	    	//---add 2 events and persons---
 	    	DBAdapter db = new DBAdapter(context); 
@@ -750,12 +771,14 @@ public class functions
 	        	}
 	        
 	        db.close();
+	        return false;
 		}else{
             Toast.makeText(context, "Record exists", Toast.LENGTH_SHORT).show();
-            }
+            return true;
+		}
     }
 	
-	public void upd_dbpersondata(long pID, String fname, String lname,long code,String uname, String pass){
+	public boolean upd_dbpersondata(long pID, String fname, String lname,long code,String uname, String pass){
 		if(!codeCHECK(code,pID)){
 	    	//---add 2 events and persons---
 	    	DBAdapter db = new DBAdapter(context); 
@@ -770,9 +793,11 @@ public class functions
 	        	}        	
 	        //}
 	        db.close();
+	        return false;
 		}else{
             Toast.makeText(context, "Record exists", 
             		Toast.LENGTH_SHORT).show();
+            return true;
             }
         
     }

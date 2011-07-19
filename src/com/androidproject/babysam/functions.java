@@ -545,17 +545,16 @@ public class functions
 	   		/* Add current Entry to offeventData and stdeventData.*/ 
 	   		if(pType == lpType && pID == dpID)LID = c.getLong(IDColumn);    
 	   		if(pType == lpType )count++;
-	   		Log.i(TAG,"pEventID: "+c.getLong(IDColumn)+" count:"+count);
+	   		Log.d(TAG,"pEventID: "+c.getLong(IDColumn)+" count:"+count);
         } while (c.moveToNext() && LID == 0); 
         c.close();
         db.close();
-        Log.i(TAG,"c count:"+c.getCount()+" "+count);
+        Log.d(TAG,"c count:"+c.getCount()+" "+count);
 		return LID;
 	}
 	
 	private Long getPersonID(String data) {
 		String[] datasplit = data.split(" ");
-		//Log.i(TAG,"getpersond: "+datasplit[2]+" "+datasplit.length+" "+datasplit[0]+" "+datasplit[1]+" "+datasplit[3]+" "+datasplit[4]);
 		long numdata = 0;
 		try{
 			numdata = new Long(datasplit[2]);
@@ -591,32 +590,8 @@ public class functions
 		return LID;
 	}
 
-	/*public void updatePos(int lpType, int pos, long lRowID) {
-		DBAdapter db = new DBAdapter(context);
-		//---get person---
-        db.open();
-        Cursor c = db.getAllEventPersons(lRowID);
-        int IDColumn = c.getColumnIndex(db.KEY_ROWID) ;
-        int pTypeColumn = c.getColumnIndex(db.KEY2_PERSONTYPE);
-        int posColumn = c.getColumnIndex(db.KEY2_POSITION);
-        do {
-	   		int pType = c.getInt(pTypeColumn);
-	   		long dpos = c.getLong(posColumn);
-	   		long rowID = c.getLong(IDColumn);
-	   		/* Add current Entry to offeventData and stdeventData. *\/
-	   		if(pType == lpType && dpos > pos){
-	   			dpos-=1;
-	   			 try{
-	   				 db.posChange(rowID,dpos);
-	   			 } catch (Exception e) {
-	 	            Log.e(TAG, "Failed to update persion poistion", e);
-	 	        }
-	   		}
-        } while (c.moveToNext()); 
-        db.close();
-	}*/
 	public boolean codeCHECK(long code){ //to check if code exists if it does then return true.
-		Log.i(TAG,"checking codes..." );
+		Log.d(TAG,"checking codes(if exists in persons)..." );
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;
 		//boolean stdexist = false;
@@ -641,7 +616,7 @@ public class functions
         if ( exist != true){
         	//Log.i(TAG,"checking codes b started..." );
 	        c = db.getAllStudents();
-	        Log.i(TAG,"checking codes dead..." );
+	        Log.v(TAG,"checking codes ..." );
 	        if (c.moveToFirst()) 
 	        	/* Loop through all Results */             	
 	        	 do {
@@ -658,7 +633,7 @@ public class functions
 	}
 	
 	public boolean codeCHECK(long code,int pType){ //to check if code exists and in correct table if it does then return true.
-		Log.i(TAG,"checking codes..." );
+		Log.d(TAG,"checking codes(if correct table)..." );
 		DBAdapter db = new DBAdapter(context);
 		boolean exist = false;
 		int personType =0;
@@ -671,7 +646,7 @@ public class functions
         	/* Loop through all Results */   
         	personType = 2;
         	 do {
-        		 //Log.i(TAG,"still checking codes..." );
+        		 Log.v(TAG,"still checking codes..." );
         		 LcodeID = c.getLong(codeIDColumn);
         	     if(code == LcodeID && personType == pType) exist = true ;  
         		
@@ -681,11 +656,10 @@ public class functions
             		Toast.LENGTH_SHORT).show();
         }
         c.close();
-        //Log.i(TAG,"checking codes a finished ..." );
+        Log.v(TAG,"checking codes a finished ..." );
         if ( exist != true){
-        	//Log.i(TAG,"checking codes b started..." );
+        	Log.v(TAG,"checking codes b started..." );
 	        c = db.getAllStudents();
-	       // Log.i(TAG,"checking codes dead..." );
 	        if (c.moveToFirst()) {
 	        	/* Loop through all Results */
 	        	personType = 1;
@@ -829,7 +803,7 @@ public class functions
 	        
 	        	try{
 		        	db.insertOfficial(code, lname, fname, uname, pass);	
-		        	Log.i(TAG,"add official to db" );
+		        	Log.d(TAG,"add official to db" );
 	        	} catch (NumberFormatException e){
 	       		 Toast.makeText(context, "Invalid data format", Toast.LENGTH_SHORT).show();
 	        	}
@@ -862,7 +836,7 @@ public class functions
 	        Log.i(TAG,"update person db method" );
 	        	try{
 	        		db.updateStudent(pID,code,lname,fname);
-		        Log.i(TAG,"update student in db" );
+		        Log.d(TAG,"update student in db" );
 	        	} catch (NumberFormatException e){
 	        		 Toast.makeText(context, "Invalid data format", 
 	                 		Toast.LENGTH_SHORT).show();
@@ -884,7 +858,7 @@ public class functions
 	        Log.i(TAG,"update person db method" );
 	        	try{
 		        	db.updateOfficial(pID,code,lname,fname, uname, pass);
-		        	Log.i(TAG,"updated official in db" );
+		        	Log.d(TAG,"updated official in db" );
 	        	} catch (NumberFormatException e){
 	       		 Toast.makeText(context, "Invalid data format", 
 	              		Toast.LENGTH_SHORT).show();
@@ -903,18 +877,6 @@ public class functions
 	public String timeStamp(){
 		return (String)android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss", new java.util.Date());
 	}
-
-
-	public void add_dbPerson(int en_stPerson, String contents, String fname, String lname, String uname, String pass) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-	public void upd_dbPerson(int en_stPerson, long rowID, String contents, String efname, String elname, String uname, String pass) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public String saveasFile(long lRowID,String username) {
 		ArrayList<String[]> officalData = aries_personExtract(lRowID, 2);
@@ -928,7 +890,7 @@ public class functions
 		String officialTag = "Official";
 		String rootTag = "Event";
 		String userTag = "username";
-		//Log.i(TAG, "save file 1");
+		Log.d(TAG, "save file ");
 
         try{
                 newxmlfile.createNewFile();
@@ -947,7 +909,7 @@ public class functions
         //we create a XmlSerializer in order to write xml data
         XmlSerializer serializer = Xml.newSerializer();
         try {
-        	Log.i(TAG, "save file 0");
+        	Log.d(TAG, "save file in the try bracket");
                 //we set the FileOutputStream as output for the serializer, using UTF-8 encoding
                         serializer.setOutput(fileos, "UTF-8");
                         //Write <?xml declaration with encoding (if encoding not null) and standalone flag (if standalone not null)
@@ -1082,10 +1044,9 @@ public class functions
 		//method will be used to split the saved Path into path and filename
 		String [] splitPath = savePath.split("\\/");
 		String path = "";//, name = null;
-		//String [] pathnName = new String [2];
 		int count = splitPath.length-1;
 		for (int i = 0; i < count;i++)path+=splitPath[i]+"/";
-		Log.i(TAG, path+"  "+count+"  "+splitPath[count]);
+		Log.v(TAG, path+"  "+count+"  "+splitPath[count]);
 		return new String []{path,splitPath[count]};
 	}
 

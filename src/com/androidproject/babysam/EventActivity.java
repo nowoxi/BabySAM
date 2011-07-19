@@ -973,7 +973,7 @@ public class EventActivity extends babysamActivity {
     }
 	
 	private void populate_table2(int sourceList,int ptype, String lcontents, long lRowID) {
-		Log.i(TAG, "method - populate teable2");
+		Log.i(TAG, "method - populate table2");
 		Long code = new Long (lcontents);
 		String cdate = timeStamp();
 		long pID = 0;
@@ -984,14 +984,15 @@ public class EventActivity extends babysamActivity {
 		if(f.codeCHECK(code)){
 			if(f.codeCHECK(code,ptype)){//check if code exists in correct table
 				pID = f.getPersonID(code, ptype);
+				Log.d(TAG, "method - populate teable2 - all checks passed - exists and corect table");
 				if(sourceList == 0){
 					if (pEdit == 1){// this is to check if edit was selected and used to update the personID only if you are editting
-						Log.i(TAG, "method - populate table 2 -- edit section");
+						Log.v(TAG, "method - populate table 2 -- edit section");
 						long [] cPos = f.eventCHECK(pID,lRowID,ptype);
 						//long pos = stPos;
 						//if (ptype == 2)pos = offPos;
 						if (cPos[0] != 0){//check if already in list else add
-							Log.i(TAG, "method - populate table - new user exists in table 2");
+							Log.d(TAG, "method - populate table - new user exists in table 2");
 							if (cPos[1] != 1){//check if present if not update and disable former else infrom user and do nothing
 								DBAdapter db = new DBAdapter(this); 
 						        db.open(); 
@@ -1013,20 +1014,30 @@ public class EventActivity extends babysamActivity {
 						attdList(pID,lRowID, ptype, cdate);
 					}
 				}else if(sourceList == 1){
+					Log.d(TAG, "Populate list - Source LIst 1 "+ pID);
 					long [] cPos = f.eventCHECK(pID,lRowID,ptype);
-					if (cPos[0] == 0){
+					if (cPos[0] == 0){ // if is not on event list
 						add_attdList(pID, lRowID, ptype, cdate);
-					}else {
-						//Log.i(TAG, "Person already on List");
+					}else if (cPos[2] != 1){//if list isnt 1
+						Log.d(TAG, "Populate list - Person already on List updating list: "+ pID);
 						DBAdapter db = new DBAdapter(this); 
 				        db.open(); 
-				        db.updateEventPerson(pID, 1);
+				        long list = 1;
+				        long epID=f.getEventPersonID(pID, ptype, lRowID);
+				        db.updateEventPerson(epID, list);
 				        db.close();
+				        if (cPos[1] == 1){
+				        	Log.v(TAG, "If person on list and present update list view");
+					        if (ptype == 1)std_adapt.notifyDataSetChanged();
+					        if (ptype == 2)off_adapt.notifyDataSetChanged();
+				        }
+					}else {//if exist and list is 1
+						Log.w(TAG, "Person already on List");
 					}
 				}
 				correctTable = true;
 			}else {
-				Log.i(TAG,"wrong row "+ ptype );
+				Log.w(TAG,"wrong row "+ ptype );
 				correctTable = false;
 				Toast.makeText(this, "Adding person to wrong group", Toast.LENGTH_SHORT).show();
 			}
@@ -1076,14 +1087,15 @@ public class EventActivity extends babysamActivity {
 				pEdit =1;EditPass=true;
 				if (ptype == 1)stPos = pos[3]-1;
 				else if (ptype == 2)offPos = pos[3]-1;
-			}Log.i(TAG, "method - attdLIst -- update");
+			}
+			Log.d(TAG, "method - attdLIst -- update");
 			db.updateEventPerson(epID, cdate, 1);//, list);// when updating i might only want it to update a few detais not all
 			pos = f.eventCHECK(pID, lRowID, ptype);
 		}else{
 			list = 0;
 			listCheck=false;
 			db.insertEventPerson(lRowID, ptype, pID, cdate,present, list);
-			Log.i(TAG, "method - attdLIst-- insert");
+			Log.d(TAG, "method - attdLIst-- insert");
 		}
 		db.close();
 		

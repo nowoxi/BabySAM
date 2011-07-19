@@ -472,7 +472,7 @@ public class DBAdapter
 	}
 
 	public boolean updateEventPerson(long rowId, long list) {
-		Log.i("BabaySAM","update: "+list);
+		Log.i("BabySAM","update: "+list);
         ContentValues args = new ContentValues();
         args.put(KEY2_LIST, list);
         return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null)>0;

@@ -790,8 +790,9 @@ public class EventActivity extends babysamActivity {
 					if (pEdit == 0 )offeventData.add(lData);
 					if (pEdit == 1 && EditPass ){
 						pos = (int) offPos ;//value of person to be edited
-						offeventData.remove(pos);
-						offeventData.add(pos, lData);
+						//offeventData.remove(pos);
+						if(remove_lsitViewItem(en_stPerson,pos))offeventData.add(pos, lData);
+						else offeventData.add(lData);
 						//offeventData=f.evenedit_personExtract(RowID, en_stPerson);
 					}
 				}
@@ -1065,7 +1066,7 @@ public class EventActivity extends babysamActivity {
 			}while ( i < stdeventData.size() && code != listcode );
 			Log.d(TAG, " code: "+code+" listcode: "+listcode);
 			if (code == listcode){
-				listCheck = true;,
+				listCheck = true;
 				if(remove_lsitViewItem(ptype,i-1))stdeventData.add(i-1, listview_Format(pID,ptype,RowID));
 				Log.d(TAG, "the list element - "+ stdeventData.get(i-1)+" format: "+ listview_Format(pID,ptype,RowID));
 			}

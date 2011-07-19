@@ -30,7 +30,16 @@
 	<item
 	android:id="@+id/event_list"
 	android:title="@string/option_event_list"
-	android:icon="@android:drawable/ic_menu_agenda"></item>
+	android:icon="@android:drawable/ic_menu_agenda">
+	<menu>
+	            <item android:id="@+id/event_ffile"
+	                  android:title="@string/option_event_list_file"
+	                  android:icon="@android:drawable/ic_menu_send" />
+	            <item android:id="@+id/event_net"
+	                  android:title="@string/option_event_list_net" 
+	                  android:icon="@android:drawable/ic_menu_upload"/>
+	        </menu>
+	</item>
 	<item
 	android:id="@+id/event_save"
 	android:title="@string/option_event_save"

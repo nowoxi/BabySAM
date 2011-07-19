@@ -135,7 +135,7 @@ public class DBAdapter
     }
     
   //---insert a person for event into the database---
-    public boolean insertEventPerson(long eventid, int ptype, long pID, String timestamp, int present, int list) 
+    public boolean insertEventPerson(long eventid, int ptype, long pID, String timestamp, long present, long list) 
     {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY2_EVENTID, eventid);
@@ -470,5 +470,12 @@ public class DBAdapter
         args.put(KEY2_PERSONID, pID);
         return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null)> 0;
 	}
+
+	public boolean updateEventPerson(long rowId, long list) {
+		Log.i("BabaySAM","update: "+list);
+        ContentValues args = new ContentValues();
+        args.put(KEY2_LIST, list);
+        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowId, null)>0;
+    }
 
 }

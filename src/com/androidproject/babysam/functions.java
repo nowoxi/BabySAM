@@ -40,7 +40,8 @@ public class functions
         if(pType == 2)c = db.getOfficial(ilRowID);
         int codeIDColumn = c.getColumnIndex(DBAdapter.KEY_CODE) ;
         long LcodeID=0;
-		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);	        
+		if (c.moveToFirst())LcodeID = c.getLong(codeIDColumn);
+		c.close();
         db.close();
 		return LcodeID;
 	}
@@ -51,7 +52,8 @@ public class functions
         Cursor c = db.getPerson(eventID);
         int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID) ;
         long pID=0;
-		if (c.moveToFirst())pID = c.getLong(pIDColumn);	        
+		if (c.moveToFirst())pID = c.getLong(pIDColumn);	 
+		c.close();
         db.close();
 		return pID;
 	}
@@ -71,7 +73,8 @@ public class functions
 				LcodeID = c.getLong(codeColumn);
 				if(code == LcodeID) lRowID = c.getLong(IDColumn) ;  
         	}while (c.moveToNext() && code != LcodeID); 
-        }      
+        }
+        c.close();
         db.close();
 		return lRowID;
 	}
@@ -85,7 +88,8 @@ public class functions
         if(pType == 2)c = db.getOfficial(ilRowID);
         int nameColumn = c.getColumnIndex(column) ;
         String name = null;
-		if (c.moveToFirst())name = c.getString(nameColumn);	        
+		if (c.moveToFirst())name = c.getString(nameColumn);	 
+		c.close();
         db.close();
 		return name;
 	}
@@ -103,6 +107,7 @@ public class functions
 			rowID = c.getLong(IDcolumn);
 		} else
             Toast.makeText(context, "No Person found at position", Toast.LENGTH_SHORT).show();
+		c.close();
 		db.close();
 		return rowID;
 	}
@@ -124,6 +129,7 @@ public class functions
 				} else{
 					Toast.makeText(context, "No Person found at position", Toast.LENGTH_SHORT).show();
 				}
+				c.close();
 				db.close();
 		}
 		return welcome;
@@ -156,6 +162,7 @@ public class functions
             Toast.makeText(context, "No Event found", 
             		Toast.LENGTH_SHORT).show();
         }
+        c.close();
         db.close();
     	return eventDetails;
     }	
@@ -190,7 +197,7 @@ public class functions
         		 present = c.getInt(preColumn);
         		 list = c.getInt(listColumn);
         		 
-        		 Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
+        		// Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
         		 /* Add current Entry to offeventData and stdeventData. */
         		 if(pType == tpType){   
         			 if (tpType == 1)d = db.getStudent(pRowID);
@@ -202,11 +209,67 @@ public class functions
         			 eventData.add(data);
         			 
         		}
-        		 Log.i(TAG,"person extraction" );
+        		// Log.i(TAG,"person extraction" );
              } while (c.moveToNext());
         } else
             Toast.makeText(context, "No Persons found", 
             		Toast.LENGTH_SHORT).show();
+        c.close();
+        db.close();
+        Log.i(TAG,"person extraction" );
+    	return eventData;
+    }
+	
+	//this method to extract the rows
+	public ArrayList<String> evenedit_personExtract (long extra_EID, int tpType){
+		ArrayList<String> eventData = new ArrayList<String>();
+      //create object of DB
+    	DBAdapter db = new DBAdapter(context);
+        
+      //---get all events---
+        db.open();
+        Cursor c = db.getAllEventPersons(extra_EID);
+        Cursor d = db.getAllStudents();
+        int pType,list;
+		long present;
+        long pRowID;
+        
+      /* Get the indices of the Columns we will need */        
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);//this will not work again modified to remove error sbut logically wrong
+        int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
+        int preColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        int listColumn = c.getColumnIndex(DBAdapter.KEY2_LIST);
+        int firstColumn = d.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
+        int lastColumn = d.getColumnIndex(DBAdapter.KEY_LASTNAME);
+        int codeColumn = d.getColumnIndex(DBAdapter.KEY_CODE);
+        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        if (c.moveToFirst()) {
+        	/* Loop through all Results */             	
+        	 do {
+        		 String SList = "";
+        		 pType = c.getInt(pTypeColumn);
+        		 pRowID = c.getLong(pIDColumn);
+        		 present = c.getLong(preColumn);
+        		 list = c.getInt(listColumn);
+        		 
+        		 Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
+        		 /* Add current Entry to offeventData and stdeventData. */
+        		 if(pType == tpType){   
+        			 if (tpType == 1)d = db.getStudent(pRowID);
+        			 if (tpType == 2)d = db.getOfficial(pRowID);  
+        			 String  data = null;
+        			 if (list == 0)SList = "**";
+					 if (present == 1) data= d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn)+" "+SList;
+        			 Log.i(TAG," "+data);
+        			 eventCHECK(pRowID,extra_EID,tpType);
+        			 if(data!=null)eventData.add(data);
+        		}
+        		// Log.i(TAG,"person extraction" );
+             } while (c.moveToNext());
+        } else
+            Toast.makeText(context, "No Persons found", 
+            		Toast.LENGTH_SHORT).show();
+        c.close();
         db.close();
         Log.i(TAG,"person extraction 2" );
     	return eventData;
@@ -264,6 +327,7 @@ public class functions
             Toast.makeText(context, "No Persons found", 
             		Toast.LENGTH_SHORT).show();
             }
+        c.close();
         db.close();
         Log.i(TAG,"Aries person extraction End" );
     	return eventData;
@@ -307,6 +371,7 @@ public class functions
         else
             Toast.makeText(context, "No Persons found", 
             		Toast.LENGTH_SHORT).show();
+        c.close();
         db.close();
     	return eventData;
     }
@@ -428,7 +493,8 @@ public class functions
         Cursor c = db.getEvent(lRowID);
         int ariesregIDColumn = c.getColumnIndex(DBAdapter.KEY1_ARIES) ;
         int ariesReg=0;
-		if (c.moveToFirst())ariesReg = c.getInt(ariesregIDColumn);	        
+		if (c.moveToFirst())ariesReg = c.getInt(ariesregIDColumn);	  
+		c.close();
         db.close();
 		return ariesReg;
 	}
@@ -440,11 +506,17 @@ public class functions
     	db.ariesupdate(lRowID);
     	db.close();
 	}
+	
+	
 	public boolean deletePerson(long ilRowID, int pType) {
 		//create object of DB
     	DBAdapter db = new DBAdapter(context);
 		db.open();
-		if (pType == 3 )db.deletePerson(ilRowID);
+		if (pType == 3 ){
+			//db.deletePerson(ilRowID);
+			long present = 0;
+			db.updateEventPerson(ilRowID,timeStamp() , present);
+		}
 		if (pType == 2 )db.deleteOfficial(ilRowID);
 		if (pType == 1 )db.deleteStudent(ilRowID);
 		db.close();
@@ -453,29 +525,51 @@ public class functions
 
 	//rows in table 2 are completely made unique by the rowID or a combination of eventID, person type and position
 	//used to identify selected student via context menu 
-	public long getEventPersonID(String bad,long pos, int lpType, long lRowID) {
+	public long getEventPersonID(String bad,long pos, int lpType, long lRowID, ArrayList<String> listData) {
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
+        Long code = getPersonID(listData.get((int) pos));
+        Long pID = getPersonID(code,lpType);
         Cursor c = db.getAllEventPersons(lRowID);
         int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
         int pTypeColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONTYPE);
-        int presentColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        //int presentColumn = c.getColumnIndex(DBAdapter.KEY2_PRESENT);
+        int pIDColumn = c.getColumnIndex(DBAdapter.KEY2_PERSONID);
         long LID=0,count=0;
         c.moveToFirst();
         do {
 	   		int pType = c.getInt(pTypeColumn);
-	   		int present = c.getInt(presentColumn);
+	   		//int present = c.getInt(presentColumn);
+	   		int dpID = c.getInt(pIDColumn);
 	   		/* Add current Entry to offeventData and stdeventData.*/ 
-	   		if(pType == lpType && count == pos)LID = c.getLong(IDColumn);    
-	   		if(pType == lpType && present == 1 )count++;
+	   		if(pType == lpType && pID == dpID)LID = c.getLong(IDColumn);    
+	   		if(pType == lpType )count++;
 	   		Log.i(TAG,"pEventID: "+c.getLong(IDColumn)+" count:"+count);
         } while (c.moveToNext() && LID == 0); 
+        c.close();
         db.close();
         Log.i(TAG,"c count:"+c.getCount()+" "+count);
 		return LID;
 	}
 	
+	private Long getPersonID(String data) {
+		String[] datasplit = data.split(" ");
+		Log.i(TAG,"getpersond: "+datasplit[2]+" "+datasplit.length+" "+datasplit[0]+" "+datasplit[1]+" "+datasplit[3]+" "+datasplit[4]);
+		long numdata = 0;
+		try{
+			numdata = new Long(datasplit[2]);
+		}catch (NumberFormatException e){
+			try{
+				numdata = new Long(datasplit[3]);
+			}catch (NumberFormatException er){
+				Log.e(TAG, "Error getting nmber",er);
+			}
+		}
+		return numdata;
+	}
+
+
 	//rows in table 2 are completely made unique by the rowid or a combination of eventid, persontype and position
 	public long getEventPersonID( long pID, int lpType, long lRowID) {
 		DBAdapter db = new DBAdapter(context);
@@ -492,6 +586,7 @@ public class functions
 	   		/* Add current Entry to offeventData and stdeventData. */
 	   		if(pType == lpType && dpID == pID)LID = c.getLong(IDColumn);    
         } while (c.moveToNext()); 
+        c.close();
         db.close();
 		return LID;
 	}
@@ -541,6 +636,7 @@ public class functions
             Toast.makeText(context, "No Officials found", 
             		Toast.LENGTH_SHORT).show();
         }
+        c.close();
         //Log.i(TAG,"checking codes a finished ..." );
         if ( exist != true){
         	//Log.i(TAG,"checking codes b started..." );
@@ -556,7 +652,7 @@ public class functions
 	            Toast.makeText(context, "No Students found", 
 	            		Toast.LENGTH_SHORT).show();
         }
-        
+        c.close();
         db.close();
 		return exist;		
 	}
@@ -601,7 +697,7 @@ public class functions
 	            Toast.makeText(context, "No Students found", 
 	            		Toast.LENGTH_SHORT).show();
         }
-        
+        c.close();
         db.close();
 		return exist;		
 	}
@@ -642,7 +738,7 @@ public class functions
 	            Toast.makeText(context, "No Students found", 
 	            		Toast.LENGTH_SHORT).show();
         }
-        
+        c.close();
         db.close();
 		return exist;		
 	}
@@ -682,8 +778,9 @@ public class functions
         		 }
         	     //Log.i(TAG,"checking codes..." );
              } while (c.moveToNext() && pos[0] == 0);//exist != true);
-        else
-            Toast.makeText(context, "No Persons found for events", Toast.LENGTH_SHORT).show();
+       // else
+         //   Toast.makeText(context, "No Persons found for events", Toast.LENGTH_SHORT).show();
+        c.close();
         db.close();
         //if (exist)pos[0] = count;
         Log.i(TAG,"checking codes..."+exist+pos[0]+pos[1]+pos[2] );
@@ -1012,6 +1109,7 @@ public class functions
 				usernames.add(c.getString(unameColumn));	        
 			}while (c.moveToNext());
 		}
+		c.close();
         db.close();
 		return usernames;
 	}

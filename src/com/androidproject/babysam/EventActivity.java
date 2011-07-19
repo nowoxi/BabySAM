@@ -755,7 +755,7 @@ public class EventActivity extends babysamActivity {
 				if (pEdit==1) {
 					pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
 					add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
-					f.deletePerson(pRowID, 3);//These changes the person to absent
+					if(EditPass)f.deletePerson(pRowID, 3);//These changes the person to absent
 					//f.eventCHECK(iRowID, RowID, en_stPerson);
 				}
 				
@@ -766,19 +766,16 @@ public class EventActivity extends babysamActivity {
 				//stPos = stdeventData.size();
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
 			}
-			
+			//Log.i(TAG, " "+ correctTable);
 			if (correctTable){
+				//EditPass=true;//cant rememebr what i needed it for any more
 				lData = listview_Format(lcontents,en_stPerson, RowID);
 				//this section is for editing the list view	
+				//Log.i(TAG, "enter person: "+lData);
 				if( !lData.contains("null")){
 					if (pEdit == 0 )stdeventData.add(lData);
 					if (pEdit == 1 && EditPass){	
 						pos =(int) stPos ;//value of person to be edited
-						/*if(pos < stdeventData.size()){
-							
-						}else{
-							pos = 0;
-						}*/
 						stdeventData.remove(pos);
 						stdeventData.add(pos, lData);
 						//stdeventData=f.evenedit_personExtract(RowID, en_stPerson);
@@ -787,7 +784,6 @@ public class EventActivity extends babysamActivity {
 					//std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
 				    //std.setAdapter(std_adapt);
 					std_adapt.notifyDataSetChanged();
-					Log.i(TAG, "enter person");
 				}
 			}
 		} else if (en_stPerson == 2){
@@ -796,8 +792,8 @@ public class EventActivity extends babysamActivity {
 				//*pos = offeventData.size();
 				if (pEdit==1){
 					pRowID = iRowID;  //set the person rowID to the id to be edited
-					f.deletePerson(pRowID, 3);
 					add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
+					if(EditPass)f.deletePerson(pRowID, 3);
 				}
 				if (en_ofscan == 1)upd_dbdata(en_stPerson, pRowID,RowID, ev_contents, lcontents);
 			
@@ -806,6 +802,7 @@ public class EventActivity extends babysamActivity {
 				add_dbdata(en_stPerson, ev_contents, lcontents, RowID);
 			}
 			if (correctTable){
+				//EditPass=true;
 				lData = listview_Format(lcontents,en_stPerson, RowID);
 				if( !lData.contains("null")){
 					if (pEdit == 0 )offeventData.add(lData);
@@ -819,6 +816,7 @@ public class EventActivity extends babysamActivity {
 			}
 			off_adapt.notifyDataSetChanged();
 		} 
+		Log.i(TAG, "enter person");
 	}
 	
 	//formating the string to be used for the list view
@@ -992,20 +990,24 @@ public class EventActivity extends babysamActivity {
 						long [] cPos = f.eventCHECK(pID,lRowID,ptype);
 						//long pos = stPos;
 						//if (ptype == 2)pos = offPos;
-						if (cPos[0] != 0){//check if already in list if its not add
+						if (cPos[0] != 0){//check if already in list else add
 							Log.i(TAG, "method - populate table - new user exists in table 2");
-							DBAdapter db = new DBAdapter(this); 
-					        db.open(); 
-							//db.updateEventPersonID(pID,iRowID);
-					        long epID=f.getEventPersonID(pID, ptype, lRowID);
-					        db.updateEventPerson(epID, cdate, 1);
-							db.close();
-							EditPass=true;
+							if (cPos[1] != 1){//check if present if not update and disable former else infrom user and do nothing
+								DBAdapter db = new DBAdapter(this); 
+						        db.open(); 
+								//db.updateEventPersonID(pID,iRowID);
+						        long epID=f.getEventPersonID(pID, ptype, lRowID);
+						        db.updateEventPerson(epID, cdate, 1);
+								db.close();
+								EditPass=true;
+							}else{
+								EditPass=false;
+								Toast.makeText(this, "Person already on List", Toast.LENGTH_SHORT).show();
+								
+							}
 						}else{
-							EditPass=false;
-							//Toast.makeText(this, "Person already on List", Toast.LENGTH_SHORT).show();
+							EditPass=true;
 							attdList(pID,lRowID, ptype, cdate);
-							
 						}
 					} else{
 						attdList(pID,lRowID, ptype, cdate);

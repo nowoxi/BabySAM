@@ -555,14 +555,14 @@ public class functions
 	
 	private Long getPersonID(String data) {
 		String[] datasplit = data.split(" ");
-		Log.i(TAG,"getpersond: "+datasplit[2]+" "+datasplit.length+" "+datasplit[0]+" "+datasplit[1]+" "+datasplit[3]+" "+datasplit[4]);
+		//Log.i(TAG,"getpersond: "+datasplit[2]+" "+datasplit.length+" "+datasplit[0]+" "+datasplit[1]+" "+datasplit[3]+" "+datasplit[4]);
 		long numdata = 0;
 		try{
 			numdata = new Long(datasplit[2]);
-		}catch (NumberFormatException e){
+		}catch (Exception e){
 			try{
 				numdata = new Long(datasplit[3]);
-			}catch (NumberFormatException er){
+			}catch (Exception er){
 				Log.e(TAG, "Error getting nmber",er);
 			}
 		}
@@ -680,6 +680,7 @@ public class functions
             Toast.makeText(context, "No Officials found", 
             		Toast.LENGTH_SHORT).show();
         }
+        c.close();
         //Log.i(TAG,"checking codes a finished ..." );
         if ( exist != true){
         	//Log.i(TAG,"checking codes b started..." );

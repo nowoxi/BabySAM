@@ -439,6 +439,7 @@ public class functions
 	
 	public void sendAries(long lRowID, int age, String Uri, String Username){// age is used to check if more than one copy of an event can be sent to the server 0 - yes and 1 - no 
 		//usually new event or from history (if history - 1 if new event - 0)
+		//now i have seen that even event should be 1 as one could try to register more than once
 		/* This method does the following
 		 * 1. creates xml of session
 		 * 2. uploads the xml and retrieves response
@@ -450,7 +451,7 @@ public class functions
 		//registration check
 		int ariesReg=1;
 		if ( age == 1) ariesReg = getEventReg(lRowID);
-		Log.i(TAG, "ariesReg "+ariesReg);
+		Log.d(TAG, "ariesReg "+ariesReg);
 		
 		if(age == 0 || ariesReg == 0){
 			//xml creation
@@ -460,7 +461,7 @@ public class functions
 		}
 		if (ariesReg == 1){
 			Toast.makeText(context, "Each event can only be registered once per server", Toast.LENGTH_LONG).show();
-			Log.i(TAG, "Each event can only be registered once per server");
+			Log.w(TAG, "Each event can only be registered once per server");
 		}
 	}
 
@@ -529,7 +530,7 @@ public class functions
 		DBAdapter db = new DBAdapter(context);
 		//---get person---
         db.open();
-        Long code = getPersonID(listData.get((int) pos));
+        Long code = getPersonCode(listData.get((int) pos));
         Long pID = getPersonID(code,lpType);
         Cursor c = db.getAllEventPersons(lRowID);
         int IDColumn = c.getColumnIndex(DBAdapter.KEY_ROWID) ;
@@ -553,7 +554,7 @@ public class functions
 		return LID;
 	}
 	
-	private Long getPersonID(String data) {
+	public Long getPersonCode(String data) {
 		String[] datasplit = data.split(" ");
 		long numdata = 0;
 		try{
@@ -565,6 +566,7 @@ public class functions
 				Log.e(TAG, "Error getting nmber",er);
 			}
 		}
+		Log.d(TAG, "Persion Code: "+ numdata);
 		return numdata;
 	}
 

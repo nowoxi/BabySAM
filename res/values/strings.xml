@@ -93,7 +93,10 @@
     <string name="pass">Password</string>
     <string name="Code">Code</string>
     <string name="login_message">Please Enter Valid Username \n (Should be 3 letters or more)</string>
-    <string name="scanfail">Scan Failed</string>
+    <string name="scanfail">Intent was canceled or Data acquisition failed</string>
     <string name="unnecessary_func">Function not developed - Redundant</string>
-    
+    <string name="load_fail">Failed to load Events - </string>
+    <string name="ses_detail">Add session details</string>
+    <string name="import_xml">import person to event db</string>
+    <string name="modify_listview">Error modifing list view(Remove) - </string>
 </resources>

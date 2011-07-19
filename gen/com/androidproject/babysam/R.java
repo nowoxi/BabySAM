@@ -163,8 +163,10 @@ public final class R {
         public static final int facerec_display=0x7f09000c;
         public static final int fname=0x7f09004b;
         public static final int help=0x7f090006;
+        public static final int import_xml=0x7f090055;
         public static final int invalid_data=0x7f090048;
         public static final int lname=0x7f09004c;
+        public static final int load_fail=0x7f090053;
         public static final int login=0x7f090002;
         public static final int login_message=0x7f090050;
         public static final int menu=0x7f090003;
@@ -176,6 +178,7 @@ public final class R {
         public static final int menu_item_olist=0x7f090015;
         public static final int menu_item_set=0x7f090013;
         public static final int menu_item_slist=0x7f090014;
+        public static final int modify_listview=0x7f090056;
         public static final int no_data=0x7f090044;
         public static final int no_filemanager_installed=0x7f09002a;
         public static final int official=0x7f09004a;
@@ -208,6 +211,7 @@ public final class R {
         public static final int send_email=0x7f090043;
         public static final int ses_clear=0x7f09002e;
         public static final int ses_course=0x7f090031;
+        public static final int ses_detail=0x7f090054;
         public static final int ses_event=0x7f09002f;
         public static final int ses_save=0x7f09002d;
         public static final int ses_time=0x7f090032;

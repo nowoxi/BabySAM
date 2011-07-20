@@ -42,6 +42,7 @@ public class Old_displayActivity extends babysamActivity {
     private ProgressDialog progDialog; 
     private int typeBar;                        // Determines type progress bar: 0 = spinner, 1 = horizontal
 	
+    private String loadfail;//, loadinvalid, add_session, importxml, mod_listview;
 	
     
     @Override
@@ -49,13 +50,15 @@ public class Old_displayActivity extends babysamActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.old_display);
         LoadPref();
+        loadMessages();
+        
         TextView [] text = {(TextView) findViewById(R.id.Event_view),(TextView) findViewById(R.id.textView2),(TextView) findViewById(R.id.TextView01),
     	    	(TextView) findViewById(R.id.TextView02)};
 	    //Retrieve listview
 	    ListView off = (ListView) findViewById(R.id.listView1);
 	    ListView std = (ListView) findViewById(R.id.listView2);
 	    f = new functions(this);
-	    age = 0;
+	    age = 1;
         
         //Log.i(TAG, " this is the intent "+ intentExtra[0]);
 	    //get the event id from the intent that was passed
@@ -85,7 +88,7 @@ public class Old_displayActivity extends babysamActivity {
 		    	int y = Integer.parseInt(I_intExtra[0]);
 		    	processData(eventxml, eventData, y);
 		    } catch (Exception e) {
-	            Log.e(TAG, "Failed to load Events", e);
+	            Log.e(TAG, loadfail, e);
 	        }
 		     
 		    //put data in meventData after eventData comes back
@@ -100,9 +103,9 @@ public class Old_displayActivity extends babysamActivity {
 		    }		     
 	    } else if (DB_mode == 1){
 	    	if ( intent != null){	    		
-	    		Log.i(TAG,"long extra"+intent.getLongExtra("EventID",1) );
+	    		Log.d(TAG,"long extra"+intent.getLongExtra("EventID",1) );
 		    	extra_EID = intent.getLongExtra("EventID",1);
-		    	//TODO - trying to introduce the functions object so i can re-use common methods
+		    	// - trying to introduce the functions object so i can re-use common methods
 		    	//eventExtract();
 		    	eventDetails = f.eventExtract(extra_EID);
 		    	for (int i = 0; i < 4 ; i++){
@@ -117,7 +120,7 @@ public class Old_displayActivity extends babysamActivity {
 	    ArrayAdapter<String> std_adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdeventData);
 	    off.setAdapter(off_adapt);
 	    std.setAdapter(std_adapt);
-	    Log.i(TAG,"3 After call" );        
+	    Log.v(TAG,"End Activity" );        
     }  
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -159,7 +162,7 @@ public class Old_displayActivity extends babysamActivity {
 		int doceventType = -1;
 		boolean bFoundEvents = false;   
 	    //int xnum = 0;
-	    //Log.i(TAG," 1" );
+	    Log.i(TAG," Method - processData for resource xml" );
 		// Find Event records from XML
 		while (doceventType != XmlResourceParser.END_DOCUMENT) {
 		    if (doceventType == XmlResourceParser.START_TAG) {		    	
@@ -205,7 +208,7 @@ public class Old_displayActivity extends babysamActivity {
     	Log.i(TAG," diaolg start" );
         switch(id) {
         case 0:                      // Spinner
-        	Log.i(TAG," diaolg start" );
+        	//Log.v(TAG," diaolg start" );
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));
@@ -224,4 +227,11 @@ public class Old_displayActivity extends babysamActivity {
         }
     };
     
+    private void loadMessages() {
+		//loadinvalid = getResources().getString(R.string.invalid_data);
+		loadfail = getResources().getString(R.string.load_fail);
+		/*add_session = getResources().getString(R.string.ses_detail);
+		importxml = getResources().getString(R.string.import_xml);
+		mod_listview = getResources().getString(R.string.modify_listview);*/
+	}
 }

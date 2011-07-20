@@ -18,10 +18,4 @@ public class babysamActivity extends Activity {
 	
 	public static final String TAG = "BabySAM";
 	SharedPreferences eventSettings;
-	
-	
-	
-	
-	
-	
 }

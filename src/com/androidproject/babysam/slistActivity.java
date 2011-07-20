@@ -46,7 +46,6 @@ public class slistActivity extends babysamActivity {
     public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
 		setupViews();
-		//checkstatus();		
 	}
     
     private void setupViews() {
@@ -54,7 +53,6 @@ public class slistActivity extends babysamActivity {
         
         LoadPref();
         f = new functions(this);
-        //blank = " ";
         en_stPerson =1;
         fromIntent=0;
         
@@ -66,7 +64,7 @@ public class slistActivity extends babysamActivity {
 	    	    
 	    adapt = new ArrayAdapter<String>(this, R.layout.list_item, stdData);        
 	    slist.setAdapter(adapt);
-	    Log.i(TAG,"List view pupolated" );
+	    Log.d(TAG,"List view pupolated" );
 	    
 	  //get the event id from the intent that was passed
         Intent intent = getIntent();
@@ -177,7 +175,7 @@ public class slistActivity extends babysamActivity {
 	}
 	
 	public void entryDialog (int psEdit, long psRowID){
-		// TODO get content for ev_contents as it is done in - am not suer what this means any more 
+		// get content for ev_contents as it is done in - am not suer what this means any more 
 		
 		pEdit=psEdit;
 		iRowID=psRowID;  //setting the row id of person
@@ -305,7 +303,7 @@ public class slistActivity extends babysamActivity {
 	private void scanSet(int sett, String scan_format, int scanT, long ilRowID){
 		reScan = scanT; //used to learn if this is a rescan or a 1scan
     	if (sett == 1){
-			Log.i(TAG,"2 scan" );				
+			Log.d(TAG," Code scaning initiated" );				
 			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
 			intent.setPackage("com.google.zxing.client.android");
 			intent.putExtra("SCAN_FORMATS", scan_format);
@@ -316,7 +314,7 @@ public class slistActivity extends babysamActivity {
     		if (scanT == 1){ //to edit the list view correctly on rescan
     			entryDialog(1,ilRowID);//method to create the dialog box straight
     		} else{
-    			Log.i(TAG,"2 no scan" );
+    			Log.i(TAG,"Scanning Disabled" );
     			entryDialog(0,0);
     		}    		
         }
@@ -333,12 +331,12 @@ public class slistActivity extends babysamActivity {
                 contents = intent.getStringExtra("SCAN_RESULT");
                 format = intent.getStringExtra("SCAN_RESULT_FORMAT");
                 // Handle successful scan
-                Log.i(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
-                Log.i(TAG,"Format = "+format+" / Contents = " +contents );
+                Log.d(TAG,"requestCode = "+requestCode+" / resultCode = " +resultCode );
+                Log.d(TAG,"Format = "+format+" / Contents = " +contents );
                 
                 try {            
 	                Long lcontents = new Long (contents);
-	                Log.i(TAG,"contents " + lcontents + " after convertion. also rescan is "+ reScan );
+	                Log.d(TAG,"contents " + lcontents + " after convertion. also rescan is "+ reScan );
 	                if(reScan == 0)f.add_dbpersondata(en_stPerson, lcontents); // using blank as method is expected to be used for both officials and students               
 	                if(reScan == 1)f.upd_dbpersondata(en_stPerson, RowID, lcontents);// set rowid from rescan or scanset
 	                 
@@ -354,7 +352,7 @@ public class slistActivity extends babysamActivity {
             } else if (resultCode == RESULT_CANCELED) {
                 // Handle cancel
             	Toast.makeText(this, getResources().getString(R.string.scanfail), Toast.LENGTH_SHORT).show();
-            	Log.i(TAG,getResources().getString(R.string.scanfail) );
+            	Log.e(TAG,getResources().getString(R.string.scanfail) );
             }
         }    	
 	}

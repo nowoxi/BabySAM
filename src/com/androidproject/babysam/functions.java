@@ -30,7 +30,7 @@ public class functions
     }
 	
 	
-	//TODO find out who using the getpersoncode... i think its the edit probably then modify to get data from the student list or officials list tables
+	//DONE find out who using the getpersoncode... i think its the edit probably then modify to get data from the student list or officials list tables
 	// as required
 	public long getPersonCode(long ilRowID, int pType) {//iRowID is variable for rowid of table 3 or 4 ie person ID
 		DBAdapter db = new DBAdapter(context);
@@ -187,7 +187,7 @@ public class functions
         int firstColumn = d.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
         int lastColumn = d.getColumnIndex(DBAdapter.KEY_LASTNAME);
         int codeColumn = d.getColumnIndex(DBAdapter.KEY_CODE);
-        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        Log.d(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
         	 do {
@@ -205,7 +205,7 @@ public class functions
         			 if (present == 0)SPresent = "AB";
         			 if (list == 0)SList = "**";
         			 String data= d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn)+" "+SList+" "+SPresent;
-        			 Log.i(TAG,data);		 
+        			 Log.v(TAG,data);		 
         			 eventData.add(data);
         			 
         		}
@@ -242,7 +242,7 @@ public class functions
         int firstColumn = d.getColumnIndex(DBAdapter.KEY_FIRSTNAME);         
         int lastColumn = d.getColumnIndex(DBAdapter.KEY_LASTNAME);
         int codeColumn = d.getColumnIndex(DBAdapter.KEY_CODE);
-        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        Log.d(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
         	 do {
@@ -252,7 +252,7 @@ public class functions
         		 present = c.getLong(preColumn);
         		 list = c.getInt(listColumn);
         		 
-        		 Log.i(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
+        		 Log.v(TAG,"person extraction " +pRowID+ "THEN ptype is " + pType);
         		 /* Add current Entry to offeventData and stdeventData. */
         		 if(pType == tpType){   
         			 if (tpType == 1)d = db.getStudent(pRowID);
@@ -260,7 +260,7 @@ public class functions
         			 String  data = null;
         			 if (list == 0)SList = "**";
 					 if (present == 1) data= d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn)+" "+SList;
-        			 Log.i(TAG," "+data);
+        			 Log.v(TAG," "+data);
         			 eventCHECK(pRowID,extra_EID,tpType);
         			 if(data!=null)eventData.add(data);
         		}
@@ -271,7 +271,7 @@ public class functions
             		Toast.LENGTH_SHORT).show();
         c.close();
         db.close();
-        Log.i(TAG,"person extraction 2" );
+        Log.i(TAG,"person extraction End" );
     	return eventData;
     }
 	
@@ -298,7 +298,7 @@ public class functions
         int listColumn = c.getColumnIndex(DBAdapter.KEY2_LIST);
         int timestampColumn = c.getColumnIndex(DBAdapter.KEY_TIMESTAMP);
         
-        Log.i(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
+        Log.d(TAG, " the value for eventID - "+ extra_EID+" c size" + c.getCount());
         //String [] test;
         if (c.moveToFirst()) {
         	/* Loop through all Results */             	
@@ -306,12 +306,12 @@ public class functions
         		 pType = c.getInt(pTypeColumn);
         		 pRowID = c.getLong(pIDColumn);
         		 
-        		 Log.i(TAG," ARIES person extraction " +pRowID+ "THEN ptype is " + pType);
+        		 Log.v(TAG," ARIES person extraction " +pRowID+ "THEN ptype is " + pType);
         		 /* Add current Entry to offeventData and stdeventData. */
         		 if(pType == tpType){   
         			 if (tpType == 1)d = db.getStudent(pRowID);
         			 if (tpType == 2)d = db.getOfficial(pRowID);     
-        			 Log.i(TAG,d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));
+        			 Log.v(TAG,d.getString(firstColumn)+" "+d.getString(lastColumn)+" "+d.getLong(codeColumn));
         			 String [] test = new String [6];
         			 test[0] = Long.toString(d.getLong(codeColumn));
         			 test[1] = Integer.toString(c.getInt(presentColumn));
@@ -382,19 +382,18 @@ public class functions
 		Mail m = new Mail("babysam.proj@gmail.com", "babysamproj"); 
 		String Body = mailBody(ev_contents, offeventData, stdeventData);
 		String Subject = mailSubject(ev_contents);
-		Log.i(TAG,"send mail during" );
+		Log.i(TAG,"Method send mail started" );
         String[] toArr = {"nowoxi@gmail.com", "babysam.proj@gmail.com", Username+"@aston.ac.uk"}; 
         m.setTo(toArr); 
-        m.setFrom("nowoxi@gmail.com"); 
+        m.setFrom("babysam.proj@gmail.com"); 
         m.setSubject(Subject); 
         m.setBody("Email body.\n "+ Body); 
        
-        Log.i(TAG,"start sending" );
+        Log.v(TAG,"start sending" );
         try { 
-         // TODO
         	String savedPath = saveasFile(rID, Username);
         	m.addAttachment(savedPath); 	
-        	Log.i(TAG,"Sending" );
+        	Log.v(TAG,"Sending" );
 	          if(m.send()) { 	        	
 	              Toast.makeText( context, "Email was sent successfully.", Toast.LENGTH_SHORT).show(); 
 	              deleteTempXML(savedPath);
@@ -760,7 +759,7 @@ public class functions
         c.close();
         db.close();
         //if (exist)pos[0] = count;
-        Log.i(TAG,"checking codes..."+exist+pos[0]+pos[1]+pos[2] );
+        Log.d(TAG,"checking codes..."+exist+pos[0]+pos[1]+pos[2] );
 		return pos;		
 	}
 	
@@ -782,7 +781,7 @@ public class functions
 	        Log.i(TAG,"add data method" );
 	        	try{
 			        db.insertStudent(code, lname, fname);
-			        Log.i(TAG,"add student to db" );
+			        Log.v(TAG,"added student to db" );
 	        	} catch (NumberFormatException e){
 	        		 Toast.makeText(context, context.getResources().getString( R.string.invalid_data), Toast.LENGTH_SHORT).show();
 	        	}
@@ -805,7 +804,7 @@ public class functions
 	        
 	        	try{
 		        	db.insertOfficial(code, lname, fname, uname, pass);	
-		        	Log.d(TAG,"add official to db" );
+		        	Log.v(TAG,"added official to db" );
 	        	} catch (NumberFormatException e){
 	       		 Toast.makeText(context, "Invalid data format", Toast.LENGTH_SHORT).show();
 	        	}
@@ -838,7 +837,7 @@ public class functions
 	        Log.i(TAG,"update person db method" );
 	        	try{
 	        		db.updateStudent(pID,code,lname,fname);
-		        Log.d(TAG,"update student in db" );
+		        Log.v(TAG,"update student in db" );
 	        	} catch (NumberFormatException e){
 	        		 Toast.makeText(context, "Invalid data format", 
 	                 		Toast.LENGTH_SHORT).show();
@@ -860,7 +859,7 @@ public class functions
 	        Log.i(TAG,"update person db method" );
 	        	try{
 		        	db.updateOfficial(pID,code,lname,fname, uname, pass);
-		        	Log.d(TAG,"updated official in db" );
+		        	Log.v(TAG,"updated official in db" );
 	        	} catch (NumberFormatException e){
 	       		 Toast.makeText(context, "Invalid data format", 
 	              		Toast.LENGTH_SHORT).show();
@@ -959,7 +958,7 @@ public class functions
                                     	serializer.attribute(null, "Last_Name", studentData.get(i)[4]);
                                     	serializer.attribute(null, "First_Name", studentData.get(i)[5]);
                                     serializer.endTag(null, studentTag);
-                                 //  Log.i(TAG, "save file: "+ studentData.get(i)[5]);
+                                   Log.v(TAG, "save file: "+ studentData.get(i)[5]);
                                 }
                         serializer.endTag(null, rootTag);
                         serializer.endDocument();//Log.i(TAG, "save file 3");
@@ -1054,7 +1053,7 @@ public class functions
 
 	private void setFilePath(File newxmlfile) {
 		this.filePath = newxmlfile.toString();
-		Log.i(TAG, filePath);
+		Log.d(TAG, filePath);
 	}
 	
 	public String getFilePath(){

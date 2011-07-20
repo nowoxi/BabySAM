@@ -3,6 +3,7 @@ package com.androidproject.babysam;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
     public class ProgressThread extends Thread {	
     	
@@ -27,7 +28,7 @@ import android.os.Looper;
             context = ctx;
             age= a;
             username = user;
-            //Log.i("BabySAM","send emailrun @@" );
+            Log.v("BabySAM","ProgressThread for progress dialog" );
         }
         
         @Override
@@ -35,7 +36,6 @@ import android.os.Looper;
             Looper.prepare();
             if(upload.equalsIgnoreCase("Mail"))f.sendEmail(extra_EID, eventDetails, username);
             if(!upload.equalsIgnoreCase("Mail"))f.sendAries(extra_EID,age,upload, username);;
-                    
             handler.sendEmptyMessage(0);
             Looper.loop();
         }

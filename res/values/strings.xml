@@ -14,7 +14,7 @@
     <string name="old_display">HISTORY DETAILS</string>    
     <string name="facerec_display">Display Screen</string>
     
-    <string name="version">version 1.9</string>
+    <string name="version">version 2.0</string>
     <string name="auth_but">Login</string>
     <string name="zxing_but">Scan Code</string>
     
@@ -97,6 +97,6 @@
     <string name="unnecessary_func">Function not developed - Redundant</string>
     <string name="load_fail">Failed to load Events - </string>
     <string name="ses_detail">Add session details</string>
-    <string name="import_xml">import person to event db</string>
-    <string name="modify_listview">Error modifing list view(Remove) - </string>
+    <string name="import_xml">import person to event dB</string>
+    <string name="modify_listview">Error modifying list view(Remove) - </string>
 </resources>

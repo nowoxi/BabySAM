@@ -87,7 +87,15 @@ public class EventActivity extends babysamActivity {
         super.onCreate(savedInstanceState);
         setupViews();
         stateID=0;
+        event_clear(RowID);//TODO this might be a bad idea look into it
     }
+
+	private void event_clear(long rID) {
+		DBAdapter db = new DBAdapter(this); 
+        db.open();
+        db.deleteEvent(rID);
+        db.close();		
+	}
 
 	@Override
 	protected void onDestroy() {
@@ -1018,7 +1026,7 @@ public class EventActivity extends babysamActivity {
 				}
 				correctTable = true;
 			}else {
-				Log.w(TAG,"wrong row "+ ptype );
+				Log.w(TAG,"Adding person to wrong group. The person is a "+ ptype +" Type" );
 				correctTable = false;
 				Toast.makeText(this, "Adding person to wrong group", Toast.LENGTH_SHORT).show();
 			}
@@ -1208,10 +1216,7 @@ public class EventActivity extends babysamActivity {
 
 	public void event_cancel(long rID){
 		//make a method that would cancel all the current status of events	i.e. deleting from the database
-		DBAdapter db = new DBAdapter(this); 
-        db.open();
-        db.deleteEvent(rID);
-        db.close();
+		event_clear(rID);
 		EventActivity.this.finish();
 	}
 	

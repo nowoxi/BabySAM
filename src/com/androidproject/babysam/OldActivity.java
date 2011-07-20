@@ -51,7 +51,7 @@ public class OldActivity extends babysamActivity {
 					for (int i = 0; i <= 4 ; i++)intent.putExtra(intentExtra[i], eventData.get(position)[i]);													
 		    	} else if (DB_mode == 1){
 		    		//send the event id to the new activity to be started
-		    		Log.i(TAG,"4 After call list postision: "+ position +" rowID:  "+RowID.get(position)+ ". I beleive it is easier to use " + (position+1)+" as Row ID");
+		    		Log.d(TAG,"4 After call list postision: "+ position +" rowID:  "+RowID.get(position)+ ". I beleive it is easier to use " + (position+1)+" as Row ID");
 		    		intent.putExtra("EventID", RowID.get(position));
 		    	}
 	    		startActivity(intent);
@@ -114,7 +114,6 @@ public class OldActivity extends babysamActivity {
 		            
 		            if (data[2] != null) eventData.add(data);	 
 		        }
-		        
 		    }
 		    doceventType = event.next();
 		}
@@ -151,10 +150,6 @@ public class OldActivity extends babysamActivity {
             		Toast.LENGTH_SHORT).show();
         db.close();
     	return leventData;
-    }
-    
-    public void personExtract (){
-    	
     }
     
   //to load all prefences to their variables only used in event

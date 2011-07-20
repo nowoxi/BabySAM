@@ -24,7 +24,6 @@ public class DBAdapter
 	public static final String KEY2_EVENTID = "eventid";
 	public static final String KEY2_PERSONTYPE = "pType";
 	public static final String KEY2_PERSONID = "pID";
-	//public static final String KEY2_POSITION = "position";
 	public static final String KEY2_PRESENT = "present";
 	public static final String KEY2_LIST = "list";
 	
@@ -387,7 +386,7 @@ public class DBAdapter
     }
   //---insert a person for event into the database---
     public boolean updateEventPerson(long rowId, String timestamp, long present)//, int list) //long position,
-    {Log.i("BabaySAM","update: "+present);
+    {Log.d("BabaySAM","update: "+present);
         ContentValues args = new ContentValues();
         //args.put(KEY2_EVENTID, eventid);
         //args.put(KEY2_PERSONTYPE, ptype);
@@ -451,12 +450,6 @@ public class DBAdapter
                 null,
                 null);
 	}
-
-	/*public boolean posChange(long rowID, long position) {
-		 ContentValues args = new ContentValues();
-	        args.put(KEY2_POSITION, position);
-	        return db.update(DATABASE_TABLE2, args, KEY_ROWID + "=" + rowID, null) > 0;
-	}*/
 
 	public boolean ariesupdate(long lRowID) {
 		int aries = 1;

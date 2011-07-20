@@ -24,12 +24,12 @@ public class LoginActivity extends babysamActivity {
         
         Button authbut = (Button) findViewById(R.id.auth_but);
         authbut.setOnClickListener(new View.OnClickListener() {
-        public void onClick(View v) {
-        // Handle date picking dialog
-        	uname = (EditText)findViewById(R.id.authEText);
-        	String user = uname.getText().toString();
-        	checkUsername(user);
-        }
+	        public void onClick(View v) {
+	        // Handle date picking dialog
+	        	uname = (EditText)findViewById(R.id.authEText);
+	        	String user = uname.getText().toString();
+	        	checkUsername(user);
+	        }
         });
     }
     
@@ -45,7 +45,7 @@ public class LoginActivity extends babysamActivity {
 			 } else if (resultCode == RESULT_CANCELED) {
 	                // Handle cancel
 				 Toast.makeText(getApplicationContext(),getResources().getString(R.string.login_message),Toast.LENGTH_LONG).show();
-	            	Log.i(TAG,getResources().getString(R.string.login_message) );
+	            	Log.w(TAG,getResources().getString(R.string.login_message) );
 	         }
 		}
 	}

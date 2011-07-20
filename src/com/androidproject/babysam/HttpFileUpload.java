@@ -12,14 +12,13 @@ import android.util.Log;
 public class HttpFileUpload {
 	
 	private int serverResponseCode;
-	private String serverResponseMessage;
+	private String serverResponseMessage, TAG ="BabySAM";
 	
 	HttpFileUpload(String path,String urlServer){
 		try {
 			upload(path, urlServer);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			Log.e("BabySAM", "Error", e);
+			Log.e(TAG, "Error", e);
 		}
 	}
 	
@@ -27,10 +26,6 @@ public class HttpFileUpload {
 	public void upload (String pathToOurFile, String urlServer) throws Exception {
 		  HttpURLConnection connection = null;
 		  DataOutputStream outputStream = null;
-		  //DataInputStream inputStream = null;
-	
-		  //functions f = new functions (context);
-		  //String pathToOurFile = //f.getFilePath();
 		  String lineEnd = "\r\n";
 		  String twoHyphens = "--";
 		  String boundary =  "*****";
@@ -82,13 +77,13 @@ public class HttpFileUpload {
 			  serverResponseCode = connection.getResponseCode();
 			  serverResponseMessage = connection.getResponseMessage();
 			  
-			  Log.i("BabySAM", serverResponseCode +" "+ serverResponseMessage);
+			  Log.i(TAG, serverResponseCode +" "+ serverResponseMessage);
 			  
 			  fileInputStream.close();
 			  outputStream.flush();
 			  outputStream.close();
 		  } catch (Exception ex) {
-			  //Exception handling
+			  Log.e(TAG, "Error getting data from URL", ex);
 		  }	  
 	}
 	

@@ -22,7 +22,6 @@ import android.widget.Toast;
 
 public class settingsActivity extends babysamActivity {
 	
-	   //private int en_stscan, en_ofscan, en_evscan;
 	   private ListView menuList;
 	   private int count = T_SCAN.length;
 	   private int [] en_scan = new int [count];
@@ -33,8 +32,6 @@ public class settingsActivity extends babysamActivity {
 	   
 	   //I need to develop the xml to select settings and a method to save to the share preferences
 	   //improve code here to use more of if and for loops instead of the repeated sequences
-	   
-	   
 	   
 	   /* TODO 
 	    * add setting for adding users to the database for test purposes. Add setting on scanning list and individual users
@@ -76,8 +73,6 @@ public class settingsActivity extends babysamActivity {
 		    	String strText = textView.getText().toString();
 		    	
 		    	if (strText.equalsIgnoreCase(ariesMenuItem)) {
-		    	// Launch the Events Activity
-		    		//startActivity(new Intent(MenuActivity.this, EventActivity.class));
 		    		Context context = settingsActivity.this;
 		    		final AlertDialog.Builder alert = new AlertDialog.Builder(context);
 		    		final EditText input = new EditText(context);
@@ -87,7 +82,7 @@ public class settingsActivity extends babysamActivity {
 						public void onClick(DialogInterface dialog, int whichButton) {
 							String uriTemp  = (String) input.getText().toString();
 							String httpheader = "http://",httptail = "upload.php";
-							if (!uriTemp.startsWith(httpheader)){//add header if missing.. any other thing used should be self correctedcorrect
+							if (!uriTemp.startsWith(httpheader)){//add header if missing.. any other thing used should be self corrected correct
 								uriTemp= httpheader.concat(uriTemp);
 							}
 							if (!uriTemp.endsWith(httptail)){//add upload.php if missing.. any other thing used should correct
@@ -117,7 +112,7 @@ public class settingsActivity extends babysamActivity {
 									dialog.cancel();
 								}
 							});
-					alert.show();		//Log.i(TAG, " test 2");
+					alert.show();		
 				}
 		    	
 		    	
@@ -172,7 +167,6 @@ public class settingsActivity extends babysamActivity {
     	//---add 2 events and persons---
     	DBAdapter db = new DBAdapter(this); 
         db.open();        
-        //long id;
         db.insertEvent(
         		"Examination",
         		"NW104",
@@ -182,16 +176,6 @@ public class settingsActivity extends babysamActivity {
         		"12:00");
         Long u = new Long ("20116001325041");
         Random randomGenerator = new Random();
-       /* * 
-        //TODO
-        db.insertPerson(2,2,new Long ("23116001325041"),"12:00",0);
-        db.insertPerson(2,1,new Long ("23115001325041"),"12:00",0);
-        db.insertPerson(2,1,new Long ("23114001325041"),"12:00",1);
-        db.insertPerson(2,1,new Long ("23113001325041"),"12:00",2);
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",0);
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",1);
-        db.insertPerson(1,1,new Long ("23113001325041"),"12:00",2);
-        db.insertPerson(1,2,new Long ("23113001325041"),"12:00",3);*/
         for (int i = 0; i<3;i++)db.insertStudent(u + randomGenerator.nextInt(1000), getRandomfName(), getRandomlName());        
         for (int i = 0; i<1;i++){
         	String name = getRandomlName();
@@ -210,7 +194,7 @@ public class settingsActivity extends babysamActivity {
         
         db.close();
         EventID += 1;
-        //Log.i(TAG, "add to db");
+        Log.i(TAG, "add to db");
     }
     
     private void delete_db_Tab(){
@@ -221,6 +205,7 @@ public class settingsActivity extends babysamActivity {
         db.deleteAllTables();
         db.close();
     }
+    
     //to load all prefences to their variables only used in event
     private void LoadPref(){// this is used to load all the current settings on start of activity
 	    	eventSettings = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
@@ -306,7 +291,7 @@ public class settingsActivity extends babysamActivity {
 			"Smith","Johnson","Williams","Jones","Brown","Davis","Miller","Wilson","Moore",
 			"Taylor","Anderson","Thomas","Jackson","White","Harris","Martin","Thompson","Garcia",
 			"Martinez","Robinson","Clark","Lewis","Lee","Walker","Hall","Allen","Young",
-			"King","Wright","Hill","Scott","Green","Adams","Baker","Carter","Turner",
+			"King","Wright","Hill","Scott","Green","Adams","Baker","Carter","Turner","Tolulope"
 		};
 		int indexL = r2.nextInt(lNames.length - 1);
 		

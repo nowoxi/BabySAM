@@ -373,7 +373,7 @@ public class DBAdapter
     }
 
     //---updates an event---
-    public boolean updateEvent(long rowId,String event, String venue, String course, int duration, int aries, String timestamp) 
+    public boolean updateEvent(long rowId,String event, String venue, String course, int duration, int aries)//, String timestamp) 
     {
         ContentValues args = new ContentValues();
         args.put(KEY1_EVENTTYPE, event);
@@ -381,7 +381,7 @@ public class DBAdapter
         args.put(KEY1_COURSE, course);
         args.put(KEY1_DURATION, duration);
         args.put(KEY1_ARIES, aries);
-        args.put(KEY_TIMESTAMP, timestamp);
+        //args.put(KEY_TIMESTAMP, timestamp);
         return db.update(DATABASE_TABLE1, args, KEY_ROWID + "=" + rowId, null) > 0;
     }
   //---insert a person for event into the database---

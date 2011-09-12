@@ -387,7 +387,7 @@ public class functions
         m.setTo(toArr); 
         m.setFrom("babysam.proj@gmail.com"); 
         m.setSubject(Subject); 
-        m.setBody("Email body.\n "+ Body); 
+        m.setBody(Body); 
        
         Log.v(TAG,"start sending" );
         try { 
@@ -672,8 +672,8 @@ public class functions
 	        else
 	            Toast.makeText(context, "No Students found", 
 	            		Toast.LENGTH_SHORT).show();
+	       c.close(); 
         }
-        c.close();
         db.close();
 		return exist;		
 	}
@@ -713,8 +713,8 @@ public class functions
 	        else
 	            Toast.makeText(context, "No Students found", 
 	            		Toast.LENGTH_SHORT).show();
-        }
-        c.close();
+	        c.close();
+	    }
         db.close();
 		return exist;		
 	}

@@ -6,6 +6,5 @@
 	<classpathentry kind="lib" path="C:/Users/Xi/Documents/school/Project/mail/activation.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Xi/Documents/school/Project/mail/additionnal.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Xi/Documents/school/Project/mail/mail.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Xi/Documents/school/Project/packages/httpmime-4.1.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

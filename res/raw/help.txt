@@ -1,19 +1,79 @@
-Have you been there? 
-Have you done that?
+ How to add students/officials’ manually
 
-BEEN THERE, DONE THAT! is a trivia quiz dedicated to those who love travel and adventure. By answering a series of Yes or No questions, you gain points toward being the most well-traveled and field-tested person on the planet. Share your experiences and compete with your friends. 
+1.	First login to the application (How to login)
+2.	Select official or student list from min menu
+3.	Select Menu > “load persons”> “Add Single person” 
+4.	If scanning enable, scan person ID Barcode
+5.	Enter detail as required. For officials ensure username is added to give ability of user to login. 
+6.	Press ok, if all data is valid. A new person will appear at the bottom of the list; else a warning will be displayed.
 
-GAME SETTINGS
+How to Navigate
+1.	By clicking on the items to go further
+2.	Returning with the back button
+3.	If you go back will entering information the data is lost
 
-<TBD>
+Deleting
+1.	To delete data select the specific item and hold until a context menu appears then click delete
+2.	To delete events from history the database has to be emptied
 
-SUPPORT INFORMATION
+How to login
+1.	Select the text field
+2.	Enter a username for an already existing user
+3.	For a new official enter an unused username and this will open a dialog to create user
 
-"Been There, Done That!" was developed by Mamlambo, Inc. 
+Ensure username is an Aston username and that the password isn’t your Aston password
 
-Phone: 1-800-555-1212
-Email: support@mamlambo.com
-Website: http://www.mamlambo.com 
-Address: 1060 West Addison Street, Chicago, IL 60613
-COPYRIGHT ©2009, Mamlambo, Inc. 
-All rights reserved.
+How to create an event
+1.	Select event in the main menu (How to login)
+2.	To cancel an event (all information will be lost)
+	Press menu; select more > cancel	
+3.	 To save an event (event details must be added to save an event; events cannot be edited after saving) 
+	Press menu; select more >save
+4.	To send an email ( can be done multiple times; email is sent to logged in user) 
+	Press menu; select upload>  “send to email”
+5.	 To upload to Aries (Single upload per session; should be done at end of session) 
+	Press menu; select upload > “Aries upload”
+6.	To save to file ( can be done multiple times; saves in the memory card in the application folder) 
+	Press menu; select upload > “save to file” 
+
+How to add session, officials or students to events
+1.	Press menu; select “add session” or “add student” or “add official”
+2.	If scanning is enabled for particular option selected then scan code (How to scan)
+3.	A dialog for details is presented (with scan code, if enabled)
+4.	Correctly enter necessary data and click ok
+
+Sessions can be modified by going through the same process of adding.
+
+How to change settings in events
+	Press > menu; Select more> settings
+
+
+How to use help from events
+	Press > menu; Select more> help
+
+
+How to scan
+1.	Ensure the environment is well lite
+2.	Ensure scanning is enabled for particular option in settings (How to use settings)
+3.	Place phone horizontally with camera above barcode
+4.	Place redline on screen across the code. Better to align across the centre of code
+5.	Ensure hand is steady and all of code is within rectangular frame but not too far off
+6.	When idem scanned there is a beep and an image of the code with a green line is displayed for a few seconds before normal activity is resumed with scanned data presented in a dialog box
+
+How to use history
+1.	Select history from the main menu (how to login)
+2.	Select an event from the list of previous events displayed
+3.	The details of the events would be shown
+4.	Events have the upload option which would allow for saving to file or emailing at any time but will only allow for server upload if event had never been uploaded successfully
+
+How to modify officials/student details
+1.	Select  officials’ or students list from the main menu
+2.	Press and hold item to be modified
+3.	To modify detail you can select any of the following options – rescan, delete, edit
+
+Settings Configuration
+1.	To enable an option check box and uncheck to disable except for the Mother SAM address which is a URL to the upload server address
+2.	On exit, the settings will be saved
+3.	There is an option to check and uncheck all
+4.	The Debug option is used to empty the database and populate it as well.
+

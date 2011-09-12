@@ -157,11 +157,10 @@ public class Old_displayActivity extends babysamActivity {
         return  eventSettings.getString("aries_link"," Enter URL plesae");
     }
     
-    //Method for debuggin purposes only
+    //Method for debugging purposes only uses local resource XML
     private void processData( XmlResourceParser event,ArrayList<String[]> eventData, int xeID) throws XmlPullParserException,IOException {
 		int doceventType = -1;
 		boolean bFoundEvents = false;   
-	    //int xnum = 0;
 	    Log.i(TAG," Method - processData for resource xml" );
 		// Find Event records from XML
 		while (doceventType != XmlResourceParser.END_DOCUMENT) {
@@ -189,7 +188,6 @@ public class Old_displayActivity extends babysamActivity {
 		    }
 		    doceventType = event.next();
 		}
-		
 		// Handle no events available
 		if (bFoundEvents == false) {
 			String [] data = {getResources().getString(R.string.no_data)};
@@ -208,7 +206,7 @@ public class Old_displayActivity extends babysamActivity {
     	Log.i(TAG," diaolg start" );
         switch(id) {
         case 0:                      // Spinner
-        	//Log.v(TAG," diaolg start" );
+        	//Log.v(TAG," dialog start" );
             progDialog = new ProgressDialog(this);
             progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progDialog.setMessage(getResources().getString(R.string.send_email));

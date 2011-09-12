@@ -19,27 +19,6 @@ public class DesEncrypter {
     Cipher ecipher;
     Cipher dcipher;
 
-    /*DesEncrypter(SecretKey key) {
-        // Create an 8-byte initialization vector
-        byte[] iv = new byte[]{
-            (byte)0x8E, 0x12, 0x39, (byte)0x9C,
-            0x07, 0x72, 0x6F, 0x5A
-        };
-        AlgorithmParameterSpec paramSpec = new IvParameterSpec(iv);
-        try {
-            ecipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-            dcipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-
-            // CBC requires an initialization vector
-            ecipher.init(Cipher.ENCRYPT_MODE, key, paramSpec);
-            dcipher.init(Cipher.DECRYPT_MODE, key, paramSpec);
-        } catch (java.security.InvalidAlgorithmParameterException e) {
-        } catch (javax.crypto.NoSuchPaddingException e) {
-        } catch (java.security.NoSuchAlgorithmException e) {
-        } catch (java.security.InvalidKeyException e) {
-        }
-    }*/
-    
  // 8-byte Salt
     byte[] salt = {
         (byte)0xA9, (byte)0x9B, (byte)0xC8, (byte)0x32,

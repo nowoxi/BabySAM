@@ -278,17 +278,17 @@ public class olistActivity extends babysamActivity {
 		String pass=len_content[4];
 		
 		long pRowID;
-		if (en_ofscan == 1 || pEdit == 1){ //if en_stscan is enabled scan would have added thats why we are updating only
+		if (fromIntent == 0 && en_ofscan == 1 || pEdit == 1){ //if en_stscan is enabled scan would have added thats why we are updating only
 			//the value of pRowID must be the id of the record added by the scan intent 
 			pRowID = getLastPersonRow(RowID);
-			Log.i(TAG,"rescanning or editing student" );
+			Log.i(TAG,"rescanning or editing official"  + fromIntent );
 			if (pEdit==1){
 				pRowID = iRowID;  //set the person rowID to the id to be edited, done at the unset of entrydialog
 				pos =(int) stPos ;//value of person to be edited on listview
 			}
 			exist = false;//for update is should be allowed to edit list view always
 			f.upd_dbpersondata(pRowID, fname, lname, code, uname, pass);
-		} else if (en_ofscan == 0){
+		} else if (en_ofscan == 0  || fromIntent != 0){
 			exist = f.add_dbpersondata( fname, lname, code, uname, pass);
 		}
 		
